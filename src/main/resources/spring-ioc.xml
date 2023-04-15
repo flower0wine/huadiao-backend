@@ -2,17 +2,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/context
        https://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/mvc
-       https://www.springframework.org/schema/mvc/spring-mvc.xsd
 ">
-
-    <!--包扫描-->
-    <context:component-scan base-package="com.huadiao" />
 
     <!--引入外部 properties 文件-->
     <context:property-placeholder location="classpath:mysql.properties"/>
@@ -25,18 +23,35 @@
         <property name="password" value="${mysql.password}"/>
     </bean>
 
-    <bean id="sessionFactory"  class="org.mybatis.spring.SqlSessionFactoryBean">
+    <bean id="sqlSessionFactory"  class="org.mybatis.spring.SqlSessionFactoryBean">
         <!--设置数据源-->
         <property name="dataSource" ref="dataSource" />
         <!--引入 mybatis 配置文件-->
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
-        <!--设置 mybatis 映射文件的路径-->
+        <!--设置 mybatis 映射文件的路径, 接口 mapper 路径与 mapper 映射文件路径不同时指定-->
         <!--<property name="mapperLocations" value="classpath:com/huadiao/mapper/*.xml" />-->
     </bean>
 
     <!--为 mapper 接口生成代理实现类, 配置了下面标签就不需要配置 mapperLocations, 只有包路径不同才需要配置-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.huadiao.mapper"/>
+    </bean>
+
+    <!--事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--使用 spring 事务注解需要开启事务注解驱动-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!--redis 连接池-->
+    <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+        <constructor-arg name="poolConfig">
+            <bean class="redis.clients.jedis.JedisPoolConfig"/>
+        </constructor-arg>
+        <constructor-arg name="host" value="localhost"/>
+        <constructor-arg name="port" value="6379"/>
     </bean>
 
 </beans>

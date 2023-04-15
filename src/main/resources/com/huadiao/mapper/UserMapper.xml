@@ -1,4 +1,69 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.huadiao.mapper.UserMapper">
+
+    <!--更新用户登录时间-->
+    <update id="updateUserLatestLoginTime">
+        update huadiao_login_register
+        set `latest_login_time` = now()
+        where `uid` = #{uid};
+    </update>
+
+    <resultMap id="userBaseInfoDtoResultMap" type="com.huadiao.entity.dto.UserBaseInfoDto">
+        <result property="uid" column="uid"/>
+        <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+    </resultMap>
+
+    <!--通过用户名和密码来获取用户-->
+    <select id="selectUserByUsernameAndPassword" resultMap="userBaseInfoDtoResultMap">
+        select `uid`, `user_id`, `username`
+        from huadiao_user_base
+        where `username` = #{username}
+          and `password` = MD5(#{password});
+    </select>
+
+    <!--添加新用户-->
+    <insert id="insertNewHuadiaoUser">
+        insert into huadiao_user_base(`user_id`, `username`, `password`)
+        values (#{userId}, #{username}, MD5(#{password}));
+    </insert>
+
+    <select id="selectUidByUserId" resultType="java.lang.Integer">
+        select uid
+        from huadiao_user_base
+        where user_id = #{userId};
+    </select>
+
+    <!--根据用户 uid 获取 userId-->
+    <select id="selectUserIdByUid" resultType="java.lang.String">
+        select `user_id`
+        from huadiao_user_base
+        where uid = #{uid};
+    </select>
+
+    <!--通过用户名查找用户-->
+    <select id="selectUserByUsername" resultMap="userBaseInfoDtoResultMap">
+        select `uid`, `user_id`, `username`
+        from huadiao_user_base
+        where username = #{username};
+    </select>
+
+    <resultMap id="userShareDtoResultMap" type="com.huadiao.entity.dto.UserShareDto">
+        <result property="uid" column="uid"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="userAvatar" column="user_avatar"/>
+    </resultMap>
+    <!--通过 uid 获取用户共享信息-->
+    <select id="selectUserShareDtoByUid" resultMap="userShareDtoResultMap">
+        select `uid`, `user_id`, `nickname`, `user_avatar`
+        from huadiao_user_info
+                 inner join (select `user_avatar` from huadiao_homepage where uid = #{uid}) t1 on uid = #{uid}
+                 inner join (select `user_id` from huadiao_user_base where uid = #{uid}) t2 on uid = #{uid};
+    </select>
+
+
 </mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.huadiao.mapper.FollowFanMapper">
+
+    <!--新增两人的关系-->
+    <insert id="insertRelationByBothUid">
+        insert into huadiao_relation(`fan_uid`, `uid`, `status`, `latest_follow_date`, `follow_times`, `group_id`)
+        values (#{fanUid}, #{uid}, 1, now(), 1, #{groupId})
+        on duplicate key update `status`             = 1,
+                                `latest_follow_date` = now(),
+                                `follow_times`       = `follow_times` + 1,
+                                `group_id`           = #{groupId};
+    </insert>
+
+    <!--获取用户关注和粉丝的数量-->
+    <select id="countFollowAndFansByUid" resultType="java.lang.Integer">
+        select count(`fan_uid`)
+        from huadiao_relation
+        where `fan_uid` = #{uid}
+          and `status` = 1
+        union all
+        select count(`uid`)
+        from huadiao_relation
+        where `uid` = #{uid}
+          and `status` = 1;
+    </select>
+
+
+</mapper>

@@ -2,8 +2,13 @@ package com.huadiao.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @author flowerwine
@@ -15,13 +20,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ImportResource("classpath:spring-mvc.xml")
 public class SpringMvcConfig implements WebMvcConfigurer {
 
-    /**
-     * 跨域请求设置
-     */
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
-
+    public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+        resolvers.add(new HandlerExceptionResolver() {
+            @Override
+            public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+                ex.printStackTrace();
+                return null;
+            }
+        });
     }
-
-
 }

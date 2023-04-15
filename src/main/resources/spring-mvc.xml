@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 
     <!--静态资源放行-->
     <mvc:default-servlet-handler />
     <!--开启 mvc 注解-->
     <mvc:annotation-driven/>
+    <!--包扫描-->
+    <context:component-scan base-package="com.huadiao"/>
+
+    <!--允许所有请求跨域-->
+    <mvc:cors>
+        <mvc:mapping path="/**" allow-credentials="true" allowed-methods="*" allowed-headers="*" allowed-origin-patterns="http://localhost:8081"/>
+    </mvc:cors>
 </beans>

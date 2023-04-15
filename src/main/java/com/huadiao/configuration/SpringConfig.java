@@ -1,7 +1,9 @@
 package com.huadiao.configuration;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 /**
  * @author flowerwine
@@ -12,6 +14,7 @@ import org.springframework.context.annotation.ImportResource;
 @Configuration
 @ImportResource("classpath:spring-ioc.xml")
 public class SpringConfig {
+
 
 
 }

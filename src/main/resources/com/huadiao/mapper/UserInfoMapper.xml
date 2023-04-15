@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huadiao.mapper.UserInfoMapper">
+
+    <!--新增用户信息, 存在则更新用户信息-->
+    <insert id="insertOrUpdateUserInfoByUid">
+        insert into huadiao_user_info(`uid`, `nickname`, `canvases`, `sex`, `born_date`, `school`)
+        values (#{uid}, #{nickname}, #{canvases}, #{sex}, #{bornDate}, #{school})
+        on duplicate key update `nickname`    = #{nickname},
+                                `canvases`    = #{canvases},
+                                `sex`         = #{sex},
+                                `born_date`   = #{bornDate},
+                                `school`      = #{school},
+                                `update_time` = now()
+    </insert>
+
+    <resultMap id="userDetailDtoResultMap" type="com.huadiao.entity.dto.UserDetailDto">
+        <result property="nickname" column="nickname"/>
+        <result property="canvases" column="canvases"/>
+        <result property="bornDate" column="born_date"/>
+        <result property="school" column="school"/>
+    </resultMap>
+    <!--根据用户 uid 获取用户信息-->
+    <select id="selectUserInfoByUid" resultMap="userDetailDtoResultMap">
+        select `nickname`, `canvases`, `born_date`, `school`, `sex`
+        from huadiao_user_info
+        inner join (select `username` from huadiao_user_base where uid = 1) t1 on uid = 1;
+    </select>
+
+</mapper>
