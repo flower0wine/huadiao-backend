@@ -1,7 +1,7 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.dto.UserBaseInfoDto;
-import com.huadiao.entity.dto.UserShareDto;
+import com.huadiao.entity.dto.userdto.UserBaseDto;
+import com.huadiao.entity.dto.userdto.UserShareDto;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -16,7 +16,7 @@ public interface UserMapper {
      * @param password 密码
      * @return 返回查找的用户
      */
-    UserBaseInfoDto selectUserByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
+    UserBaseDto selectUserByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
 
     /**
      * 加入花凋新用户, 用户注册
@@ -51,7 +51,7 @@ public interface UserMapper {
      * @param username 用户名
      * @return 返回查找到的用户
      */
-    UserBaseInfoDto selectUserByUsername(@Param("username") String username);
+    UserBaseDto selectUserByUsername(@Param("username") String username);
 
     /**
      * 通过 uid 获取用户共享信息

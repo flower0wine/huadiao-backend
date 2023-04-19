@@ -14,17 +14,23 @@
                                 `update_time` = now()
     </insert>
 
-    <resultMap id="userDetailDtoResultMap" type="com.huadiao.entity.dto.UserDetailDto">
-        <result property="nickname" column="nickname"/>
+    <!--新增个人主页-->
+    <insert id="insertUserHomepageByUid">
+        insert into huadiao_homepage(`uid`)
+        values (#{uid});
+    </insert>
+
+    <resultMap id="userDetailDtoResultMap" type="com.huadiao.entity.dto.userinfodto.UserInfoDto">
         <result property="canvases" column="canvases"/>
         <result property="bornDate" column="born_date"/>
         <result property="school" column="school"/>
+        <result property="sex" column="sex"/>
     </resultMap>
     <!--根据用户 uid 获取用户信息-->
     <select id="selectUserInfoByUid" resultMap="userDetailDtoResultMap">
-        select `nickname`, `canvases`, `born_date`, `school`, `sex`
+        select `canvases`, `born_date`, `school`, `sex`
         from huadiao_user_info
-        inner join (select `username` from huadiao_user_base where uid = 1) t1 on uid = 1;
+        where uid = #{uid};
     </select>
 
 </mapper>

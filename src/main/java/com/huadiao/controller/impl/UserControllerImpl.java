@@ -1,21 +1,26 @@
 package com.huadiao.controller.impl;
 
-import com.huadiao.controller.ErrorController;
 import com.huadiao.controller.UserController;
-import com.huadiao.entity.dto.UserDetailDto;
-import com.huadiao.service.AbstractUserService;
+import com.huadiao.entity.AccountSettings;
+import com.huadiao.entity.dto.accountsettings.MessageSettingsDto;
+import com.huadiao.entity.dto.accountsettings.PublicInfoSettingsDto;
+import com.huadiao.entity.dto.userdto.UserAbstractDto;
+import com.huadiao.entity.dto.userinfodto.UserInfoDto;
 import com.huadiao.service.PoemService;
+import com.huadiao.service.UserInfoService;
 import com.huadiao.service.UserService;
+import com.huadiao.service.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Set;
 
 /**
  * @author flowerwine
@@ -28,24 +33,27 @@ import java.util.regex.Pattern;
 public class UserControllerImpl implements UserController {
     private UserService userService;
     private PoemService poemService;
+    private UserInfoService userInfoService;
+    private UserSettingsService userSettingsService;
 
     @Autowired
-    public UserControllerImpl(UserService userService, PoemService poemService) {
+    public UserControllerImpl(UserService userService, PoemService poemService, UserInfoService userInfoService, UserSettingsService userSettingsService) {
         this.userService = userService;
         this.poemService = poemService;
+        this.userInfoService = userInfoService;
+        this.userSettingsService = userSettingsService;
     }
 
     @Override
-    @GetMapping("/huadiaoIndex")
-    public Map<String, Object> getUserHuadiaoIndexInfo(@CookieValue("User_ID") String userId, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Map<String, Object> map = new HashMap<>(2);
-        map.put("userHuadiaoIndexInfo", userService.getUserHuadiaoIndexInfo(request, response));
-        map.put("huadiaoIndexPoem", poemService.getPoem());
-        return map;
+    @GetMapping("/huadiaoHeader")
+    public UserAbstractDto getHuadiaoHeaderUserInfo(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Integer uid = (Integer) session.getAttribute("uid");
+        return userService.getHuadiaoHeaderUserInfo(uid);
     }
 
     @Override
-    @PostMapping("/login")
+    @PostMapping("/common/login")
     public void huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, String> map) throws Exception {
         userService.huadiaoUserLogin(request, response, map.get("username"), map.get("password"));
     }
@@ -57,53 +65,61 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    @GetMapping("/registerCode")
+    @GetMapping("/common/registerCode")
     public void getCheckCode(HttpSession session, HttpServletResponse response) throws Exception {
         userService.getCheckCode(session, response);
     }
 
     @Override
-    @PostMapping("/register")
+    @PostMapping("/common/register")
     public String registerHuadiao(@RequestBody Map<String, String> map, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {
         return userService.registerHuadiao(session, map.get("username"), map.get("password"), map.get("confirmPassword"), map.get("checkCode"));
     }
 
     @Override
     @PostMapping("/userInfo")
-    public String insertOrUpdateUserInfo(Map<String, String> map, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public String insertOrUpdateUserInfo(@RequestBody Map<String, String> map, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Integer uid = (Integer) session.getAttribute("uid");
-        if(uid == null) {
-            // 没有登录, 重定向到主页
-            response.sendRedirect(HOST);
-        } else {
-            String bornDate = map.get("bornDate");
-            // 检查出生日期是否符合要求
-            Matcher matcher = AbstractUserService.bornDateReg.matcher(bornDate);
-            if(!matcher.matches()) {
-                return AbstractUserService.WRONG_BORN_DATE;
-            }
-            String sex = map.get("sex");
-            String school = map.get("school");
-            String canvases = map.get("canvases");
-            String nickname = map.get("nickname");
-            String userId = session.getAttribute("userId").toString();
-            userService.insertOrUpdateUserInfo(uid, userId, nickname, canvases, sex, bornDate, school);
-        }
-        return null;
+        String bornDate = map.get("bornDate");
+        String sex = map.get("sex");
+        String school = map.get("school");
+        String canvases = map.get("canvases");
+        String nickname = map.get("nickname");
+        String userId = session.getAttribute("userId").toString();
+        return userInfoService.insertOrUpdateUserInfo(uid, userId, nickname, canvases, sex, bornDate, school);
     }
 
     @Override
     @GetMapping("/userInfo")
-    public UserDetailDto getUserInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception {
+    public UserInfoDto getUserInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Integer uid = (Integer) session.getAttribute("uid");
-        if(uid != null) {
-            return userService.getUserInfo(uid);
-        } else {
-            // 没有用户返回 404 状态码
-            request.getRequestDispatcher(ErrorController.NOT_FOUND_DISPATCHER_PATH).forward(request, response);
-            return null;
-        }
+        String userId = (String) session.getAttribute("userId");
+        return userInfoService.getUserInfo(uid, userId);
     }
 
+    @Override
+    @GetMapping("/messageSettings")
+    public MessageSettingsDto getUserMessageSettings(HttpServletRequest request) {
+        return null;
+    }
 
+    @Override
+    @GetMapping("/accountSettings")
+    public AccountSettings getUserAccountSettings(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Integer uid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        return userSettingsService.getUserSettings(uid, userId);
+    }
+
+    @Override
+    @PostMapping("/accountSettings")
+    public String modifyUserSettings(HttpServletRequest request, @RequestBody Map<String, String> settingMap) {
+        HttpSession session = request.getSession();
+        Integer uid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        // set 集合去重, 防止可能的错误, 或者入侵
+        Set<String> settingsSet = new HashSet<>(settingMap.values());
+        return userSettingsService.modifyAccountSettings(uid, userId, settingsSet);
+    }
 }

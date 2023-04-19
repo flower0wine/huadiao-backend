@@ -15,4 +15,14 @@
     <mvc:cors>
         <mvc:mapping path="/**" allow-credentials="true" allowed-methods="*" allowed-headers="*" allowed-origin-patterns="http://localhost:8081"/>
     </mvc:cors>
+
+    <!--拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/common/**"/>
+            <bean class="com.huadiao.interceptor.LoginCheckInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
 </beans>
+

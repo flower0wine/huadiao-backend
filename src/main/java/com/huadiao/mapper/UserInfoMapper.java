@@ -1,8 +1,7 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.dto.UserDetailDto;
+import com.huadiao.entity.dto.userinfodto.UserInfoDto;
 import org.apache.ibatis.annotations.Param;
-import org.mybatis.spring.annotation.MapperScan;
 
 /**
  * @author flowerwine
@@ -26,12 +25,17 @@ public interface UserInfoMapper {
                              @Param("canvases") String canvases, @Param("sex") String sex,
                              @Param("bornDate") String bornDate, @Param("school") String school);
 
+    /**
+     * 新增个人主页
+     * @param uid 用户 uid
+     */
+    void insertUserHomepageByUid(@Param("uid") Integer uid);
 
     /**
      * 根据用户 uid 获取用户信息
      * @param uid 用户 uid
      * @return 返回用户详细信息
-     * @throws Exception 可能抛出异常
      */
-    UserDetailDto selectUserInfoByUid(Integer uid) throws Exception;
+    UserInfoDto selectUserInfoByUid(Integer uid);
+
 }

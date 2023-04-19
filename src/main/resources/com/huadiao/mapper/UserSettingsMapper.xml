@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huadiao.mapper.UserSettingsMapper">
+
+    <!--新增用户账号设置-->
+    <insert id="insertOrUpdateUserSettingsByUid">
+        insert into huadiao_user_settings(`uid`,
+        `public_star_status`,
+        `public_born_status`,
+        `public_fanju_status`,
+        `public_note_status`,
+        `public_school_status`,
+        `public_follow_status`,
+        `public_fan_status`,
+        `public_canvases_status`,
+        `public_homepage_status`,
+        `message_remind_status`,
+        `message_reply_status`,
+        `message_like_status`)
+        values (#{uid}, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        <if test="settingsList != null">
+            on duplicate key update
+            <foreach collection="settingsList" item="setting" separator=",">
+                ${setting} = if(${setting} = 1, 0, 1)
+            </foreach>
+        </if>
+    </insert>
+
+    <resultMap id="publicInfoSettingsResultMap" type="com.huadiao.entity.dto.accountsettings.PublicInfoSettingsDto">
+        <result property="publicHomepageStatus" column="public_homepage_status"/>
+        <result property="publicCanvasesStatus" column="public_canvases_status"/>
+        <result property="publicFollowStatus" column="public_follow_status"/>
+        <result property="publicSchoolStatus" column="public_school_status"/>
+        <result property="publicFanjuStatus" column="public_fanju_status"/>
+        <result property="publicBornStatus" column="public_born_status"/>
+        <result property="publicStarStatus" column="public_star_status"/>
+        <result property="publicFanStatus" column="public_fan_status"/>
+        <result property="publicNoteStatus" column="public_note_status"/>
+    </resultMap>
+    <!--获取用户公开信息设置-->
+    <select id="selectUserPublicInfoSettingsByUid" resultMap="publicInfoSettingsResultMap">
+        select `public_homepage_status`,
+               `public_canvases_status`,
+               `public_follow_status`,
+               `public_school_status`,
+               `public_fanju_status`,
+               `public_born_status`,
+               `public_star_status`,
+               `public_fan_status`,
+               `public_note_status`
+        from huadiao_user_settings
+        where uid = #{uid};
+    </select>
+
+    <resultMap id="messageSettingsResultMap" type="com.huadiao.entity.dto.accountsettings.MessageSettingsDto">
+        <result property="messageRemindStatus" column="message_remind_status"/>
+        <result property="messageReplyStatus" column="message_reply_status"/>
+        <result property="messageLikeStatus" column="message_like_status"/>
+    </resultMap>
+    <!--获取用户消息设置-->
+    <select id="selectUserMessageSettingsByUid" resultMap="messageSettingsResultMap">
+        select `message_remind_status`, `message_reply_status`, `message_like_status`
+        from huadiao_user_settings
+        where uid = 1;
+    </select>
+
+    <resultMap id="accountSettingsResultMap" type="com.huadiao.entity.AccountSettings">
+        <result property="publicHomepageStatus" column="public_homepage_status"/>
+        <result property="publicCanvasesStatus" column="public_canvases_status"/>
+        <result property="publicFollowStatus" column="public_follow_status"/>
+        <result property="publicSchoolStatus" column="public_school_status"/>
+        <result property="publicFanjuStatus" column="public_fanju_status"/>
+        <result property="publicBornStatus" column="public_born_status"/>
+        <result property="publicStarStatus" column="public_star_status"/>
+        <result property="publicFanStatus" column="public_fan_status"/>
+        <result property="publicNoteStatus" column="public_note_status"/>
+        <result property="messageRemindStatus" column="message_remind_status"/>
+        <result property="messageReplyStatus" column="message_reply_status"/>
+        <result property="messageLikeStatus" column="message_like_status"/>
+    </resultMap>
+    <!--获取用户账号设置-->
+    <select id="selectAccountSettingsByUid" resultMap="accountSettingsResultMap">
+        select `public_homepage_status`,
+               `public_canvases_status`,
+               `public_follow_status`,
+               `public_school_status`,
+               `public_fanju_status`,
+               `public_born_status`,
+               `public_star_status`,
+               `public_fan_status`,
+               `public_note_status`,
+               `message_remind_status`,
+               `message_reply_status`,
+               `message_like_status`
+        from huadiao_user_settings
+        where uid = #{uid};
+    </select>
+</mapper>

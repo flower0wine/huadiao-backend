@@ -1,13 +1,16 @@
 package com.huadiao.controller;
 
-import com.huadiao.entity.dto.UserDetailDto;
+import com.huadiao.entity.AccountSettings;
+import com.huadiao.entity.dto.accountsettings.MessageSettingsDto;
+import com.huadiao.entity.dto.accountsettings.PublicInfoSettingsDto;
+import com.huadiao.entity.dto.userdto.UserAbstractDto;
+import com.huadiao.entity.dto.userinfodto.UserInfoDto;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,15 +18,13 @@ import java.util.Map;
  * @author flowerwine
  */
 public interface UserController extends Controller {
+
     /**
-     * 获取花凋首页信息: 用户信息, 诗词等
-     * @param userId 用户id
+     * 获取花凋头部面板用户信息
      * @param request 请求对象
-     * @param response 响应对象
-     * @throws Exception 可能抛出异常
-     * @return 返回花凋首页信息
+     * @return 返回用户信息
      */
-    Map<String, Object> getUserHuadiaoIndexInfo(String userId, HttpServletRequest request, HttpServletResponse response) throws Exception;
+    UserAbstractDto getHuadiaoHeaderUserInfo(HttpServletRequest request);
 
     /**
      * 或吊用户进行登录
@@ -77,7 +78,28 @@ public interface UserController extends Controller {
      * @param response 响应对象
      * @param session session 对象
      * @return 返回用户详细信息
-     * @throws Exception 可能抛出错误
      */
-    UserDetailDto getUserInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception;
+    UserInfoDto getUserInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session);
+
+    /**
+     * 获取用户消息设置
+     * @param request 请求对象
+     * @return 返回消息设置
+     */
+    MessageSettingsDto getUserMessageSettings(HttpServletRequest request);
+
+    /**
+     * 获取用户设置
+     * @param request 请求对象
+     * @return 返回用户设置
+     */
+    AccountSettings getUserAccountSettings(HttpServletRequest request);
+
+    /**
+     * 更新账号设置
+     * @param request 请求对象
+     * @param settingMap 设置集合
+     * @return 返回更新成功提示信息
+     */
+    String modifyUserSettings(HttpServletRequest request, Map<String, String> settingMap);
 }

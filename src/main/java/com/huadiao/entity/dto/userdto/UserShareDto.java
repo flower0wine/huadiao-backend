@@ -1,4 +1,4 @@
-package com.huadiao.entity.dto;
+package com.huadiao.entity.dto.userdto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

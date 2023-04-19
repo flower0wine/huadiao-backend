@@ -125,36 +125,6 @@ public abstract class AbstractUserService implements UserService {
     protected static final String NULL_CHECK_CODE = "nullCheckCode";
 
     /**
-     * 默认的用户个人简介
-     */
-    protected static String DEFAULT_USER_CANVASES = "这个人十分神秘...";
-
-    /**
-     * 默认的用户性别, 为未知, 0(未知), 1(男性), 2(女性)
-     */
-    protected static String DEFAULT_USER_SEX = "0";
-
-    /**
-     * 默认的出生日期
-     */
-    protected static String DEFAULT_USER_BORN_DATE = "";
-
-    /**
-     * 默认的学校
-     */
-    protected static String DEFAULT_USER_SCHOOL = "";
-
-    /**
-     * 错误的日期格式
-     */
-    public static String WRONG_BORN_DATE = "wrongBornDate";
-
-    /**
-     * 出生日期正则表达式
-     */
-    public static Pattern bornDateReg = Pattern.compile("^\\d{4}([-/])\\d{1,2}\\1\\d{1,2}$");
-
-    /**
      * 用户名正则表达式
      */
     public static Pattern usernameReg = Pattern.compile("[^0-9a-zA-Z_]");

@@ -11,7 +11,7 @@
         where `uid` = #{uid};
     </update>
 
-    <resultMap id="userBaseInfoDtoResultMap" type="com.huadiao.entity.dto.UserBaseInfoDto">
+    <resultMap id="userBaseInfoDtoResultMap" type="com.huadiao.entity.dto.userdto.UserBaseDto">
         <result property="uid" column="uid"/>
         <result property="userId" column="user_id"/>
         <result property="username" column="username"/>
@@ -51,7 +51,7 @@
         where username = #{username};
     </select>
 
-    <resultMap id="userShareDtoResultMap" type="com.huadiao.entity.dto.UserShareDto">
+    <resultMap id="userShareDtoResultMap" type="com.huadiao.entity.dto.userdto.UserShareDto">
         <result property="uid" column="uid"/>
         <result property="userId" column="user_id"/>
         <result property="nickname" column="nickname"/>

@@ -14,7 +14,7 @@ public interface ErrorController extends Controller {
     /**
      * 资源未找到匹配路径
      */
-    String NOT_FOUND_DISPATCHER_PATH = "/notFound";
+    String NOT_FOUND_DISPATCHER_PATH = "/common/notFound";
 
     /**
      * 没有相应资源错误

@@ -22,7 +22,7 @@ import java.io.IOException;
 public class ErrorControllerImpl implements ErrorController {
 
     @Override
-    @RequestMapping("/notFoundError")
+    @RequestMapping(NOT_FOUND_DISPATCHER_PATH)
     public ResponseEntity<String> notFoundError(@RequestAttribute String notFoundMessage) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(notFoundMessage);
     }
