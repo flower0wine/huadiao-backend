@@ -2,15 +2,13 @@ package com.huadiao.controller;
 
 import com.huadiao.entity.AccountSettings;
 import com.huadiao.entity.dto.accountsettings.MessageSettingsDto;
-import com.huadiao.entity.dto.accountsettings.PublicInfoSettingsDto;
 import com.huadiao.entity.dto.userdto.UserAbstractDto;
+import com.huadiao.entity.dto.userdto.UserShareDto;
 import com.huadiao.entity.dto.userinfodto.UserInfoDto;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -102,4 +100,11 @@ public interface UserController extends Controller {
      * @return 返回更新成功提示信息
      */
     String modifyUserSettings(HttpServletRequest request, Map<String, String> settingMap);
+
+    /**
+     * 获取可共享用户信息
+     * @param httpSession session 对象
+     * @return 返回可共享对象
+     */
+    UserShareDto getUserShare(HttpSession httpSession);
 }

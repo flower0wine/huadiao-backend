@@ -5,11 +5,9 @@ import com.huadiao.entity.AccountSettings;
 import com.huadiao.entity.dto.accountsettings.MessageSettingsDto;
 import com.huadiao.entity.dto.accountsettings.PublicInfoSettingsDto;
 import com.huadiao.entity.dto.userdto.UserAbstractDto;
+import com.huadiao.entity.dto.userdto.UserShareDto;
 import com.huadiao.entity.dto.userinfodto.UserInfoDto;
-import com.huadiao.service.PoemService;
-import com.huadiao.service.UserInfoService;
-import com.huadiao.service.UserService;
-import com.huadiao.service.UserSettingsService;
+import com.huadiao.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -118,8 +116,18 @@ public class UserControllerImpl implements UserController {
         HttpSession session = request.getSession();
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
+        if(settingMap == null) {
+            return AbstractUserSettingsService.ACCOUNT_SETTING_UPDATE_FAIL;
+        }
         // set 集合去重, 防止可能的错误, 或者入侵
         Set<String> settingsSet = new HashSet<>(settingMap.values());
         return userSettingsService.modifyAccountSettings(uid, userId, settingsSet);
+    }
+
+    @Override
+    @GetMapping("/share")
+    public UserShareDto getUserShare(HttpSession httpSession) {
+        Integer uid = (Integer) httpSession.getAttribute("uid");
+        return userService.getUserShareInfo(uid);
     }
 }

@@ -11,6 +11,12 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
 
     /**
+     * 计数所有的用户数量
+     * @return 返回用户表中的用户数量
+     */
+    Integer countAllUser();
+
+    /**
      * 通过用户名和密码来获取用户
      * @param username 用户名
      * @param password 密码
@@ -20,11 +26,12 @@ public interface UserMapper {
 
     /**
      * 加入花凋新用户, 用户注册
+     * @param uid 用户 uid
      * @param userId 用户 id
      * @param username 用户名
      * @param password 用户密码
      */
-    void insertNewHuadiaoUser(@Param("userId") String userId, @Param("username") String username, @Param("password") String password);
+    void insertNewHuadiaoUser(@Param("uid") Integer uid, @Param("userId") String userId, @Param("username") String username, @Param("password") String password);
 
     /**
      * 更新最近一次登录时间

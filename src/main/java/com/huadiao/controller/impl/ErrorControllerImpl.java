@@ -23,7 +23,7 @@ public class ErrorControllerImpl implements ErrorController {
 
     @Override
     @RequestMapping(NOT_FOUND_DISPATCHER_PATH)
-    public ResponseEntity<String> notFoundError(@RequestAttribute String notFoundMessage) {
+    public ResponseEntity<String> notFoundError(@RequestAttribute(required = false, name = "message") String notFoundMessage) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(notFoundMessage);
     }
 

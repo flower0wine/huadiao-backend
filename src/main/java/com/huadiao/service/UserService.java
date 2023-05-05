@@ -2,6 +2,7 @@ package com.huadiao.service;
 
 import com.huadiao.entity.AccountSettings;
 import com.huadiao.entity.dto.userdto.UserAbstractDto;
+import com.huadiao.entity.dto.userdto.UserShareDto;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +21,6 @@ public interface UserService {
      * @return 返回用户信息
      */
     UserAbstractDto getHuadiaoHeaderUserInfo(Integer uid);
-
 
     /**
      * 花凋用户登录
@@ -59,4 +59,10 @@ public interface UserService {
      */
     String registerHuadiao(HttpSession session, String username, String password, String confirmPassword, String checkCode) throws Exception;
 
+    /**
+     * 获取用户共享信息
+     * @param uid 用户 uid
+     * @return 返回共享信息
+     */
+    UserShareDto getUserShareInfo(Integer uid);
 }

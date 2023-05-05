@@ -13,7 +13,7 @@
 ">
 
     <!--引入外部 properties 文件-->
-    <context:property-placeholder location="classpath:mysql.properties"/>
+    <context:property-placeholder location="classpath:mysql.properties, classpath:properties/huadiaoConfig.properties"/>
 
     <!--数据源配置-->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
@@ -50,8 +50,9 @@
         <constructor-arg name="poolConfig">
             <bean class="redis.clients.jedis.JedisPoolConfig"/>
         </constructor-arg>
-        <constructor-arg name="host" value="localhost"/>
-        <constructor-arg name="port" value="6379"/>
+        <constructor-arg name="host" value="${jedis.host}"/>
+        <constructor-arg name="port" value="${jedis.port}"/>
     </bean>
+
 
 </beans>

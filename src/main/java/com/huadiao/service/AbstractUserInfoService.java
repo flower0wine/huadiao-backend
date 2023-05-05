@@ -1,6 +1,5 @@
 package com.huadiao.service;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -90,7 +89,5 @@ public abstract class AbstractUserInfoService implements UserInfoService {
      * 出生日期正则表达式
      */
     public static Pattern bornDateReg = Pattern.compile("^\\d{4}([-/])\\d{1,2}\\1\\d{1,2}$");
-
-
 
 }

@@ -25,10 +25,11 @@
         <result property="bornDate" column="born_date"/>
         <result property="school" column="school"/>
         <result property="sex" column="sex"/>
+        <result property="nickname" column="nickname"/>
     </resultMap>
     <!--根据用户 uid 获取用户信息-->
     <select id="selectUserInfoByUid" resultMap="userDetailDtoResultMap">
-        select `canvases`, `born_date`, `school`, `sex`
+        select `canvases`, `born_date`, `school`, `sex`, `nickname`
         from huadiao_user_info
         where uid = #{uid};
     </select>

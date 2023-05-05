@@ -5,7 +5,7 @@
 
 <mapper namespace="com.huadiao.mapper.FollowFanMapper">
 
-    <!--新增两人的关系-->
+    <!--新增两人的关系, 可以是重复关注-->
     <insert id="insertRelationByBothUid">
         insert into huadiao_relation(`fan_uid`, `uid`, `status`, `latest_follow_date`, `follow_times`, `group_id`)
         values (#{fanUid}, #{uid}, 1, now(), 1, #{groupId})
@@ -14,6 +14,55 @@
                                 `follow_times`       = `follow_times` + 1,
                                 `group_id`           = #{groupId};
     </insert>
+
+    <!--新增用户关注分组-->
+    <insert id="insertFollowGroupByUid">
+        insert into huadiao_relation_group(`uid`, `group_id`, `group_name`, `create_date`, `status`)
+        values (#{uid}, #{groupId}, #{groupName}, now(), 1);
+    </insert>
+
+    <!--根据两者的 uid 取消关注关系-->
+    <update id="deleteRelationByBothUid">
+        update huadiao_relation
+        set `latest_cancel_follow_date` = now(),
+            `status`                    = 0
+        where uid = #{uid}
+          and fan_uid = #{fanUid};
+    </update>
+
+    <!--删除粉丝-->
+    <update id="deleteFanByUid">
+        update huadiao_relation
+        set `status`              = 0,
+            `removed`             = 1,
+            `latest_removed_time` = now()
+        where `uid` = #{uid}
+          and `fan_uid` = #{fanUid};
+    </update>
+
+    <!--修改关注分组-->
+    <update id="moveFollowGroup">
+        update huadiao_relation
+        set `group_id` = #{groupId}
+        where uid = #{uid}
+          and `status` = 1
+          and fan_uid = #{fanUid};
+    </update>
+
+    <!--修改关注分组名称-->
+    <update id="modifyFollowGroupNameByUid">
+        update huadiao_relation_group
+        set `group_name` = #{groupName}
+        where `group_id` = #{groupId}
+          and `uid` = #{uid};
+    </update>
+
+    <!--删除关注分组-->
+    <update id="deleteFollowGroupByUid">
+        update huadiao_relation_group
+        set `status` = 0
+        where `group_id` = #{groupId};
+    </update>
 
     <!--获取用户关注和粉丝的数量-->
     <select id="countFollowAndFansByUid" resultType="java.lang.Integer">
@@ -26,6 +75,111 @@
         from huadiao_relation
         where `uid` = #{uid}
           and `status` = 1;
+    </select>
+
+    <resultMap id="followGroupResultMap" type="com.huadiao.entity.FollowGroup">
+        <result property="groupId" column="group_id"/>
+        <result property="groupName" column="group_name"/>
+        <result property="createDate" column="create_date"/>
+        <association property="count" select="com.huadiao.mapper.FollowFanMapper.countFollowGroupByUidAndGroupId"
+                     column="group_id"/>
+    </resultMap>
+    <!--获取用户关注分组, 包括官方定义的默认分组-->
+    <select id="selectFollowGroupByUid" resultMap="followGroupResultMap">
+        select `group_name`, `group_id`, `create_date`
+        from huadiao_relation_group
+        where (uid = #{uid} or uid is null)
+          and `status` = 1
+        order by group_id
+    </select>
+
+    <!--获取用户关注分组个数-->
+    <select id="countFollowGroup" resultType="java.lang.Integer">
+        select count(1)
+        from huadiao_relation_group
+        where id > 10;
+    </select>
+
+    <resultMap id="followFanResultMap" type="com.huadiao.entity.FollowFan">
+        <result property="groupId" column="group_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="uid" column="uid"/>
+        <result property="canvases" column="canvases"/>
+        <result property="userAvatar" column="user_avatar"/>
+        <result property="nickname" column="nickname"/>
+        <result property="friend" column="friend"/>
+    </resultMap>
+    <!--根据分组 id, 并根据 begin 和 end 进行分页, 获取用户关注-->
+    <select id="selectUserFollowByUid" resultMap="followFanResultMap">
+        select t1.uid as uid,
+        case when t2.uid is not null then 1 else 0 end
+        as frined,
+        t3.`user_avatar`,
+        t4.`user_id`,
+        t5.`nickname`,
+        t5.`canvases`,
+        t1.`group_id`
+        from huadiao_relation t1
+        left join huadiao_relation t2 on t2.fan_uid = t1.uid and t2.uid = t1.fan_uid
+        left join huadiao_homepage t3 on t3.uid = t1.uid
+        left join huadiao_user_base t4 on t4.uid = t1.uid
+        left join huadiao_user_info t5 on t5.uid = t1.uid
+        where t1.fan_uid = #{uid} and t1.`status` = 1
+        <if test="groupId != null">and t1.group_id = #{groupId}</if>
+        limit #{begin}, #{page};
+    </select>
+
+    <!--获取用户粉丝-->
+    <select id="selectUserFanByUid" resultMap="followFanResultMap">
+        select t1.fan_uid as uid,
+               case when t2.fan_uid is not null then 1 else 0 end
+                          as frined,
+               t3.`user_avatar`,
+               t4.`user_id`,
+               t5.`nickname`,
+               t5.`canvases`
+        from huadiao_relation t1
+                 left join huadiao_relation t2 on t2.uid = t1.fan_uid and t2.fan_uid = t1.uid
+                 left join huadiao_homepage t3 on t3.uid = t1.fan_uid
+                 left join huadiao_user_base t4 on t4.uid = t1.fan_uid
+                 left join huadiao_user_info t5 on t5.uid = t1.fan_uid
+        where t1.uid = #{uid}
+          and t1.`status` = 1
+        limit #{begin}, #{page};
+    </select>
+
+    <!--返回关注分组人数-->
+    <select id="countFollowGroupByUidAndGroupId" resultType="java.lang.Integer">
+        select count(1)
+        from huadiao_relation
+        where fan_uid = #{uid}
+          and group_id = #{groupId}
+          and `status` = 1;
+    </select>
+
+    <!--查询关注分组-->
+    <select id="selectFollowGroupByUidAndGroupId" resultMap="followGroupResultMap">
+        select `create_date`, `group_name`, `group_id`
+        from huadiao_relation_group
+        where group_id = #{groupId}
+          and (uid = #{uid} or uid is null)
+          and `status` = 1;
+    </select>
+
+    <!--获取关注数量-->
+    <select id="countFollowByUid" resultType="java.lang.Integer">
+        select count(1)
+        from huadiao_relation
+        where `status` = 1
+          and `fan_uid` = #{uid};
+    </select>
+
+    <!--计算关注分组的数量-->
+    <select id="countFollowGroupByUid" resultType="java.lang.Integer">
+        select count(1)
+        from huadiao_relation_group
+        where `status` = 1
+          and `uid` = #{uid};
     </select>
 
 

@@ -10,12 +10,13 @@ import com.huadiao.mapper.UserMapper;
 import com.huadiao.mapper.UserSettingsMapper;
 import com.huadiao.service.AbstractUserInfoService;
 import com.huadiao.service.AbstractUserService;
-import com.huadiao.utils.CreateUserId;
-import com.huadiao.utils.GeneratorCookie;
+import com.huadiao.util.CreateHuadiaoUserId;
+import com.huadiao.util.GeneratorCookie;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -148,21 +149,21 @@ public class UserServiceImpl extends AbstractUserService {
         }
         log.debug("用户通过所有的注册检查! 下面开始注册新花凋用户");
         boolean end = false;
-        String userId = CreateUserId.createUserId();
-        Integer uid;
+        String userId = null;
+        // 计数不会产生 null
+        int uid = userMapper.countAllUser() + 1;
+        log.debug("第 {} (uid) 位用户即将加入!", uid);
         while (!end) {
-            try {
-                // 新增花凋用户
-                userMapper.insertNewHuadiaoUser(userId, username, password);
-                end = true;
-            } catch (Exception e) {
+            userId = CreateHuadiaoUserId.createUserId();
+            String existedUserId = userMapper.selectUserIdByUid(uid);
+            if(userId.equals(existedUserId)) {
                 log.trace("为新用户创建的 userId {} 重复, 准备再次创建", userId);
-                userId = CreateUserId.createUserId();
+                continue;
             }
+            end = true;
         }
-        // 获取新增的用户的 uid
-        uid = userMapper.selectUidByUserId(userId);
-        log.trace("获取新增的用户 uid 为 {}", uid);
+        // 新增花凋用户
+        userMapper.insertNewHuadiaoUser(uid + 1, userId, username, password);
         // 新增用户信息
         userInfoMapper.insertOrUpdateUserInfoByUid(uid, userId, AbstractUserInfoService.DEFAULT_USER_CANVASES, AbstractUserInfoService.DEFAULT_USER_SEX, AbstractUserInfoService.DEFAULT_USER_BORN_DATE, AbstractUserInfoService.DEFAULT_USER_SCHOOL);
         log.trace("新增用户信息成功 (uid: {}, userId: {})", uid, userId);
@@ -176,4 +177,11 @@ public class UserServiceImpl extends AbstractUserService {
         return SUCCEED_REGISTER;
     }
 
+    @Override
+    public UserShareDto getUserShareInfo(Integer uid) {
+        log.debug("uid 为 {} 的用户尝试获取共享信息", uid);
+        UserShareDto userShareDto = userMapper.selectUserShareDtoByUid(uid);
+        log.debug("uid 为 {} 的用户成功获取共享信息, userShareDto: {}", uid, userShareDto);
+        return userShareDto;
+    }
 }

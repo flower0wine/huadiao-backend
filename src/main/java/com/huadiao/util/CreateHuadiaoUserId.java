@@ -1,4 +1,4 @@
-package com.huadiao.utils;
+package com.huadiao.util;
 
 import java.util.Random;
 
@@ -6,7 +6,7 @@ import java.util.Random;
  * 该类用于生成不同的 userId
  * @author flowerwine
  */
-public class CreateUserId {
+public class CreateHuadiaoUserId {
 
     private static final char[] NUMBER_CODE_UNIT = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
     private final static int LENGTH = 12;

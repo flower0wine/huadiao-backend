@@ -23,4 +23,5 @@ public class UserInfoDto {
     private String canvases;
     private String school;
     private String bornDate;
+    private String nickname;
 }

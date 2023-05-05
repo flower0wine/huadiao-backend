@@ -1,4 +1,4 @@
-package com.huadiao.utils;
+package com.huadiao.util;
 
 import javax.servlet.http.Cookie;
 
