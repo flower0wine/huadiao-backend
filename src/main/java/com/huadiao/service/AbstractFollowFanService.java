@@ -1,12 +1,14 @@
 package com.huadiao.service;
 
+import java.util.List;
+
 /**
  * @author flowerwine
  * @version 1.1
  * @projectName huadiao-user-back
  * @description 业务层: 关注与粉丝处理抽象实现类
  */
-public abstract class AbstractFollowFanService implements FollowFanService {
+public abstract class AbstractFollowFanService extends AbstractService implements FollowFanService {
 
     /**
      * 关注分组添加成功
@@ -29,19 +31,9 @@ public abstract class AbstractFollowFanService implements FollowFanService {
     public static String WRONG_FOLLOW_GROUP_NAME_LENGTH = "wrongFollowGroupNameLength";
 
     /**
-     * 错误的被访问者 uid
+     * 不存在的关注分组 id
      */
-    public static String WRONG_VIEWED_UID = "wrongViewedUid";
-
-    /**
-     * 错误的 uid, 该 uid 不存在
-     */
-    public static String WRONG_UID = "wrongUid";
-
-    /**
-     * 错误的关注分组 id
-     */
-    public static String WRONG_GROUP_ID = "wrongGroupId";
+    public static String NO_EXIST_GROUP_ID = "noExistGroupId";
 
     /**
      * 建立关系成功
@@ -67,5 +59,31 @@ public abstract class AbstractFollowFanService implements FollowFanService {
      * 达到关注分组最大数量
      */
     public static String REACH_MAX_FOLLOW_GROUP_AMOUNT = "reachMaxFollowGroupAmount";
+
+    /**
+     * 从集合中的数据判断两人的关系
+     * @param relation 装载有两人的关系的集合
+     * @return 如果是互关返回 friend, 是关注返回 follow, 是粉丝返回 fan, 是陌生人返回 stranger
+     */
+    public static String judgeRelationBetweenBoth(List<Integer> relation) {
+        // 判断两人的关系, 陌生人为 stranger, 朋友为 friend
+        int friend = 2, stranger = 0, follow = 2, fan = 1;
+        String rel = null;
+        // 我与他互粉
+        if (relation.size() == friend) {
+            rel = "friend";
+        }
+        // 我与他无关系
+        else if (relation.size() == stranger) {
+            rel = "stranger";
+        }
+        // 我是他的关注
+        else if (relation.size() == 1 && relation.get(0) == fan) {
+            rel = "fan";
+        } else if (relation.size() == 1 && relation.get(0) == follow) {
+            rel = "follow";
+        }
+        return rel;
+    }
 
 }

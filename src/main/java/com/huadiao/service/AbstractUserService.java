@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * @projectName huadiao-user-back
  * @description
  */
-public abstract class AbstractUserService implements UserService {
+public abstract class AbstractUserService extends AbstractService implements UserService {
 
     /**
      * 仅以用户 id 作为 cookie 键名来记录用户登录状态

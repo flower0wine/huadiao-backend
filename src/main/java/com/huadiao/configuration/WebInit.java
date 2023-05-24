@@ -1,6 +1,8 @@
 package com.huadiao.configuration;
 
+import com.huadiao.filter.ConsumeTimeFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.CompositeFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 import javax.servlet.Filter;
 
@@ -28,10 +30,13 @@ public class WebInit extends AbstractAnnotationConfigDispatcherServletInitialize
 
     @Override
     protected Filter[] getServletFilters() {
+        // 处理字符编码
         CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
         characterEncodingFilter.setEncoding("UTF-8");
         characterEncodingFilter.setForceEncoding(true);
-        return new Filter[]{characterEncodingFilter};
+        // 计算每次请求耗时
+        ConsumeTimeFilter consumeTimeFilter = new ConsumeTimeFilter();
+        return new Filter[]{characterEncodingFilter, consumeTimeFilter};
     }
 
 

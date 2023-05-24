@@ -6,5 +6,5 @@ package com.huadiao.service;
  * @projectName huadiao-user-back
  * @description
  */
-public abstract class AbstractHomepageService implements HomepageService {
+public abstract class AbstractHomepageService extends AbstractService implements HomepageService {
 }

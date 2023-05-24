@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huadiao.mapper.NoteMapper">
+
+    <!--新增笔记-->
+    <insert id="insertNewNoteByUid">
+        insert into huadiao_note(`note_id`, `uid`, `note_title`, `note_content`, `publish_time`, `status`,
+                                 `modify_times`)
+        values (#{noteId}, #{uid}, #{noteTitle}, #{noteContent}, now(), 1, 0)
+        on duplicate key update `modify_date`  = now(),
+                                `modify_times` = `modify_times` + 1,
+                                `note_title`   = #{noteTitle},
+                                `note_content` = #{noteContent};
+    </insert>
+
+    <!--删除笔记-->
+    <delete id="deleteNoteByUidAndNoteId">
+        delete
+        from huadiao_note
+        where `uid` = #{uid}
+          and `note_id` = #{noteId};
+    </delete>
+
+    <resultMap id="noteDaoResultMap" type="com.huadiao.entity.dto.note.ShareNoteDto">
+        <result property="noteId" column="note_id"/>
+        <result property="noteTitle" column="note_title"/>
+        <result property="noteContent" column="note_content"/>
+        <result property="publishTime" column="publish_time"/>
+    </resultMap>
+    <!--查找笔记-->
+    <select id="selectNoteByUidAndNoteId" resultMap="noteDaoResultMap">
+        select `uid`, `note_id`, `note_title`, `note_content`, `publish_time`
+        from huadiao_note
+        where `uid` = #{uid}
+          and `note_id` = #{noteId};
+    </select>
+
+    <!--计数笔记-->
+    <select id="countNoteByUid" resultType="java.lang.Integer">
+        select count(1)
+        from huadiao_note
+        where uid = #{uid};
+    </select>
+
+    <resultMap id="noteDetailsResultMap" type="com.huadiao.entity.dto.note.ShareNoteDto">
+        <result property="noteTitle" column="note_title"/>
+        <result property="noteContent" column="note_content"/>
+        <result property="publishTime" column="publish_time"/>
+        <result property="noteId" column="note_id"/>
+        <association property="likeNumber" select="com.huadiao.mapper.NoteMapper.countNoteLikeByUid" column="uid"/>
+        <association property="unlikeNumber" select="com.huadiao.mapper.NoteMapper.countNoteUnlikeByUid" column="uid"/>
+        <association property="viewNumber" select="com.huadiao.mapper.NoteMapper.countNoteViewByUid" column="uid"/>
+    </resultMap>
+    <!--获取用户全部笔记-->
+    <select id="selectNoteDetailsByUid" resultMap="noteDetailsResultMap">
+        select `note_id`, `note_title`, `note_content`, `publish_time`, `uid`
+        from huadiao_note
+        where uid = #{uid};
+    </select>
+
+    <!--获取笔记喜欢次数-->
+    <select id="countNoteLikeByUid" resultType="java.lang.Integer">
+        select count(1)
+        from huadiao_note_like
+        where `author_uid` = #{authorUid}
+          and `note_id` = #{noteId};
+    </select>
+
+    <!--获取笔记被不喜欢次数-->
+    <select id="countNoteUnlikeByUid" resultType="java.lang.Integer">
+        select count(1)
+        from huadiao_note_unlike
+        where `author_uid` = #{authorUid}
+          and `note_id` = #{noteId};
+    </select>
+
+    <!--获取笔记被访问次数-->
+    <select id="countNoteViewByUid" resultType="java.lang.Integer">
+        select count(1)
+        from huadiao_note_view
+        where `author_uid` = #{authorUid}
+          and `note_id` = #{noteId};
+    </select>
+</mapper>

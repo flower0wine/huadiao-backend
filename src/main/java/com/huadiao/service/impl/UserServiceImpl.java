@@ -50,11 +50,7 @@ public class UserServiceImpl extends AbstractUserService {
     @Override
     public UserAbstractDto getHuadiaoHeaderUserInfo(Integer uid) {
         log.debug("尝试获取 session 中的用户 uid 并且获取结果为 {}", uid);
-        // 获取并填充用户信息
-        UserShareDto userShareDto = userMapper.selectUserShareDtoByUid(uid);
-        // 用户关注与粉丝
-        List<Integer> followFans = followFanMapper.countFollowAndFansByUid(uid);
-        UserAbstractDto userAbstractDto = UserAbstractDto.loadUserAbstractInfo(userShareDto, followFans);
+        UserAbstractDto userAbstractDto = getUserInfoByUid(userMapper, followFanMapper, uid);
         // 用户已登录
         userAbstractDto.setLogin(USER_LOGIN_STATUS);
         log.info("用户具有登录状态, uid 为 {} 的用户获取了自己在花凋首页的相关信息", uid);
@@ -183,5 +179,10 @@ public class UserServiceImpl extends AbstractUserService {
         UserShareDto userShareDto = userMapper.selectUserShareDtoByUid(uid);
         log.debug("uid 为 {} 的用户成功获取共享信息, userShareDto: {}", uid, userShareDto);
         return userShareDto;
+    }
+
+    @Override
+    public boolean userExist(Integer uid) {
+        return userMapper.selectUserIdByUid(uid) != null;
     }
 }

@@ -12,10 +12,11 @@
         <result property="userAvatar" column="user_avatar"/>
         <result property="pageBackground" column="page_background"/>
         <result property="visitCount" column="visit_count"/>
+        <result property="uid" column="uid"/>
     </resultMap>
     <!--获取个人主页部分信息-->
     <select id="selectHomepageInfoByUid" resultMap="homepageInfoResultMap">
-        select `user_avatar`, `homepage_background`, count(1) as `visit_count`
+        select t1.uid, `user_avatar`, `homepage_background`, count(1) as `visit_count`
         from huadiao_homepage t1
                  left join huadiao_homepage_visit t2 on t1.uid = t2.uid
         where t1.uid = #{uid};

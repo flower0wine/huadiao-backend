@@ -182,5 +182,20 @@
           and `uid` = #{uid};
     </select>
 
+    <!--获取两者的关系-->
+    <select id="selectRelationByBothUid" resultType="java.lang.Integer">
+        select 1
+        from huadiao_relation
+        where `uid` = #{uid}
+          and `fan_uid` = #{otherUid}
+          and `status` = 1
+        union all
+        select 2
+        from huadiao_relation
+        where `uid` = #{otherUid}
+          and `fan_uid` = #{uid}
+          and `status` = 1
+    </select>
+
 
 </mapper>

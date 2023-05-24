@@ -7,7 +7,7 @@ import java.util.Map;
  * 用户个人主页控制器接口
  * @author flowerwine
  */
-public interface HomepageController {
+public interface HomepageController extends Controller {
 
     /**
      * 根据 uid 访问个人主页

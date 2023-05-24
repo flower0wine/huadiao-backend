@@ -44,7 +44,7 @@ public interface FollowFanMapper {
      * @param uid 用户 uid
      * @param fanUid 粉丝的 uid
      */
-    void insertRelationByBothUid(@Param("uid") Integer uid, @Param("fanUid") Integer fanUid);
+    void insertRelationByBothUid(@Param("uid") Integer uid, @Param("fanUid") Integer fanUid, @Param("groupId") Integer groupId);
 
     /**
      * 根据两者的 uid 取消两人的关系
@@ -132,4 +132,13 @@ public interface FollowFanMapper {
      * @param groupId 关注分组 id
      */
     void deleteFollowGroupByUid(@Param("uid") Integer uid, @Param("groupId") Integer groupId);
+
+    /**
+     * 获取两人的关系, 如果返回集合为个数为 0 则为互不关注, 返回集合个数为 1,
+     * 并且值为 1 则为 uid 被 otherUid 关注, 为 2 则反之, 集合个数为 2 则为相互关注
+     * @param uid 当前用户 uid
+     * @param otherUid 其他人 uid
+     * @return 返回关系集合
+     */
+    List<Integer> selectRelationByBothUid(@Param("uid") Integer uid, @Param("otherUid") Integer otherUid);
 }

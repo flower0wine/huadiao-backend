@@ -5,6 +5,7 @@ import com.huadiao.entity.HomepageInfo;
 import com.huadiao.entity.dto.userdto.UserShareDto;
 import com.huadiao.entity.dto.userinfodto.UserInfoDto;
 import com.huadiao.mapper.*;
+import com.huadiao.service.AbstractFollowFanService;
 import com.huadiao.service.AbstractHomepageService;
 import com.huadiao.service.AbstractUserSettingsService;
 import com.huadiao.service.FollowFanService;
@@ -48,49 +49,57 @@ public class HomepageServiceImpl extends AbstractHomepageService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> getHomepageInfo(Integer uid, String userId, Integer viewedUid) {
-        log.debug("uid, userId 分别为 {}, {} 的用户尝试访问 uid 为 {} 的用户的个人主页", uid, userId, viewedUid);
+
         // 判断被访问者是否存在
         String viewerUserId = userMapper.selectUserIdByUid(viewedUid);
-        if(viewerUserId == null) {
+        if (viewerUserId == null) {
             Map<String, Object> map = new HashMap<>(2);
-            map.put("wrongUid", "");
+            map.put(WRONG_MESSAGE_KEY, NO_EXIST_UID);
             return map;
         }
-        AccountSettings accountSettings = AbstractUserSettingsService.getAccountSettings(viewedUid, jedisPool, userSettingsMapper);
-        // 如果用户选择不公开个人主页信息
-        if (!accountSettings.getPublicHomepageStatus()) {
-            log.debug("uid 为 {} 的用户不公开个人主页信息", viewedUid);
-            Map<String, Object> map = new HashMap<>(2);
-            map.put(AbstractUserSettingsService.PRIVATE_SETTINGS_KEY, AbstractUserSettingsService.PRIVATE_USER_INFO);
-            return map;
-        }
-        // 如果用户选择公开个人主页
-        else {
-            log.debug("uid 为 {} 的用户公开个人主页信息", viewedUid);
-            // 获取用户信息
-            List<Integer> followFan = followFanMapper.countFollowAndFansByUid(viewedUid);
-            UserInfoDto userInfoDto = userInfoMapper.selectUserInfoByUid(viewedUid);
-            HomepageInfo homepageInfo = homepageMapper.selectHomepageInfoByUid(viewedUid);
-            // 添加访问记录
-            if (!uid.equals(viewedUid)) {
-                insertVisitRecord(uid, userId, viewedUid);
-            }
 
-            Map<String, Object> map = new HashMap<>(10);
-            map.put("followCount", followFan.get(FollowFanService.FOLLOW_INDEX));
-            map.put("fanCount", followFan.get(FollowFanService.FAN_INDEX));
-            map.put("userInfo", userInfoDto);
-            map.put("homepageInfo", homepageInfo);
-            return map;
+        boolean me = uid.equals(viewedUid);
+        // 如果不是本人
+        if (!me) {
+            AccountSettings accountSettings = AbstractUserSettingsService.getAccountSettings(viewedUid, jedisPool, userSettingsMapper);
+            // 如果用户选择不公开个人主页信息
+            if (!accountSettings.getPublicHomepageStatus()) {
+                log.debug("uid 为 {} 的用户不公开个人主页信息", viewedUid);
+                Map<String, Object> map = new HashMap<>(2);
+                map.put(PRIVATE_SETTINGS_KEY, PRIVATE_USER_INFO);
+                return map;
+            }
         }
+
+        log.debug("uid 为 {} 的用户公开个人主页信息", viewedUid);
+        // 获取个人主页信息
+        List<Integer> followFan = followFanMapper.countFollowAndFansByUid(viewedUid);
+        List<Integer> relation = followFanMapper.selectRelationByBothUid(uid, viewedUid);
+        UserInfoDto userInfoDto = userInfoMapper.selectUserInfoByUid(viewedUid);
+        HomepageInfo homepageInfo = homepageMapper.selectHomepageInfoByUid(viewedUid);
+
+        // 装填参数
+        Map<String, Object> map = new HashMap<>(10);
+        map.put("followCount", followFan.get(FollowFanService.FOLLOW_INDEX));
+        map.put("fanCount", followFan.get(FollowFanService.FAN_INDEX));
+        map.put("userInfo", userInfoDto);
+        map.put("homepageInfo", homepageInfo);
+        map.put("relation", AbstractFollowFanService.judgeRelationBetweenBoth(relation));
+        map.put("me", me);
+
+        // 不是本人添加访问记录
+        if (!me) {
+            insertVisitRecord(uid, userId, viewedUid);
+        }
+        return map;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void insertVisitRecord(Integer uid, String userId, Integer viewedUid) {
-        log.debug("uid, userId 分别为 {}, {} 的用户的个人主页新增访问记录, 访问者 uid: {}", uid, userId, viewedUid);
+        log.debug("尝试为 uid, userId 分别为 {}, {} 的用户的个人主页新增访问记录, 访问者 uid: {}", uid, userId, viewedUid);
         homepageMapper.insertVisitRecordByUid(uid, viewedUid);
+        log.debug("为 uid, userId 分别为 {}, {} 的用户的个人主页新增访问记录成功, 访问者 uid: {}", uid, userId, viewedUid);
     }
 }

@@ -16,6 +16,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 public class HomepageInfo {
+    private Integer uid;
     private String pageBackground;
     private String userAvatar;
     private Integer visitCount;

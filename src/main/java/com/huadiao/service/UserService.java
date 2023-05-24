@@ -65,4 +65,11 @@ public interface UserService {
      * @return 返回共享信息
      */
     UserShareDto getUserShareInfo(Integer uid);
+
+    /**
+     * 根据 uid 判断用户是否存在
+     * @param uid 用户 uid
+     * @return 存在返回 true, 否则返回 false
+     */
+    boolean userExist(Integer uid);
 }
