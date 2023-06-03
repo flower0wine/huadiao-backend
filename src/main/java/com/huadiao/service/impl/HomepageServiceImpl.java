@@ -5,6 +5,7 @@ import com.huadiao.entity.HomepageInfo;
 import com.huadiao.entity.dto.userdto.UserShareDto;
 import com.huadiao.entity.dto.userinfodto.UserInfoDto;
 import com.huadiao.mapper.*;
+import com.huadiao.redis.UserSettingJedisUtil;
 import com.huadiao.service.AbstractFollowFanService;
 import com.huadiao.service.AbstractHomepageService;
 import com.huadiao.service.AbstractUserSettingsService;
@@ -36,16 +37,14 @@ public class HomepageServiceImpl extends AbstractHomepageService {
     private FollowFanMapper followFanMapper;
     private UserSettingsMapper userSettingsMapper;
     private HomepageMapper homepageMapper;
-    private JedisPool jedisPool;
 
     @Autowired
-    public HomepageServiceImpl(UserInfoMapper userInfoMapper, UserMapper userMapper, FollowFanMapper followFanMapper, UserSettingsMapper userSettingsMapper, HomepageMapper homepageMapper, JedisPool jedisPool) {
+    public HomepageServiceImpl(UserInfoMapper userInfoMapper, UserMapper userMapper, FollowFanMapper followFanMapper, UserSettingsMapper userSettingsMapper, HomepageMapper homepageMapper) {
         this.userInfoMapper = userInfoMapper;
         this.userMapper = userMapper;
         this.followFanMapper = followFanMapper;
         this.userSettingsMapper = userSettingsMapper;
         this.homepageMapper = homepageMapper;
-        this.jedisPool = jedisPool;
     }
 
     @Override
@@ -62,7 +61,7 @@ public class HomepageServiceImpl extends AbstractHomepageService {
         boolean me = uid.equals(viewedUid);
         // 如果不是本人
         if (!me) {
-            AccountSettings accountSettings = AbstractUserSettingsService.getAccountSettings(viewedUid, jedisPool, userSettingsMapper);
+            AccountSettings accountSettings = userSettingJedisUtil.getAccountSettings(viewedUid);
             // 如果用户选择不公开个人主页信息
             if (!accountSettings.getPublicHomepageStatus()) {
                 log.debug("uid 为 {} 的用户不公开个人主页信息", viewedUid);

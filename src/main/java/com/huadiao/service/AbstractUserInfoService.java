@@ -1,5 +1,12 @@
 package com.huadiao.service;
 
+import com.huadiao.entity.dto.userdto.UserAbstractDto;
+import com.huadiao.entity.dto.userdto.UserShareDto;
+import com.huadiao.mapper.FollowFanMapper;
+import com.huadiao.mapper.UserMapper;
+import redis.clients.jedis.JedisPool;
+
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -89,5 +96,6 @@ public abstract class AbstractUserInfoService implements UserInfoService {
      * 出生日期正则表达式
      */
     public static Pattern bornDateReg = Pattern.compile("^\\d{4}([-/])\\d{1,2}\\1\\d{1,2}$");
+
 
 }

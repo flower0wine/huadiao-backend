@@ -1,6 +1,5 @@
 package com.huadiao.service.impl;
 
-import cn.hutool.core.util.StrUtil;
 import com.huadiao.entity.AccountSettings;
 import com.huadiao.entity.FollowFan;
 import com.huadiao.entity.FollowGroup;
@@ -9,16 +8,12 @@ import com.huadiao.mapper.FollowFanMapper;
 import com.huadiao.mapper.UserMapper;
 import com.huadiao.mapper.UserSettingsMapper;
 import com.huadiao.service.AbstractFollowFanService;
-import com.huadiao.service.AbstractUserInfoService;
 import com.huadiao.service.AbstractUserSettingsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,14 +31,12 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
     private UserMapper userMapper;
     private FollowFanMapper followFanMapper;
     private UserSettingsMapper userSettingsMapper;
-    private JedisPool jedisPool;
 
     @Autowired
-    public FollowFanServiceImpl(UserMapper userMapper, FollowFanMapper followFanMapper, UserSettingsMapper userSettingsMapper, JedisPool jedisPool) {
+    public FollowFanServiceImpl(UserMapper userMapper, FollowFanMapper followFanMapper, UserSettingsMapper userSettingsMapper) {
         this.userMapper = userMapper;
         this.followFanMapper = followFanMapper;
         this.userSettingsMapper = userSettingsMapper;
-        this.jedisPool = jedisPool;
     }
 
     @Override
@@ -114,7 +107,7 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
         boolean me = uid.equals(viewedUid);
         // 不是本人需要判断本人是否公开关注信息
         if(!me) {
-            AccountSettings accountSettings = AbstractUserSettingsService.getAccountSettings(viewedUid, jedisPool, userSettingsMapper);
+            AccountSettings accountSettings = userSettingJedisUtil.getAccountSettings(viewedUid);
             if(!accountSettings.getPublicFollowStatus()) {
                 log.debug("viewedUid 为 {} 的用户已设置关注信息不公开", viewedUid);
                 map.put(PRIVATE_SETTINGS_KEY, PRIVATE_USER_INFO);
@@ -145,7 +138,7 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
         boolean me = uid.equals(viewedUid);
         // 不是本人需要判断本人是否公开粉丝信息
         if(!me) {
-            AccountSettings accountSettings = AbstractUserSettingsService.getAccountSettings(viewedUid, jedisPool, userSettingsMapper);
+            AccountSettings accountSettings = userSettingJedisUtil.getAccountSettings(viewedUid);
             if(!accountSettings.getPublicFanStatus()) {
                 log.debug("viewedUid 为 {} 的用户已设置粉丝信息不公开", viewedUid);
                 Map<String, Object> map = new HashMap<>(2);

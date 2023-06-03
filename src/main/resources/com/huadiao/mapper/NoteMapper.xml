@@ -21,18 +21,31 @@
           and `note_id` = #{noteId};
     </delete>
 
-    <resultMap id="noteDaoResultMap" type="com.huadiao.entity.dto.note.ShareNoteDto">
+    <resultMap id="singleNoteDtoResultMap" type="com.huadiao.entity.dto.note.ShareNoteDto">
         <result property="noteId" column="note_id"/>
         <result property="noteTitle" column="note_title"/>
         <result property="noteContent" column="note_content"/>
         <result property="publishTime" column="publish_time"/>
+        <result property="likeNumber" column="like_number"/>
+        <result property="unlikeNumber" column="unlike_number"/>
+        <result property="viewNumber" column="view_number"/>
     </resultMap>
     <!--查找笔记-->
-    <select id="selectNoteByUidAndNoteId" resultMap="noteDaoResultMap">
-        select `uid`, `note_id`, `note_title`, `note_content`, `publish_time`
-        from huadiao_note
-        where `uid` = #{uid}
-          and `note_id` = #{noteId};
+    <select id="selectNoteByUidAndNoteId" resultMap="singleNoteDtoResultMap">
+        select t1.`uid`,
+               t1.`note_id`,
+               `note_title`,
+               `note_content`,
+               `publish_time`,
+               count(t2.uid) as `like_number`,
+               count(t3.uid) as `unlike_number`,
+               count(t4.uid) as `view_number`
+        from huadiao_note t1
+                 left join huadiao_note_like t2 on t1.uid = t2.author_uid
+                 left join huadiao_note_unlike t3 on t1.uid = t3.author_uid
+                 left join huadiao_note_view t4 on t1.uid = t4.author_uid
+        where t1.`uid` = #{uid}
+          and t1.`note_id` = #{noteId};
     </select>
 
     <!--计数笔记-->
@@ -47,15 +60,26 @@
         <result property="noteContent" column="note_content"/>
         <result property="publishTime" column="publish_time"/>
         <result property="noteId" column="note_id"/>
-        <association property="likeNumber" select="com.huadiao.mapper.NoteMapper.countNoteLikeByUid" column="uid"/>
-        <association property="unlikeNumber" select="com.huadiao.mapper.NoteMapper.countNoteUnlikeByUid" column="uid"/>
-        <association property="viewNumber" select="com.huadiao.mapper.NoteMapper.countNoteViewByUid" column="uid"/>
+        <result property="likeNumber" column="like_number"/>
+        <result property="unlikeNumber" column="unlike_number"/>
+        <result property="viewNumber" column="view_number"/>
     </resultMap>
     <!--获取用户全部笔记-->
-    <select id="selectNoteDetailsByUid" resultMap="noteDetailsResultMap">
-        select `note_id`, `note_title`, `note_content`, `publish_time`, `uid`
-        from huadiao_note
-        where uid = #{uid};
+    <select id="selectAllNoteByUid" resultMap="noteDetailsResultMap">
+        SELECT n.uid,
+               n.note_id,
+               n.note_title,
+               n.note_content,
+               n.publish_time,
+               COUNT(l.uid) AS like_number,
+               COUNT(u.uid) AS unlike_number,
+               COUNT(v.uid) AS view_number
+        FROM huadiao_note n
+                 LEFT JOIN huadiao_note_like l ON n.note_id = l.note_id
+                 LEFT JOIN huadiao_note_unlike u ON n.note_id = u.note_id
+                 LEFT JOIN huadiao_note_view v ON n.note_id = v.note_id
+        WHERE n.uid = #{uid}
+        GROUP BY n.uid, n.note_id;
     </select>
 
     <!--获取笔记喜欢次数-->
@@ -63,6 +87,7 @@
         select count(1)
         from huadiao_note_like
         where `author_uid` = #{authorUid}
+          and `status` = 1
           and `note_id` = #{noteId};
     </select>
 
@@ -71,6 +96,7 @@
         select count(1)
         from huadiao_note_unlike
         where `author_uid` = #{authorUid}
+          and `status` = 1
           and `note_id` = #{noteId};
     </select>
 
@@ -79,6 +105,45 @@
         select count(1)
         from huadiao_note_view
         where `author_uid` = #{authorUid}
+          and `status` = 1
           and `note_id` = #{noteId};
     </select>
+
+    <!--判断当前用户是否点赞过某个笔记-->
+    <select id="selectMyLikeWithNote" resultType="java.lang.Integer">
+        select `uid`
+        from huadiao_note_like
+        where `note_id` = #{noteId}
+          and `author_uid` = #{authorUid}
+          and `status` = 1
+          and `uid` = #{uid};
+    </select>
+
+    <!--判断当前用户是否不喜欢过某个笔记-->
+    <select id="selectMyUnlikeWithNote" resultType="java.lang.Integer">
+        select `uid`
+        from huadiao_note_unlike
+        where `note_id` = #{noteId}
+          and `author_uid` = #{authorUid}
+          and `status` = 1
+          and `uid` = #{uid};
+    </select>
+
+    <!--判断作者 uid 是否存在 noteId 的笔记-->
+    <select id="selectAuthorUid" resultType="java.lang.Integer">
+        select `uid`
+        from huadiao_note
+        where `uid` = #{uid}
+          and `note_id` = #{noteId};
+    </select>
+
+    <!--判断笔记是否存在, 由于返回类型为 bool, 所以要求 sql 语句只能返回 0 和 1 两个数字-->
+    <select id="selectExistByNoteIdAndUid" resultType="java.lang.Boolean">
+        select if(count(`uid`) = 1, 1, 0)
+        from huadiao_note
+        where `uid` = #{uid}
+          and `note_id` = #{noteId}
+    </select>
+
 </mapper>
+

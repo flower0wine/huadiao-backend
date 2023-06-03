@@ -13,77 +13,88 @@ public abstract class AbstractFollowFanService extends AbstractService implement
     /**
      * 关注分组添加成功
      */
-    public static String FOLLOW_GROUP_ADD_SUCCEED = "followGroupAddSucceed";
+    public String FOLLOW_GROUP_ADD_SUCCEED = "followGroupAddSucceed";
 
     /**
      * 最大关注名称长度
      */
-    public static int MAX_FOLLOW_GROUP_NAME_LENGTH = 16;
+    public int MAX_FOLLOW_GROUP_NAME_LENGTH = 16;
 
     /**
      * 分组名称不能为空
      */
-    public static String NULL_FOLLOW_GROUP_NAME = "nullFollowGroupName";
+    public String NULL_FOLLOW_GROUP_NAME = "nullFollowGroupName";
 
     /**
      * 关注分组名称长度最长不超过 16 字符
      */
-    public static String WRONG_FOLLOW_GROUP_NAME_LENGTH = "wrongFollowGroupNameLength";
+    public String WRONG_FOLLOW_GROUP_NAME_LENGTH = "wrongFollowGroupNameLength";
 
     /**
      * 不存在的关注分组 id
      */
-    public static String NO_EXIST_GROUP_ID = "noExistGroupId";
+    public String NO_EXIST_GROUP_ID = "noExistGroupId";
 
     /**
      * 建立关系成功
      */
-    public static String BUILD_RELATION_SUCCEED = "buildRelationSucceed";
+    public String BUILD_RELATION_SUCCEED = "buildRelationSucceed";
 
     /**
      * 最大关注数量
      */
-    public static int MAX_FOLLOW_AMOUNT = 200;
+    public int MAX_FOLLOW_AMOUNT = 200;
 
     /**
      * 达到最大关注数量
      */
-    public static String REACH_MAX_FOLLOW_AMOUNT = "reachMaxFollowAmount";
+    public String REACH_MAX_FOLLOW_AMOUNT = "reachMaxFollowAmount";
 
     /**
      * 关注分组最多可建立的数量
      */
-    public static int MAX_FOLLOW_GROUP_AMOUNT = 20;
+    public int MAX_FOLLOW_GROUP_AMOUNT = 20;
 
     /**
      * 达到关注分组最大数量
      */
-    public static String REACH_MAX_FOLLOW_GROUP_AMOUNT = "reachMaxFollowGroupAmount";
+    public String REACH_MAX_FOLLOW_GROUP_AMOUNT = "reachMaxFollowGroupAmount";
+
+    public enum Relation {
+        /** 关系 */
+        FRIEND(0),
+        STRONGER(1),
+        FOLLOW(2),
+        FAN(3);
+
+        Relation(Integer relation) {
+            this.relation = relation;
+        }
+        private Integer relation;
+    }
 
     /**
      * 从集合中的数据判断两人的关系
      * @param relation 装载有两人的关系的集合
      * @return 如果是互关返回 friend, 是关注返回 follow, 是粉丝返回 fan, 是陌生人返回 stranger
      */
-    public static String judgeRelationBetweenBoth(List<Integer> relation) {
+    public static Relation judgeRelationBetweenBoth(List<Integer> relation) {
         // 判断两人的关系, 陌生人为 stranger, 朋友为 friend
-        int friend = 2, stranger = 0, follow = 2, fan = 1;
-        String rel = null;
+        int friend = 2, stranger = 0, fan = 1;
         // 我与他互粉
         if (relation.size() == friend) {
-            rel = "friend";
+            return Relation.FRIEND;
         }
         // 我与他无关系
         else if (relation.size() == stranger) {
-            rel = "stranger";
+            return Relation.STRONGER;
         }
         // 我是他的关注
         else if (relation.size() == 1 && relation.get(0) == fan) {
-            rel = "fan";
-        } else if (relation.size() == 1 && relation.get(0) == follow) {
-            rel = "follow";
+            return Relation.FAN;
+        } else {
+            return Relation.FOLLOW;
         }
-        return rel;
     }
 
 }

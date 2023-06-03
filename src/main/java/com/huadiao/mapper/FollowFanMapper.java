@@ -43,6 +43,7 @@ public interface FollowFanMapper {
      * 新增两人的关系
      * @param uid 用户 uid
      * @param fanUid 粉丝的 uid
+     * @param groupId 关注分组 id
      */
     void insertRelationByBothUid(@Param("uid") Integer uid, @Param("fanUid") Integer fanUid, @Param("groupId") Integer groupId);
 

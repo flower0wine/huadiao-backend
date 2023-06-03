@@ -1,7 +1,12 @@
 package com.huadiao.service;
 
+import cn.hutool.http.server.HttpServerRequest;
 import com.huadiao.entity.dto.note.SelfNoteDto;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -22,13 +27,16 @@ public interface NoteService {
 
     /**
      * 获取指定用户的笔记
+     * @param request 请求对象
+     * @param response 响应对象
      * @param uid 读者 uid
      * @param userId 读者 id
      * @param authorUid 作者 uid
      * @param noteId 笔记唯一标识
      * @return 返回含有作者笔记的集合, 里面处理笔记还有是否是本人等信息
+     * @throws  Exception 可能抛出异常
      */
-    Map<String, Object> getSingleNote(Integer uid, String userId, Integer authorUid, Integer noteId);
+    Map<String, Object> getSingleNote(HttpServletRequest request, HttpServletResponse response, Integer uid, String userId, Integer authorUid, Integer noteId) throws Exception;
 
     /**
      * 获取用户的笔记, 与上面不同的是该方法是在编辑笔记页面进行的获取自己的笔记请求

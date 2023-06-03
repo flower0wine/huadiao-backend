@@ -1,10 +1,14 @@
 package com.huadiao.service.impl;
 
+import cn.hutool.http.server.HttpServerRequest;
+import com.huadiao.controller.ErrorController;
 import com.huadiao.entity.AccountSettings;
+import com.huadiao.entity.dto.note.NoteRelationDto;
 import com.huadiao.entity.dto.note.SelfNoteDto;
 import com.huadiao.entity.dto.note.ShareNoteDto;
 import com.huadiao.entity.dto.userdto.UserAbstractDto;
 import com.huadiao.mapper.*;
+import com.huadiao.service.AbstractFollowFanService;
 import com.huadiao.service.AbstractNoteService;
 import com.huadiao.service.AbstractUserSettingsService;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.JedisPool;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,15 +40,13 @@ public class NoteServiceImpl extends AbstractNoteService {
     private NoteMapper noteMapper;
     private UserSettingsMapper userSettingsMapper;
     private FollowFanMapper followFanMapper;
-    private JedisPool jedisPool;
 
     @Autowired
-    public NoteServiceImpl(UserMapper userMapper, NoteMapper noteMapper, UserSettingsMapper userSettingsMapper, FollowFanMapper followFanMapper, JedisPool jedisPool) {
+    public NoteServiceImpl(UserMapper userMapper, NoteMapper noteMapper, UserSettingsMapper userSettingsMapper, FollowFanMapper followFanMapper) {
         this.userMapper = userMapper;
         this.noteMapper = noteMapper;
         this.userSettingsMapper = userSettingsMapper;
         this.followFanMapper = followFanMapper;
-        this.jedisPool = jedisPool;
     }
 
     @Override
@@ -62,15 +68,16 @@ public class NoteServiceImpl extends AbstractNoteService {
     }
 
     @Override
-    public Map<String, Object> getSingleNote(Integer uid, String userId, Integer authorUid, Integer noteId) {
+    public Map<String, Object> getSingleNote(HttpServletRequest request, HttpServletResponse response, Integer uid, String userId, Integer authorUid, Integer noteId) throws Exception {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取 uid 为 {} 的 noteId 为 {} 的笔记", uid, userId, authorUid, noteId);
 
-        // 检查用户提供的 authorUid 是否存在
-        String authorUserId = userMapper.selectUserIdByUid(authorUid);
-        if(authorUserId == null) {
-            log.debug("uid, userId 分别为 {}, {} 的用户提供的 authorUid: {} 不存在", uid, userId, authorUid);
+        // 检查用户提供的 authorUid 和 笔记 id 是否存在
+        Integer queryAuthorUid = noteMapper.selectAuthorUid(authorUid, noteId);
+        if(queryAuthorUid == null) {
+            log.debug("uid, userId 分别为 {}, {} 的用户提供的 authorUid: {} 并不存在 noteId: {} 的笔记, 返回 404", uid, userId, authorUid, noteId);
+            request.getRequestDispatcher(ErrorController.NOT_FOUND_DISPATCHER_PATH).forward(request, response);
             Map<String, Object> map = new HashMap<>(2);
-            map.put(WRONG_MESSAGE_KEY, NO_EXIST_UID);
+            map.put(WRONG_MESSAGE_KEY, INVALID_PARAM);
             return map;
         }
 
@@ -78,7 +85,7 @@ public class NoteServiceImpl extends AbstractNoteService {
         boolean me = uid.equals(authorUid);
         if(!me) {
             // 检查作者是否公开笔记
-            AccountSettings accountSettings = AbstractUserSettingsService.getAccountSettings(authorUid, jedisPool, userSettingsMapper);
+            AccountSettings accountSettings = userSettingJedisUtil.getAccountSettings(authorUid);
             if(!accountSettings.getPublicNoteStatus()) {
                 log.debug("uid 为 {} 的用户选择不公开笔记", authorUid);
                 Map<String, Object> map = new HashMap<>(2);
@@ -89,11 +96,29 @@ public class NoteServiceImpl extends AbstractNoteService {
 
         // 查找笔记
         ShareNoteDto shareNoteDto = noteMapper.selectNoteByUidAndNoteId(authorUid, noteId);
+        // 查找作者信息
+        UserAbstractDto authorInfo = userInfoJedisUtil.getUserInfoByUid(authorUid);
+        // 查找我和作者的关系
+        AbstractFollowFanService.Relation relation = AbstractFollowFanService.judgeRelationBetweenBoth(followFanMapper.selectRelationByBothUid(uid, authorUid));
+        // 查找我和笔记的关系
+        NoteRelationDto noteRelationDto = new NoteRelationDto();
+        noteRelationDto.setMe(uid.equals(queryAuthorUid));
+        noteRelationDto.setMyLike(uid.equals(noteMapper.selectMyLikeWithNote(uid, noteId, authorUid)));
+        noteRelationDto.setMyUnlike(uid.equals(noteMapper.selectMyUnlikeWithNote(uid, noteId, authorUid)));
 
         // 填充数据
-        Map<String, Object> map = new HashMap<>(4);
-        map.put("noteInfo", shareNoteDto);
-        map.put("me", me);
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("noteTitle", shareNoteDto.getNoteTitle());
+        map.put("noteContent", shareNoteDto.getNoteContent());
+        map.put("viewNumber", shareNoteDto.getViewNumber());
+        map.put("likeNumber", shareNoteDto.getLikeNumber());
+        map.put("unlikeNumber", shareNoteDto.getUnlikeNumber());
+        map.put("starNumber", shareNoteDto.getStarNumber());
+        map.put("commentNumber", shareNoteDto.getCommentNumber());
+        map.put("publishTime", shareNoteDto.getPublishTime());
+        map.put("authorInfo", authorInfo);
+        map.put("authorAndMeRelation", relation);
+        map.put("noteAndMeRelation", noteRelationDto);
         return map;
     }
 
@@ -147,7 +172,7 @@ public class NoteServiceImpl extends AbstractNoteService {
         boolean me = uid.equals(authorUid);
         // 不是本人查看是否公开笔记
         if(!me) {
-            AccountSettings accountSettings = AbstractUserSettingsService.getAccountSettings(authorUid, jedisPool, userSettingsMapper);
+            AccountSettings accountSettings = userSettingJedisUtil.getAccountSettings(authorUid);
             if(!accountSettings.getPublicNoteStatus()) {
                 Map<String, Object> map = new HashMap<>(2);
                 map.put(PRIVATE_SETTINGS_KEY, PRIVATE_USER_INFO);
@@ -156,8 +181,8 @@ public class NoteServiceImpl extends AbstractNoteService {
         }
 
         Map<String, Object> map = new HashMap<>(4);
-        List<ShareNoteDto> shareNoteDtoList = noteMapper.selectNoteDetailsByUid(authorUid);
-        UserAbstractDto authorInfo = getUserInfoByUid(userMapper, followFanMapper, authorUid);
+        List<ShareNoteDto> shareNoteDtoList = noteMapper.selectAllNoteByUid(authorUid);
+        UserAbstractDto authorInfo = userInfoJedisUtil.getUserInfoByUid(authorUid);
 
         map.put("me", me);
         map.put("authorInfo", authorInfo);

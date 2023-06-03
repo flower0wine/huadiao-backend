@@ -1,6 +1,10 @@
 package com.huadiao.service;
 
+import com.huadiao.entity.dto.userdto.UserAbstractDto;
 import com.huadiao.entity.dto.userinfodto.UserInfoDto;
+import com.huadiao.mapper.FollowFanMapper;
+import com.huadiao.mapper.UserMapper;
+import redis.clients.jedis.JedisPool;
 
 /**
  * 业务层: 与用户信息相关的操作的接口

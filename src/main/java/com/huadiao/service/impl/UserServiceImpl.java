@@ -8,6 +8,7 @@ import com.huadiao.mapper.FollowFanMapper;
 import com.huadiao.mapper.UserInfoMapper;
 import com.huadiao.mapper.UserMapper;
 import com.huadiao.mapper.UserSettingsMapper;
+import com.huadiao.redis.UserInfoJedisUtil;
 import com.huadiao.service.AbstractUserInfoService;
 import com.huadiao.service.AbstractUserService;
 import com.huadiao.util.CreateHuadiaoUserId;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import redis.clients.jedis.JedisPool;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -50,7 +52,7 @@ public class UserServiceImpl extends AbstractUserService {
     @Override
     public UserAbstractDto getHuadiaoHeaderUserInfo(Integer uid) {
         log.debug("尝试获取 session 中的用户 uid 并且获取结果为 {}", uid);
-        UserAbstractDto userAbstractDto = getUserInfoByUid(userMapper, followFanMapper, uid);
+        UserAbstractDto userAbstractDto = userInfoJedisUtil.getUserInfoByUid(uid);
         // 用户已登录
         userAbstractDto.setLogin(USER_LOGIN_STATUS);
         log.info("用户具有登录状态, uid 为 {} 的用户获取了自己在花凋首页的相关信息", uid);

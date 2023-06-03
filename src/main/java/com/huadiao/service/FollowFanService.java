@@ -84,7 +84,7 @@ public interface FollowFanService {
      * @param uid 被关注者
      * @param fanUserId 用户 id
      * @param fanUid 关注者
-     * @param groupId 分组 id
+     * @param groupId 分组 id, 分组 id 为 null 则分配到 默认分组
      * @return 返回添加成功或失败提示
      */
     String buildRelationBetweenBoth(Integer uid, String fanUserId, Integer fanUid, Integer groupId);

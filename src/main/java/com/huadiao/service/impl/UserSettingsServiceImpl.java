@@ -31,12 +31,10 @@ import java.util.regex.Pattern;
 public class UserSettingsServiceImpl extends AbstractUserSettingsService {
 
     private UserSettingsMapper userSettingsMapper;
-    private JedisPool jedisPool;
 
     @Autowired
-    public UserSettingsServiceImpl(UserSettingsMapper userSettingsMapper, JedisPool jedisPool) {
+    public UserSettingsServiceImpl(UserSettingsMapper userSettingsMapper) {
         this.userSettingsMapper = userSettingsMapper;
-        this.jedisPool = jedisPool;
     }
 
     @Override
@@ -46,11 +44,7 @@ public class UserSettingsServiceImpl extends AbstractUserSettingsService {
 
         // 用户设置存储到 redis 中
         if (accountSettings != null) {
-            Jedis jedis = jedisPool.getResource();
-            // 格式化字符串
-            String jedisKey = StrUtil.format(REDIS_KEY_USER_SETTINGS, uid);
-            jedis.set(jedisKey, JSONUtil.toJsonStr(accountSettings));
-            jedisPool.returnResource(jedis);
+            userSettingJedisUtil.setAccountSettings(uid, accountSettings);
             log.debug("已将 uid, userId 分别为 {}, {} 的用户刚查询的用户设置存储到 redis 中, 为 settings: {}", uid, userId, accountSettings);
         }
 
@@ -77,32 +71,37 @@ public class UserSettingsServiceImpl extends AbstractUserSettingsService {
         }
         userSettingsMapper.insertOrUpdateUserSettingsByUid(uid, settingsArr);
 
-        log.debug("更新后设置已经写入到数据库, 下面尝试将其写入到 redis 中");
-        // 修改 redis 存储的用户设置
-        Jedis jedis = jedisPool.getResource();
-        String jedisKey = StrUtil.format(REDIS_KEY_USER_SETTINGS, uid);
-        String settings = jedis.get(jedisKey);
-        if(settings != null) {
-            log.debug("redis 中已存在用户设置, 对其进行更新");
-            // 根据提供的参数将 redis 中的设置更新
-            JSONObject jsonObject = JSONUtil.parseObj(settings);
-            for (String setting : settingsArr) {
-                Boolean settingStatus = jsonObject.getBool(setting);
-                jsonObject.set(setting, !settingStatus);
-            }
-            jedis.set(jedisKey, JSONUtil.toJsonStr(jsonObject));
-            log.debug("redis 数据更新成功");
-        } else {
-            log.debug("redis 中不存在用户设置, 将从数据库中获取存入 redis 中");
-            AccountSettings accountSettings = userSettingsMapper.selectAccountSettingsByUid(uid);
-            jedis.set(jedisKey, JSONUtil.toJsonStr(accountSettings));
-            log.debug("从数据库获取用户设置并存入 redis 成功");
-        }
-        log.debug("更新后设置已经写入 redis 中");
-        jedisPool.returnResource(jedis);
+        // ... 这里对于先写入数据库还是先写入 redis 感到疑惑, 代码已剪切
+
         log.debug("uid, userId 分别为 {}, {} 的用户更新账号设置成功, settingsList: {}", uid, userId, settingsSet);
         return ACCOUNT_SETTING_UPDATE_SUCCEED;
     }
 
 
+    /**
+     *
+     log.debug("更新后设置已经写入到数据库, 下面尝试将其写入到 redis 中");
+     // 修改 redis 存储的用户设置
+     Jedis jedis = jedisPool.getResource();
+     String jedisKey = StrUtil.format(REDIS_KEY_USER_SETTINGS, uid);
+     String settings = jedis.get(jedisKey);
+     if(settings != null) {
+     log.debug("redis 中已存在用户设置, 对其进行更新");
+     // 根据提供的参数将 redis 中的设置更新
+     JSONObject jsonObject = JSONUtil.parseObj(settings);
+     for (String setting : settingsArr) {
+     Boolean settingStatus = jsonObject.getBool(setting);
+     jsonObject.set(setting, !settingStatus);
+     }
+     jedis.set(jedisKey, JSONUtil.toJsonStr(jsonObject));
+     log.debug("redis 数据更新成功");
+     } else {
+     log.debug("redis 中不存在用户设置, 将从数据库中获取存入 redis 中");
+     AccountSettings accountSettings = userSettingsMapper.selectAccountSettingsByUid(uid);
+     jedis.set(jedisKey, JSONUtil.toJsonStr(accountSettings));
+     log.debug("从数据库获取用户设置并存入 redis 成功");
+     }
+     log.debug("更新后设置已经写入 redis 中");
+     jedisPool.returnResource(jedis);
+     */
 }

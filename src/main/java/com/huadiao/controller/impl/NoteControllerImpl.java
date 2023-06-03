@@ -1,5 +1,6 @@
 package com.huadiao.controller.impl;
 
+import cn.hutool.http.server.HttpServerRequest;
 import com.huadiao.controller.NoteController;
 import com.huadiao.entity.dto.note.SelfNoteDto;
 import com.huadiao.service.FollowFanService;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
@@ -66,10 +69,10 @@ public class NoteControllerImpl implements NoteController {
 
     @Override
     @GetMapping("/search")
-    public Map<String, Object> getSingleNote(HttpSession session, Integer uid, Integer noteId) {
+    public Map<String, Object> getSingleNote(HttpServletRequest request, HttpServletResponse response, HttpSession session, Integer uid, Integer noteId) throws Exception {
         Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
-        return noteService.getSingleNote(myUid, userId, uid, noteId);
+        return noteService.getSingleNote(request, response, myUid, userId, uid, noteId);
     }
 
     @Override
