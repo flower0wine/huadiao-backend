@@ -1,7 +1,6 @@
 package com.huadiao.redis.impl;
 
 import cn.hutool.core.util.StrUtil;
-import com.huadiao.mapper.NoteStarMapper;
 import com.huadiao.redis.AbstractJedis;
 import com.huadiao.redis.StarJedisUtil;
 import org.springframework.stereotype.Component;
@@ -31,9 +30,9 @@ public class StarJedis extends AbstractJedis implements StarJedisUtil {
             jedisPool.returnResource(jedis);
             return Integer.parseInt(noteStarAmount);
         } else {
-            Integer countNoteStar = noteStarMapper.countNoteStarByUid(uid);
+            Integer countNoteStar = noteOperateMapper.countNoteStarByUid(uid);
             jedis.set(jedisKey, String.valueOf(countNoteStar));
-            jedisPool.returnResource(jedis);
+            jedis.close();
             return countNoteStar;
         }
     }

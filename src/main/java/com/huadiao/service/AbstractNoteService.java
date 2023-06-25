@@ -1,5 +1,7 @@
 package com.huadiao.service;
 
+import java.util.regex.Pattern;
+
 /**
  * @author flowerwine
  * @version 1.1
@@ -16,6 +18,26 @@ public abstract class AbstractNoteService extends AbstractService implements Not
      * 笔记标题最大长度
      */
     public int MAX_NOTE_TITLE_LENGTH = 100;
+
+    /**
+     * 单次最大获取行数
+     */
+    public int MAX_ROW = 40;
+
+    /**
+     * 评论 id 的长度
+     */
+    public int COMMENT_LENGTH = 20;
+
+    /**
+     * 未分配的评论 id, 在笔记评论表中父评论 sub_comment_id 为 null, 在笔记评论喜欢表和不喜欢表中则为 0
+     */
+    public Long UNDISTRIBUTED_COMMENT_ID = null;
+
+    /**
+     * 正则表达式, 评论 id
+     */
+    public Pattern commentIdPattern = Pattern.compile("[\\d\\w]+");
 
     /**
      * 不符合规范的笔记标题
@@ -41,5 +63,10 @@ public abstract class AbstractNoteService extends AbstractService implements Not
      * 修改笔记成功
      */
     public String MODIFY_NOTE_SUCCEED = "modifyNoteSucceed";
+
+    /**
+     * 添加笔记评论成功
+     */
+    public String ADD_NOTE_COMMENT_SUCCEED = "addNoteCommentSucceed";
 
 }

@@ -4,13 +4,19 @@
 
     <!--新增笔记-->
     <insert id="insertNewNoteByUid">
-        insert into huadiao_note(`note_id`, `uid`, `note_title`, `note_content`, `publish_time`, `status`,
-                                 `modify_times`)
-        values (#{noteId}, #{uid}, #{noteTitle}, #{noteContent}, now(), 1, 0)
+        insert into huadiao_note(`note_id`, `uid`, `note_title`, `note_content`, `publish_time`)
+        values (#{noteId}, #{uid}, #{noteTitle}, #{noteContent}, now())
         on duplicate key update `modify_date`  = now(),
                                 `modify_times` = `modify_times` + 1,
                                 `note_title`   = #{noteTitle},
                                 `note_content` = #{noteContent};
+    </insert>
+
+    <!--新增笔记评论-->
+    <insert id="insertNoteCommentByUid">
+        insert into huadiao_note_comment(`uid`, `note_id`, `author_uid`, `root_comment_id`, `sub_comment_id`,
+                                         `comment_time`, `comment_content`)
+        values (#{uid}, #{noteId}, #{authorUid}, #{rootCommentId}, #{subCommentId}, now(), #{commentContent});
     </insert>
 
     <!--删除笔记-->
@@ -21,14 +27,25 @@
           and `note_id` = #{noteId};
     </delete>
 
+    <!--删除笔记评论-->
+    <delete id="deleteNoteCommentByUid">
+        delete
+        from huadiao_note_comment
+        where `uid` = #{uid}
+          and `author_uid` = #{authorUid}
+          and `note_id` = #{noteId}
+          and `root_comment_id` = #{rootCommentId}
+          and `sub_comment_id` = #{subCommentId};
+    </delete>
+
     <resultMap id="singleNoteDtoResultMap" type="com.huadiao.entity.dto.note.ShareNoteDto">
         <result property="noteId" column="note_id"/>
         <result property="noteTitle" column="note_title"/>
         <result property="noteContent" column="note_content"/>
         <result property="publishTime" column="publish_time"/>
         <result property="likeNumber" column="like_number"/>
-        <result property="unlikeNumber" column="unlike_number"/>
         <result property="viewNumber" column="view_number"/>
+        <result property="starNumber" column="star_number"/>
     </resultMap>
     <!--查找笔记-->
     <select id="selectNoteByUidAndNoteId" resultMap="singleNoteDtoResultMap">
@@ -37,20 +54,20 @@
                `note_title`,
                `note_content`,
                `publish_time`,
-               count(t2.uid) as `like_number`,
-               count(t3.uid) as `unlike_number`,
-               count(t4.uid) as `view_number`
+               count(distinct t2.uid) as `like_number`,
+               count(distinct t3.uid) as `view_number`,
+               count(distinct t4.uid) as `star_number`
         from huadiao_note t1
-                 left join huadiao_note_like t2 on t1.uid = t2.author_uid
-                 left join huadiao_note_unlike t3 on t1.uid = t3.author_uid
-                 left join huadiao_note_view t4 on t1.uid = t4.author_uid
+                 left join huadiao_note_like t2 on t1.uid = t2.author_uid AND t2.status
+                 left join huadiao_note_view t3 on t1.uid = t3.author_uid AND t3.status
+                 left join huadiao_note_star t4 on t1.uid = t4.author_uid AND t4.status
         where t1.`uid` = #{uid}
           and t1.`note_id` = #{noteId};
     </select>
 
     <!--计数笔记-->
     <select id="countNoteByUid" resultType="java.lang.Integer">
-        select count(1)
+        select count(*)
         from huadiao_note
         where uid = #{uid};
     </select>
@@ -61,51 +78,51 @@
         <result property="publishTime" column="publish_time"/>
         <result property="noteId" column="note_id"/>
         <result property="likeNumber" column="like_number"/>
-        <result property="unlikeNumber" column="unlike_number"/>
         <result property="viewNumber" column="view_number"/>
+        <result property="starNumber" column="star_number"/>
     </resultMap>
     <!--获取用户全部笔记-->
     <select id="selectAllNoteByUid" resultMap="noteDetailsResultMap">
-        SELECT n.uid,
-               n.note_id,
-               n.note_title,
-               n.note_content,
-               n.publish_time,
-               COUNT(l.uid) AS like_number,
-               COUNT(u.uid) AS unlike_number,
-               COUNT(v.uid) AS view_number
+        SELECT n.`uid`,
+               n.`note_id`,
+               n.`note_title`,
+               n.`note_content`,
+               n.`publish_time`,
+               COUNT(l.uid) AS `like_number`,
+               COUNT(v.uid) AS `view_number`,
+               COUNT(w.uid) AS `star_number`
         FROM huadiao_note n
-                 LEFT JOIN huadiao_note_like l ON n.note_id = l.note_id
-                 LEFT JOIN huadiao_note_unlike u ON n.note_id = u.note_id
-                 LEFT JOIN huadiao_note_view v ON n.note_id = v.note_id
+                 LEFT JOIN huadiao_note_like l ON n.note_id = l.note_id AND l.status
+                 LEFT JOIN huadiao_note_view v ON n.note_id = v.note_id AND v.status
+                 LEFT JOIN huadiao_note_star w ON n.note_id = w.note_id AND w.status
         WHERE n.uid = #{uid}
         GROUP BY n.uid, n.note_id;
     </select>
 
     <!--获取笔记喜欢次数-->
     <select id="countNoteLikeByUid" resultType="java.lang.Integer">
-        select count(1)
+        select count(*)
         from huadiao_note_like
         where `author_uid` = #{authorUid}
-          and `status` = 1
+          and `status`
           and `note_id` = #{noteId};
     </select>
 
     <!--获取笔记被不喜欢次数-->
     <select id="countNoteUnlikeByUid" resultType="java.lang.Integer">
-        select count(1)
+        select count(*)
         from huadiao_note_unlike
         where `author_uid` = #{authorUid}
-          and `status` = 1
+          and `status`
           and `note_id` = #{noteId};
     </select>
 
     <!--获取笔记被访问次数-->
     <select id="countNoteViewByUid" resultType="java.lang.Integer">
-        select count(1)
+        select count(*)
         from huadiao_note_view
         where `author_uid` = #{authorUid}
-          and `status` = 1
+          and `status`
           and `note_id` = #{noteId};
     </select>
 
@@ -115,8 +132,37 @@
         from huadiao_note_like
         where `note_id` = #{noteId}
           and `author_uid` = #{authorUid}
-          and `status` = 1
+          and `status`
           and `uid` = #{uid};
+    </select>
+
+    <!--判断用户是否收藏某个笔记-->
+    <select id="selectMyStarWithNote" resultType="java.lang.Integer">
+        select `uid`
+        from huadiao_note_star
+        where `note_id` = #{noteId}
+          and `author_uid` = #{authorUid}
+          and `status`
+          and `uid` = #{uid};
+    </select>
+
+    <resultMap id="noteRelationResultMap" type="com.huadiao.entity.dto.note.NoteRelationDto">
+        <result property="myLike" column="my_like"/>
+        <result property="myUnlike" column="my_unlike"/>
+        <result property="myStar" column="my_star"/>
+    </resultMap>
+    <!--获取用户与笔记的关系-->
+    <select id="selectNoteRelationByUidAndNoteId" resultMap="noteRelationResultMap">
+        select if(t1.`uid` = #{uid}, 1, 0) as `my_like`,
+               if(t2.`uid` = #{uid}, 1, 0) as `my_unlike`,
+               if(t3.`uid` = #{uid}, 1, 0) as `my_star`
+        from huadiao_note_like t1
+                 left join huadiao_note_unlike t2 on t2.author_uid = t1.author_uid and t2.status
+                 left join huadiao_note_star t3 on t3.author_uid = t1.author_uid and t3.status
+        where t1.`note_id` = #{noteId}
+          and t1.`author_uid` = #{authorUid}
+          and t1.`status`
+          and t1.`uid` = #{uid};
     </select>
 
     <!--判断当前用户是否不喜欢过某个笔记-->
@@ -125,7 +171,7 @@
         from huadiao_note_unlike
         where `note_id` = #{noteId}
           and `author_uid` = #{authorUid}
-          and `status` = 1
+          and `status`
           and `uid` = #{uid};
     </select>
 
@@ -137,13 +183,85 @@
           and `note_id` = #{noteId};
     </select>
 
-    <!--判断笔记是否存在, 由于返回类型为 bool, 所以要求 sql 语句只能返回 0 和 1 两个数字-->
-    <select id="selectExistByNoteIdAndUid" resultType="java.lang.Boolean">
-        select if(count(`uid`) = 1, 1, 0)
+    <!--判断笔记是否存在, 查找到返回数字 1, 否则返回 null-->
+    <select id="selectExistByNoteIdAndUid" resultType="java.lang.Integer">
+        select 1
         from huadiao_note
         where `uid` = #{uid}
           and `note_id` = #{noteId}
     </select>
+
+    <resultMap id="noteCommentResultMap" type="com.huadiao.entity.dto.note.NoteCommentDto">
+        <id property="commentId" column="root_comment_id"/>
+        <result property="uid" column="uid"/>
+        <result property="likeNumber" column="like_number"/>
+        <result property="myLike" column="my_like"/>
+        <result property="myUnlike" column="my_unlike"/>
+        <result property="commentContent" column="comment_content"/>
+        <result property="commentDate" column="comment_time"/>
+        <result property="userAvatar" column="user_avatar"/>
+        <result property="nickname" column="nickname"/>
+        <collection property="commentList" ofType="com.huadiao.entity.dto.note.NoteCommentDto" notNullColumn="sub_comment_id">
+            <result property="commentId" column="sub_comment_id"/>
+            <result property="uid" column="uid"/>
+            <result property="likeNumber" column="like_number"/>
+            <result property="myLike" column="my_like"/>
+            <result property="myUnlike" column="my_unlike"/>
+            <result property="commentContent" column="comment_content"/>
+            <result property="commentDate" column="comment_time"/>
+            <result property="userAvatar" column="user_avatar"/>
+            <result property="nickname" column="nickname"/>
+        </collection>
+    </resultMap>
+    <!--获取笔记评论-->
+    <select id="selectNoteCommentByUid" resultMap="noteCommentResultMap">
+        select t1.`uid`,
+               t1.`note_id`,
+               t1.`root_comment_id`,
+               t1.`sub_comment_id`,
+               `comment_time`,
+               `comment_content`,
+               `user_avatar`,
+               `nickname`,
+               if(t2.`uid` = #{uid}, 1, 0) as `my_like`,
+               if(t3.`uid` = #{uid}, 1, 0) as `my_unlike`,
+               count(distinct t2.`uid`) as `like_number`
+        from huadiao_note_comment t1
+                 left join huadiao_note_comment_like t2 on t2.author_uid = t1.author_uid and
+                                                           t2.note_id = t1.note_id and
+                                                           t2.root_comment_id = t1.root_comment_id and
+                                                           t2.status and
+                                                           (t2.sub_comment_id = t1.sub_comment_id or (t2.sub_comment_id = 0 and t1.sub_comment_id is null))
+                 left join huadiao_note_comment_unlike t3 on t3.author_uid = t1.author_uid and
+                                                             t3.note_id = t1.note_id and
+                                                             t3.root_comment_id = t1.root_comment_id and
+                                                             t3.status and
+                                                             (t3.sub_comment_id = t1.sub_comment_id or (t3.sub_comment_id = 0 and t1.sub_comment_id is null))
+                 left join huadiao_homepage t4 on t1.`uid` = t4.`uid`
+                 left join huadiao_user_info t5 on t1.`uid` = t5.`uid`
+        where t1.note_id = #{noteId}
+          and t1.author_uid = #{authorUid}
+          and t1.`status`
+          and t1.`id` >= (select `id` from huadiao_note_comment limit #{offset}, 1)
+        group by t1.`uid`,
+                 t1.`note_id`,
+                 t1.`root_comment_id`,
+                 t1.`sub_comment_id`,
+                 `comment_time`,
+                 `comment_content`,
+                 `my_like`,
+                 `my_unlike`
+        limit #{row}
+    </select>
+
+    <!--获取笔记评论数-->
+    <select id="countAllNoteCommentByUidNoteId" resultType="java.lang.Integer">
+        select count(*)
+        from huadiao_note_comment
+        where `note_id` = #{noteId}
+          and `author_uid` = #{uid};
+    </select>
+
 
 </mapper>
 

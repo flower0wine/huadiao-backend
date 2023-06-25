@@ -7,8 +7,8 @@
 
     <!--新增两人的关系, 可以是重复关注-->
     <insert id="insertRelationByBothUid">
-        insert into huadiao_relation(`fan_uid`, `uid`, `status`, `latest_follow_date`, `follow_times`, `group_id`)
-        values (#{fanUid}, #{uid}, 1, now(), 1, #{groupId})
+        insert into huadiao_relation(`fan_uid`, `uid`, `latest_follow_date`, `follow_times`, `group_id`)
+        values (#{fanUid}, #{uid}, now(), 1, #{groupId})
         on duplicate key update `status`             = 1,
                                 `latest_follow_date` = now(),
                                 `follow_times`       = `follow_times` + 1,
@@ -17,8 +17,8 @@
 
     <!--新增用户关注分组-->
     <insert id="insertFollowGroupByUid">
-        insert into huadiao_relation_group(`uid`, `group_id`, `group_name`, `create_date`, `status`)
-        values (#{uid}, #{groupId}, #{groupName}, now(), 1);
+        insert into huadiao_relation_group(`uid`, `group_id`, `group_name`, `create_date`)
+        values (#{uid}, #{groupId}, #{groupName}, now());
     </insert>
 
     <!--根据两者的 uid 取消关注关系-->
@@ -95,7 +95,7 @@
 
     <!--获取用户关注分组个数-->
     <select id="countFollowGroup" resultType="java.lang.Integer">
-        select count(1)
+        select count(*)
         from huadiao_relation_group
         where id > 10;
     </select>
@@ -150,7 +150,7 @@
 
     <!--返回关注分组人数-->
     <select id="countFollowGroupByUidAndGroupId" resultType="java.lang.Integer">
-        select count(1)
+        select count(*)
         from huadiao_relation
         where fan_uid = #{uid}
           and group_id = #{groupId}
@@ -168,7 +168,7 @@
 
     <!--获取关注数量-->
     <select id="countFollowByUid" resultType="java.lang.Integer">
-        select count(1)
+        select count(*)
         from huadiao_relation
         where `status` = 1
           and `fan_uid` = #{uid};
@@ -176,7 +176,7 @@
 
     <!--计算关注分组的数量-->
     <select id="countFollowGroupByUid" resultType="java.lang.Integer">
-        select count(1)
+        select count(*)
         from huadiao_relation_group
         where `status` = 1
           and `uid` = #{uid};

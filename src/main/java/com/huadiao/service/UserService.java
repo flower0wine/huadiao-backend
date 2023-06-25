@@ -24,13 +24,11 @@ public interface UserService {
 
     /**
      * 花凋用户登录
-     * @param request 请求对象
-     * @param response 响应对象
      * @param username 用户名
      * @param password 密码
      * @throws Exception 可能抛出异常
      */
-    void huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, String username, String password) throws Exception;
+    void huadiaoUserLogin(String username, String password) throws Exception;
 
     /**
      * 退出登录
@@ -42,10 +40,9 @@ public interface UserService {
     /**
      * 获取注册账号的验证码
      * @param session session
-     * @param response 响应对象
      * @throws Exception 可能抛出异常
      */
-    void getCheckCode(HttpSession session, HttpServletResponse response) throws Exception;
+    void getCheckCode(HttpSession session) throws Exception;
 
     /**
      * 注册花凋新用户

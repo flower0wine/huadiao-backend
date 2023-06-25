@@ -37,7 +37,7 @@ public class UserInfoJedis extends AbstractJedis implements UserInfoJedisUtil {
         String jedisKey = StrUtil.format(redisKeyUserInfo, uid);
         String userInfo = jedis.get(jedisKey);
         if (userInfo != null) {
-            jedisPool.returnResource(jedis);
+            jedis.close();
             return JSONUtil.toBean(userInfo, UserAbstractDto.class);
         } else {
             // 获取并填充用户信息
@@ -46,7 +46,7 @@ public class UserInfoJedis extends AbstractJedis implements UserInfoJedisUtil {
             List<Integer> followFans = followFanMapper.countFollowAndFansByUid(uid);
             UserAbstractDto userAbstractDto = UserAbstractDto.loadUserAbstractInfo(userShareDto, followFans);
             jedis.set(jedisKey, JSONUtil.toJsonStr(userAbstractDto));
-            jedisPool.returnResource(jedis);
+            jedis.close();
             return userAbstractDto;
         }
     }

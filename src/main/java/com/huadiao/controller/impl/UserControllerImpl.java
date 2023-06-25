@@ -52,8 +52,8 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @PostMapping("/common/login")
-    public void huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, String> map) throws Exception {
-        userService.huadiaoUserLogin(request, response, map.get("username"), map.get("password"));
+    public void huadiaoUserLogin(@RequestBody Map<String, String> map) throws Exception {
+        userService.huadiaoUserLogin(map.get("username"), map.get("password"));
     }
 
     @Override
@@ -64,8 +64,8 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/common/registerCode")
-    public void getCheckCode(HttpSession session, HttpServletResponse response) throws Exception {
-        userService.getCheckCode(session, response);
+    public void getCheckCode(HttpSession session) throws Exception {
+        userService.getCheckCode(session);
     }
 
     @Override

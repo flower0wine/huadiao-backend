@@ -26,12 +26,10 @@ public interface UserController extends Controller {
 
     /**
      * 或吊用户进行登录
-     * @param request 请求对象
-     * @param response 响应对象
      * @param map 请求体参数集合
      * @throws Exception 可能抛出异常
      */
-    void huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, Map<String, String> map) throws Exception;
+    void huadiaoUserLogin(Map<String, String> map) throws Exception;
 
     /**
      * 退出登录
@@ -43,10 +41,9 @@ public interface UserController extends Controller {
     /**
      * 获取注册账号的验证码
      * @param session session
-     * @param response 响应对象
      * @throws Exception 可能抛出异常
      */
-    void getCheckCode(HttpSession session, HttpServletResponse response) throws Exception;
+    void getCheckCode(HttpSession session) throws Exception;
 
     /**
      * 注册花凋账号

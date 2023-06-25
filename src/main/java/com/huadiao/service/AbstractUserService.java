@@ -19,6 +19,7 @@ public abstract class AbstractUserService extends AbstractService implements Use
     /**
      * 仅以用户 id 作为 cookie 键名来记录用户登录状态
      */
+    @Value("${user.cookieKey}")
     protected static String COOKIE_KEY_USER_ID = "User_ID";
 
     /**
@@ -29,6 +30,7 @@ public abstract class AbstractUserService extends AbstractService implements Use
     /**
      * 维持用户登录状态的 cookie 存活时间, 以秒为单位, 存活时间为一个月
      */
+    @Value("${user.cookieSurvivalTime}")
     protected static int COOKIE_SURVIVAL_TIME = 2592000;
 
     /**

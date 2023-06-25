@@ -1,5 +1,8 @@
 package com.huadiao.service;
 
+import com.huadiao.entity.dto.followfan.BothRelationDto;
+import org.springframework.beans.factory.annotation.Value;
+
 import java.util.List;
 
 /**
@@ -18,6 +21,7 @@ public abstract class AbstractFollowFanService extends AbstractService implement
     /**
      * 最大关注名称长度
      */
+    @Value("${followFan.followGroupNameLength}")
     public int MAX_FOLLOW_GROUP_NAME_LENGTH = 16;
 
     /**
@@ -43,6 +47,7 @@ public abstract class AbstractFollowFanService extends AbstractService implement
     /**
      * 最大关注数量
      */
+    @Value("${followFan.maxFollowAmount}")
     public int MAX_FOLLOW_AMOUNT = 200;
 
     /**
@@ -53,6 +58,7 @@ public abstract class AbstractFollowFanService extends AbstractService implement
     /**
      * 关注分组最多可建立的数量
      */
+    @Value("${followFan.maxFollowGroupAmount}")
     public int MAX_FOLLOW_GROUP_AMOUNT = 20;
 
     /**
@@ -60,41 +66,36 @@ public abstract class AbstractFollowFanService extends AbstractService implement
      */
     public String REACH_MAX_FOLLOW_GROUP_AMOUNT = "reachMaxFollowGroupAmount";
 
-    public enum Relation {
-        /** 关系 */
-        FRIEND(0),
-        STRONGER(1),
-        FOLLOW(2),
-        FAN(3);
-
-        Relation(Integer relation) {
-            this.relation = relation;
-        }
-        private Integer relation;
-    }
-
     /**
      * 从集合中的数据判断两人的关系
      * @param relation 装载有两人的关系的集合
      * @return 如果是互关返回 friend, 是关注返回 follow, 是粉丝返回 fan, 是陌生人返回 stranger
      */
-    public static Relation judgeRelationBetweenBoth(List<Integer> relation) {
+    public static BothRelationDto judgeRelationBetweenBoth(List<Integer> relation) {
         // 判断两人的关系, 陌生人为 stranger, 朋友为 friend
         int friend = 2, stranger = 0, fan = 1;
+        BothRelationDto relationDto = new BothRelationDto();
         // 我与他互粉
         if (relation.size() == friend) {
-            return Relation.FRIEND;
+            relationDto.setFollowing(true);
+            relationDto.setFollowed(true);
         }
         // 我与他无关系
         else if (relation.size() == stranger) {
-            return Relation.STRONGER;
+            relationDto.setFollowing(false);
+            relationDto.setFollowed(false);
         }
-        // 我是他的关注
+        // 我是他的关注, 即他是我的粉丝
         else if (relation.size() == 1 && relation.get(0) == fan) {
-            return Relation.FAN;
-        } else {
-            return Relation.FOLLOW;
+            relationDto.setFollowing(false);
+            relationDto.setFollowed(true);
         }
+        // 我是他的粉丝
+        else {
+            relationDto.setFollowing(true);
+            relationDto.setFollowed(false);
+        }
+        return relationDto;
     }
 
 }

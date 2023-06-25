@@ -1,9 +1,13 @@
 package com.huadiao.service;
 
+import com.huadiao.redis.IDGeneratorJedisUtil;
 import com.huadiao.redis.StarJedisUtil;
 import com.huadiao.redis.UserInfoJedisUtil;
 import com.huadiao.redis.UserSettingJedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author flowerwine
@@ -12,6 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @description
  */
 public abstract class AbstractService implements Service {
+    @Autowired
+    protected HttpServletRequest request;
+
+    @Autowired
+    protected HttpServletResponse response;
 
     @Autowired
     protected UserInfoJedisUtil userInfoJedisUtil;
@@ -21,6 +30,9 @@ public abstract class AbstractService implements Service {
 
     @Autowired
     protected StarJedisUtil starJedisUtil;
+
+    @Autowired
+    protected IDGeneratorJedisUtil idGeneratorJedisUtil;
 
     /**
      * 用户设置私密 map 的键名, map 将返回

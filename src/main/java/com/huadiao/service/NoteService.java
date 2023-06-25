@@ -1,12 +1,15 @@
 package com.huadiao.service;
 
 import cn.hutool.http.server.HttpServerRequest;
+import com.huadiao.entity.Result;
+import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.SelfNoteDto;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -75,4 +78,28 @@ public interface NoteService {
      * @return 返回作者的所有笔记
      */
     Map<String, Object> getAllNote(Integer uid, String userId, Integer authorUid);
+
+    /**
+     * 获取笔记评论
+     * @param uid 获取笔记评论的用户 uid
+     * @param userId 用户 id
+     * @param authorUid 作者 uid
+     * @param noteId 笔记 id
+     * @param offset 偏移量
+     * @param row 行数
+     * @return 返回评论
+     */
+    Result<List<NoteCommentDto>> getNoteComment(Integer uid, String userId, Integer authorUid, Integer noteId, Integer offset, Integer row);
+
+    /**
+     * 新增笔记评论, 若没有父评论 id, 则为添加父评论, 若有父评论 id, 则为添加子评论
+     * @param uid 评论者 uid
+     * @param userId 用户 id
+     * @param noteId 笔记 id
+     * @param authorUid 作者 uid
+     * @param rootCommentId 父评论 id
+     * @param commentContent 评论内容
+     * @return 返回新增过程中的提示
+     */
+    Result<Map<String, Object>> addNoteComment(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, String commentContent);
 }

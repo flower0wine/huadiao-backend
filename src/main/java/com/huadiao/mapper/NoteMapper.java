@@ -1,5 +1,6 @@
 package com.huadiao.mapper;
 
+import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.NoteRelationDto;
 import com.huadiao.entity.dto.note.ShareNoteDto;
 import org.apache.ibatis.annotations.Param;
@@ -38,12 +39,12 @@ public interface NoteMapper {
     ShareNoteDto selectNoteByUidAndNoteId(@Param("uid") Integer uid, @Param("noteId") Integer noteId);
 
     /**
-     * 根据 uid 和 笔记 id 来判断笔记是否存在, 由于返回类型为 bool, 所以要求 sql 语句只能返回 0 和 1 两个数字
+     * 根据 uid 和 笔记 id 来判断笔记是否存在, 不存在时返回 null, 存在时返回 数字
      * @param uid 作者 uid
      * @param noteId 笔记 id
      * @return 返回是否查找到的结果
      */
-    Boolean selectExistByNoteIdAndUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId);
+    Integer selectExistByNoteIdAndUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId);
 
     /**
      * 获取用户的笔记总数
@@ -84,6 +85,15 @@ public interface NoteMapper {
     Integer countNoteViewByUid(@Param("authorUid") Integer authorUid, @Param("noteId") Integer noteId);
 
     /**
+     * 获取用户与笔记的关系
+     * @param uid 用户 uid
+     * @param noteId 笔记 id
+     * @param authorUid 作者 uid
+     * @return 返回笔记与用户的关系
+     */
+    NoteRelationDto selectNoteRelationByUidAndNoteId(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid);
+
+    /**
      * 判断当前用户是否点赞过某个笔记
      * @param uid 当前用户的 uid
      * @param noteId 笔记 id
@@ -97,9 +107,18 @@ public interface NoteMapper {
      * @param uid 当前用户的 uid
      * @param noteId 笔记 id
      * @param authorUid 作者 uid
-     * @return 不喜欢过返回当前用户 uid, 否则返回 null
+     * @return 不喜欢了返回当前用户 uid, 否则返回 null
      */
     Integer selectMyUnlikeWithNote(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid);
+
+    /**
+     * 判断当前用户是否收藏了某个笔记
+     * @param uid 当前用户 uid
+     * @param noteId 笔记 id
+     * @param authorUid 作者 uid
+     * @return 收藏返回当前用户 uid, 否则返回 null
+     */
+    Integer selectMyStarWithNote(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid);
 
     /**
      * 判断作者 uid 是否存在 noteId 的笔记
@@ -108,5 +127,50 @@ public interface NoteMapper {
      * @return 如果存在该笔记返回作者 uid, 否则返回 null
      */
     Integer selectAuthorUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId);
+
+    /**
+     * 获取指定用户的指定笔记的评论
+     * @param uid 用户 uid
+     * @param noteId 笔记 id
+     * @param authorUid 作者 uid
+     * @param offset 偏移量
+     * @param row 一页有多少条数据
+     * @return 返回评论
+     */
+    List<NoteCommentDto> selectNoteCommentByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId,
+                                                @Param("authorUid") Integer authorUid, @Param("offset") Integer offset,
+                                                @Param("row") Integer row);
+
+    /**
+     * 返回笔记评论总数
+     * @param noteId 笔记 id
+     * @param uid 作者 uid
+     * @return 返回笔记评论数
+     */
+    Integer countAllNoteCommentByUidNoteId(@Param("noteId") Integer noteId, @Param("uid") Integer uid);
+
+    /**
+     * 新增笔记评论
+     * @param uid 评论的用户 uid
+     * @param noteId 笔记 id
+     * @param authorUid 作者 uid
+     * @param rootCommentId 父评论 id
+     * @param subCommentId 子评论 id
+     * @param commentContent 评论内容
+     */
+    void insertNoteCommentByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
+                                @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId,
+                                @Param("commentContent") String commentContent);
+
+    /**
+     * 删除笔记评论
+     * @param uid 评论用户的 uid
+     * @param noteId 笔记 id
+     * @param authorUid 作者 uid
+     * @param rootCommentId 父评论 id
+     * @param subCommentId 子评论 id
+     */
+    void deleteNoteCommentByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
+                                @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId);
 
 }

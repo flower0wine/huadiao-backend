@@ -8,7 +8,7 @@ package com.huadiao.redis;
  */
 public interface StarJedisUtil {
     /**
-     * 获取用户搜查那个数量
+     * 获取用户收藏数量
      * @param uid 用户 uid
      * @return 收藏数量
      */

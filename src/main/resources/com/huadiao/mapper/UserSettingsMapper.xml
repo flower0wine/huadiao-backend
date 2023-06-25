@@ -4,20 +4,8 @@
 
     <!--新增用户账号设置-->
     <insert id="insertOrUpdateUserSettingsByUid">
-        insert into huadiao_user_settings(`uid`,
-        `public_star_status`,
-        `public_born_status`,
-        `public_fanju_status`,
-        `public_note_status`,
-        `public_school_status`,
-        `public_follow_status`,
-        `public_fan_status`,
-        `public_canvases_status`,
-        `public_homepage_status`,
-        `message_remind_status`,
-        `message_reply_status`,
-        `message_like_status`)
-        values (#{uid}, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        insert into huadiao_user_settings(`uid`)
+        values (#{uid})
         <if test="settingsList != null">
             on duplicate key update
             <foreach collection="settingsList" item="setting" separator=",">
@@ -61,7 +49,7 @@
     <select id="selectUserMessageSettingsByUid" resultMap="messageSettingsResultMap">
         select `message_remind_status`, `message_reply_status`, `message_like_status`
         from huadiao_user_settings
-        where uid = 1;
+        where uid = #{uid};
     </select>
 
     <resultMap id="accountSettingsResultMap" type="com.huadiao.entity.AccountSettings">

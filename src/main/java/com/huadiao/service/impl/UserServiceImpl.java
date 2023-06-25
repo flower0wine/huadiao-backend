@@ -61,7 +61,7 @@ public class UserServiceImpl extends AbstractUserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, String username, String password) throws ServletException, IOException {
+    public void huadiaoUserLogin(String username, String password) throws ServletException, IOException {
         UserBaseDto userBaseDto = userMapper.selectUserByUsernameAndPassword(username, password);
         log.debug("用户使用用户名为 {} 和密码为 {} 的账号进行登录", username, password);
         // 不存在该用户
@@ -101,7 +101,7 @@ public class UserServiceImpl extends AbstractUserService {
     }
 
     @Override
-    public void getCheckCode(HttpSession session, HttpServletResponse response) throws Exception {
+    public void getCheckCode(HttpSession session) throws Exception {
         CircleCaptcha circleCaptcha = CaptchaUtil.createCircleCaptcha(CODE_IMAGE_WIDTH, CODE_IMAGE_HEIGHT, CODE_LENGTH, CODE_DISTURB_COUNT);
         circleCaptcha.write(response.getOutputStream());
         String code = circleCaptcha.getCode();
@@ -161,7 +161,7 @@ public class UserServiceImpl extends AbstractUserService {
             end = true;
         }
         // 新增花凋用户
-        userMapper.insertNewHuadiaoUser(uid + 1, userId, username, password);
+        userMapper.insertNewHuadiaoUser(uid, userId, username, password);
         // 新增用户信息
         userInfoMapper.insertOrUpdateUserInfoByUid(uid, userId, AbstractUserInfoService.DEFAULT_USER_CANVASES, AbstractUserInfoService.DEFAULT_USER_SEX, AbstractUserInfoService.DEFAULT_USER_BORN_DATE, AbstractUserInfoService.DEFAULT_USER_SCHOOL);
         log.trace("新增用户信息成功 (uid: {}, userId: {})", uid, userId);

@@ -2,6 +2,8 @@ package com.huadiao.controller.impl;
 
 import cn.hutool.http.server.HttpServerRequest;
 import com.huadiao.controller.NoteController;
+import com.huadiao.entity.Result;
+import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.SelfNoteDto;
 import com.huadiao.service.FollowFanService;
 import com.huadiao.service.NoteService;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -89,5 +92,27 @@ public class NoteControllerImpl implements NoteController {
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return noteService.getAllNote(uid, userId, authorUid);
+    }
+
+    @Override
+    @GetMapping("/comment")
+    public Result<List<NoteCommentDto>> getNoteComment(HttpSession session, Integer uid, Integer noteId, Integer offset, Integer row) {
+        Integer myUid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        return noteService.getNoteComment(myUid, userId, uid, noteId, offset, row);
+    }
+
+    @Override
+    @PostMapping("/comment/add")
+    public Result<Map<String, Object>> addNoteComment(HttpSession session, Integer uid, Integer noteId, @RequestBody Map<String, String> map) {
+        Integer myUid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        String rootCommentId = map.get("rootCommentId");
+        String commentContent = map.get("commentContent");
+        Long commentId = null;
+        if(rootCommentId != null) {
+            commentId = Long.parseLong(rootCommentId);
+        }
+        return noteService.addNoteComment(myUid, userId, noteId, uid, commentId, commentContent);
     }
 }

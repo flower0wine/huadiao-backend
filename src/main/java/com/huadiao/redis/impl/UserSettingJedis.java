@@ -29,12 +29,12 @@ public class UserSettingJedis extends AbstractJedis implements UserSettingJedisU
         String jedisKey = StrUtil.format(REDIS_KEY_USER_SETTINGS, uid);
         String settings = jedis.get(jedisKey);
         if (settings != null) {
-            jedisPool.returnResource(jedis);
+            jedis.close();
             return JSONUtil.toBean(settings, AccountSettings.class);
         } else {
             AccountSettings accountSettings = userSettingsMapper.selectAccountSettingsByUid(uid);
             jedis.set(jedisKey, JSONUtil.toJsonStr(accountSettings));
-            jedisPool.returnResource(jedis);
+            jedis.close();
             return accountSettings;
         }
     }
@@ -45,6 +45,6 @@ public class UserSettingJedis extends AbstractJedis implements UserSettingJedisU
         // 格式化字符串
         String jedisKey = StrUtil.format(REDIS_KEY_USER_SETTINGS, uid);
         jedis.set(jedisKey, JSONUtil.toJsonStr(accountSettings));
-        jedisPool.returnResource(jedis);
+        jedis.close();
     }
 }

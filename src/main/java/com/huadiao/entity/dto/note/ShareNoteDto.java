@@ -23,7 +23,5 @@ public class ShareNoteDto {
     private Date publishTime;
     private Integer viewNumber;
     private Integer starNumber;
-    private Integer commentNumber;
     private Integer likeNumber;
-    private Integer unlikeNumber;
 }

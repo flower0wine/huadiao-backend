@@ -1,11 +1,14 @@
 package com.huadiao.controller;
 
 import cn.hutool.http.server.HttpServerRequest;
+import com.huadiao.entity.Result;
+import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.SelfNoteDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -67,4 +70,25 @@ public interface NoteController extends Controller {
      * @return 返回所有笔记
      */
     Map<String, Object> getAllNotes(HttpSession session, Integer authorUid);
+
+    /**
+     * 获取笔记评论
+     * @param session session 对象
+     * @param uid 作者 uid
+     * @param noteId 笔记 id
+     * @param offset 偏移量
+     * @param row 行数
+     * @return 返回评论
+     */
+    Result<List<NoteCommentDto>> getNoteComment(HttpSession session, Integer uid, Integer noteId, Integer offset, Integer row);
+
+    /**
+     * 添加笔记评论
+     * @param session session 对象
+     * @param uid 作者 uid
+     * @param noteId 笔记 id
+     * @param map 请求体
+     * @return 返回增加过程中的提示
+     */
+    Result<Map<String, Object>> addNoteComment(HttpSession session, Integer uid, Integer noteId, Map<String, String> map);
 }

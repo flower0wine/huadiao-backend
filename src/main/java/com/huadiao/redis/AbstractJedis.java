@@ -26,6 +26,6 @@ public abstract class AbstractJedis {
     @Autowired
     protected HomepageMapper homepageMapper;
     @Autowired
-    protected NoteStarMapper noteStarMapper;
+    protected NoteOperateMapper noteOperateMapper;
 
 }
