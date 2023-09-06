@@ -137,6 +137,6 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
         if(rootCommentId != null) {
             commentId = Long.parseLong(rootCommentId);
         }
-        return noteService.addNoteComment(myUid, userId, noteId, uid, commentId, commentContent);
+        return noteOperateService.addNoteComment(myUid, userId, noteId, uid, commentId, commentContent);
     }
 }
