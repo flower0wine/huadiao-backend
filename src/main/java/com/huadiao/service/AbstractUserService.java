@@ -16,11 +16,6 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractUserService extends AbstractService implements UserService {
 
-    /**
-     * 仅以用户 id 作为 cookie 键名来记录用户登录状态
-     */
-    @Value("${user.cookieKey}")
-    protected static String COOKIE_KEY_USER_ID = "User_ID";
 
     /**
      * 确认登录状态为已登录
@@ -28,30 +23,9 @@ public abstract class AbstractUserService extends AbstractService implements Use
     protected static boolean USER_LOGIN_STATUS = true;
 
     /**
-     * 维持用户登录状态的 cookie 存活时间, 以秒为单位, 存活时间为一个月
-     */
-    @Value("${user.cookieSurvivalTime}")
-    protected static int COOKIE_SURVIVAL_TIME = 2592000;
-
-    /**
      * 维持用户登录状态的 session, 服务端 session 存活时间, 以秒为单位, 存活时间为一个月
      */
     protected static int SESSION_SURVIVAL_TIME = 2592000;
-
-    /**
-     * cookie 是否只能通过 http 获取
-     */
-    protected static boolean COOKIE_HTTP_ONLY = true;
-
-    /**
-     * 可以访问 cookie 的域名, 如设置为 .google.com, 则以 google.com 结尾的域名访问该域名
-     */
-    protected static String COOKIE_DOMAIN = "localhost";
-
-    /**
-     * 能访问 cookie 的页面, 下面设置为根目录(根目录如: localhost:9090/huadiao/)
-     */
-    protected static String COOKIE_PATH = "/";
 
     /**
      * 验证码图片宽度

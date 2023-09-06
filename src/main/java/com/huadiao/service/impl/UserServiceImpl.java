@@ -2,13 +2,12 @@ package com.huadiao.service.impl;
 
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
-import com.huadiao.controller.ErrorController;
+import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.userdto.*;
 import com.huadiao.mapper.FollowFanMapper;
 import com.huadiao.mapper.UserInfoMapper;
 import com.huadiao.mapper.UserMapper;
 import com.huadiao.mapper.UserSettingsMapper;
-import com.huadiao.redis.UserInfoJedisUtil;
 import com.huadiao.service.AbstractUserInfoService;
 import com.huadiao.service.AbstractUserService;
 import com.huadiao.util.CreateHuadiaoUserId;
@@ -17,15 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import redis.clients.jedis.JedisPool;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author flowerwine
@@ -51,7 +47,6 @@ public class UserServiceImpl extends AbstractUserService {
 
     @Override
     public UserAbstractDto getHuadiaoHeaderUserInfo(Integer uid) {
-        log.debug("尝试获取 session 中的用户 uid 并且获取结果为 {}", uid);
         UserAbstractDto userAbstractDto = userInfoJedisUtil.getUserInfoByUid(uid);
         // 用户已登录
         userAbstractDto.setLogin(USER_LOGIN_STATUS);
@@ -61,14 +56,14 @@ public class UserServiceImpl extends AbstractUserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void huadiaoUserLogin(String username, String password) throws ServletException, IOException {
+    public Result<String> huadiaoUserLogin(String username, String password) throws ServletException, IOException {
         UserBaseDto userBaseDto = userMapper.selectUserByUsernameAndPassword(username, password);
         log.debug("用户使用用户名为 {} 和密码为 {} 的账号进行登录", username, password);
         // 不存在该用户
         if (userBaseDto == null) {
             log.debug("用户名为 {} 和密码为 {} 的账号不存在", username, password);
             // 返回 404 状态码
-            request.getRequestDispatcher(ErrorController.NOT_FOUND_DISPATCHER_PATH).forward(request, response);
+            return Result.notExist();
         }
         // 存在该用户
         else {
@@ -77,12 +72,21 @@ public class UserServiceImpl extends AbstractUserService {
             // 更新登录时间
             userMapper.updateUserLatestLoginTime(uid);
             // 添加 cookie 维持用户登录状态
-            response.addCookie(GeneratorCookie.newMoreProCookie(COOKIE_KEY_USER_ID, userBaseDto.getUserId(), COOKIE_SURVIVAL_TIME, COOKIE_HTTP_ONLY, COOKIE_PATH));
+            response.addCookie(GeneratorCookie.createIdentityCookie(userBaseDto.getUserId()));
+
+
+            /**
+             * 2023-06-26 留下:
+             * 无法登录, 每次获取的 session 不同
+             */
+
+
             HttpSession session = request.getSession();
             session.setAttribute("uid", uid);
             session.setAttribute("userId", userBaseDto.getUserId());
             session.setAttribute("nickname", userBaseDto.getUsername());
             session.setMaxInactiveInterval(SESSION_SURVIVAL_TIME);
+            return Result.ok(null);
         }
     }
 

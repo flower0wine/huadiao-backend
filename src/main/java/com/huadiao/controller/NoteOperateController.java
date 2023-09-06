@@ -9,6 +9,16 @@ import javax.servlet.http.HttpSession;
  * @author flowerwine
  */
 public interface NoteOperateController extends Controller {
+    /**
+     * 删除笔记评论, 如果是父评论将会删除其下的所有子评论
+     * @param session session 对象
+     * @param uid 作者 uid
+     * @param noteId 笔记 id
+     * @param rootCommentId 父评论 id
+     * @param subCommentId 子评论 id
+     * @return 返回删除过程中的相应提示
+     */
+    Result<?> deleteNoteComment(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId);
 
     /**
      * 新增笔记收藏
@@ -73,7 +83,7 @@ public interface NoteOperateController extends Controller {
      * @param subCommentId 子评论 id
      * @return 返回新增过程中的提示
      */
-    Result<String> addNoteCommentLike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId);
+    Result<?> addNoteCommentLike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId);
 
     /**
      * 删除笔记评论喜欢
@@ -84,7 +94,7 @@ public interface NoteOperateController extends Controller {
      * @param subCommentId 子评论 id
      * @return 返回删除过程中的提示
      */
-    Result<String> deleteNoteCommentLike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId);
+    Result<?> deleteNoteCommentLike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId);
 
     /**
      * 新增笔记评论不喜欢
@@ -95,7 +105,7 @@ public interface NoteOperateController extends Controller {
      * @param subCommentId 子评论 id
      * @return 返回新增过程中的提示
      */
-    Result<String> addNoteCommentUnlike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId);
+    Result<?> addNoteCommentUnlike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId);
 
     /**
      * 删除笔记评论不喜欢
@@ -106,5 +116,17 @@ public interface NoteOperateController extends Controller {
      * @param subCommentId 子评论 id
      * @return 返回删除过程中的提示
      */
-    Result<String> deleteNoteCommentUnlike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId);
+    Result<?> deleteNoteCommentUnlike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId);
+
+    /**
+     * 举报笔记评论
+     * @param session session 对象
+     * @param uid 被举报者
+     * @param noteId 笔记 id
+     * @param authorUid 作者 uid
+     * @param rootCommentId 根评论 id
+     * @param subCommentId 子评论 id
+     * @return 返回举报过程中的提示
+     */
+    Result<?> reportNoteComment(HttpSession session, Integer uid, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId);
 }

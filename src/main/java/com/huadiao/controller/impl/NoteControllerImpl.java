@@ -5,10 +5,7 @@ import com.huadiao.controller.NoteController;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.SelfNoteDto;
-import com.huadiao.service.FollowFanService;
-import com.huadiao.service.NoteService;
-import com.huadiao.service.UserService;
-import com.huadiao.service.UserSettingsService;
+import com.huadiao.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,13 +30,15 @@ public class NoteControllerImpl implements NoteController {
     private FollowFanService followFanService;
     private UserSettingsService userSettingsService;
     private NoteService noteService;
+    private NoteOperateService noteOperateService;
 
     @Autowired
-    public NoteControllerImpl(UserService userService, FollowFanService followFanService, UserSettingsService userSettingsService, NoteService noteService) {
+    public NoteControllerImpl(UserService userService, FollowFanService followFanService, UserSettingsService userSettingsService, NoteService noteService, NoteOperateService noteOperateService) {
         this.userService = userService;
         this.followFanService = followFanService;
         this.userSettingsService = userSettingsService;
         this.noteService = noteService;
+        this.noteOperateService = noteOperateService;
     }
 
     @Override
@@ -113,6 +112,6 @@ public class NoteControllerImpl implements NoteController {
         if(rootCommentId != null) {
             commentId = Long.parseLong(rootCommentId);
         }
-        return noteService.addNoteComment(myUid, userId, noteId, uid, commentId, commentContent);
+        return noteOperateService.addNoteComment(myUid, userId, noteId, uid, commentId, commentContent);
     }
 }

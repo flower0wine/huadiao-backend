@@ -28,6 +28,14 @@ public class NoteOperateControllerImpl implements NoteOperateController {
     }
 
     @Override
+    @GetMapping("/comment/delete")
+    public Result<?> deleteNoteComment(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId) {
+        Integer myUid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        return noteOperateService.deleteNoteComment(myUid, userId, noteId, uid, rootCommentId, subCommentId);
+    }
+
+    @Override
     @GetMapping("/star/new")
     public String addNewNoteStar(HttpSession session, Integer uid, Integer noteId) {
         Integer myUid = (Integer) session.getAttribute("uid");
@@ -77,7 +85,7 @@ public class NoteOperateControllerImpl implements NoteOperateController {
 
     @Override
     @GetMapping("/comment/like/add")
-    public Result<String> addNoteCommentLike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId) {
+    public Result<?> addNoteCommentLike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId) {
         Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return noteOperateService.addNoteCommentLike(myUid, userId, noteId, uid, rootCommentId, subCommentId);
@@ -85,7 +93,7 @@ public class NoteOperateControllerImpl implements NoteOperateController {
 
     @Override
     @GetMapping("/comment/like/delete")
-    public Result<String> deleteNoteCommentLike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId) {
+    public Result<?> deleteNoteCommentLike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId) {
         Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return noteOperateService.deleteNoteCommentLike(myUid, userId, noteId, uid, rootCommentId, subCommentId);
@@ -93,7 +101,7 @@ public class NoteOperateControllerImpl implements NoteOperateController {
 
     @Override
     @GetMapping("/comment/unlike/add")
-    public Result<String> addNoteCommentUnlike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId) {
+    public Result<?> addNoteCommentUnlike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId) {
         Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return noteOperateService.addNoteCommentUnlike(myUid, userId, noteId, uid, rootCommentId, subCommentId);
@@ -101,9 +109,17 @@ public class NoteOperateControllerImpl implements NoteOperateController {
 
     @Override
     @GetMapping("/comment/unlike/delete")
-    public Result<String> deleteNoteCommentUnlike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId) {
+    public Result<?> deleteNoteCommentUnlike(HttpSession session, Integer uid, Integer noteId, Long rootCommentId, Long subCommentId) {
         Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return noteOperateService.deleteNoteCommentUnlike(myUid, userId, noteId, uid, rootCommentId, subCommentId);
+    }
+
+    @Override
+    @GetMapping("/comment/report")
+    public Result<?> reportNoteComment(HttpSession session, Integer uid, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId) {
+        Integer myUid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        return noteOperateService.reportNoteComment(myUid, userId, uid, noteId, authorUid, rootCommentId, subCommentId);
     }
 }

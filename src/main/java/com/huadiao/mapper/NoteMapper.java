@@ -126,7 +126,19 @@ public interface NoteMapper {
      * @param noteId 笔记 id
      * @return 如果存在该笔记返回作者 uid, 否则返回 null
      */
-    Integer selectAuthorUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId);
+    Integer judgeNoteExist(@Param("uid") Integer uid, @Param("noteId") Integer noteId);
+
+    /**
+     * 判断作者 uid 的笔记 id 中是否有某条评论
+     * @param uid 评论的用户 uid
+     * @param authorUid 作者 uid
+     * @param noteId 笔记 id
+     * @param rootCommentId 父评论 id
+     * @param subCommentId 子评论 id
+     * @return 找到返回 1, 没有找到返回 null
+     */
+    Integer judgeNoteCommentExist(@Param("uid") Integer uid, @Param("authorUid") Integer authorUid, @Param("noteId") Integer noteId, @Param("rootCommentId") Long rootCommentId,
+                                  @Param("subCommentId") Long subCommentId);
 
     /**
      * 获取指定用户的指定笔记的评论

@@ -15,16 +15,19 @@ import javax.servlet.Filter;
 public class WebInit extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     protected Class<?>[] getRootConfigClasses() {
+        // spring 配置类
         return new Class[]{SpringConfig.class};
     }
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
+        // springmvc 配置类
         return new Class[]{SpringMvcConfig.class};
     }
 
     @Override
     protected String[] getServletMappings() {
+        // 拦截除 jsp 的所有请求
         return new String[]{"/"};
     }
 

@@ -2,6 +2,7 @@ package com.huadiao.controller.impl;
 
 import com.huadiao.controller.UserController;
 import com.huadiao.entity.AccountSettings;
+import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.accountsettings.MessageSettingsDto;
 import com.huadiao.entity.dto.accountsettings.PublicInfoSettingsDto;
 import com.huadiao.entity.dto.userdto.UserAbstractDto;
@@ -44,16 +45,15 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/huadiaoHeader")
-    public UserAbstractDto getHuadiaoHeaderUserInfo(HttpServletRequest request) {
-        HttpSession session = request.getSession();
+    public UserAbstractDto getHuadiaoHeaderUserInfo(HttpSession session) {
         Integer uid = (Integer) session.getAttribute("uid");
         return userService.getHuadiaoHeaderUserInfo(uid);
     }
 
     @Override
     @PostMapping("/common/login")
-    public void huadiaoUserLogin(@RequestBody Map<String, String> map) throws Exception {
-        userService.huadiaoUserLogin(map.get("username"), map.get("password"));
+    public Result<String> huadiaoUserLogin(@RequestBody Map<String, String> map) throws Exception {
+        return userService.huadiaoUserLogin(map.get("username"), map.get("password"));
     }
 
     @Override

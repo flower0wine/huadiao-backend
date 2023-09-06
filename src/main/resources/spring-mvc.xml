@@ -13,7 +13,7 @@
 
     <!--允许所有请求跨域-->
     <mvc:cors>
-        <mvc:mapping path="/**" allow-credentials="true" allowed-methods="*" allowed-headers="*"
+        <mvc:mapping path="/**" allow-credentials="true" allowed-methods="GET" allowed-headers="*"
                      allowed-origin-patterns="http://localhost:8081"/>
     </mvc:cors>
 

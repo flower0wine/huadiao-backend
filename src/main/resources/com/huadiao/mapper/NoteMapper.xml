@@ -176,7 +176,7 @@
     </select>
 
     <!--判断作者 uid 是否存在 noteId 的笔记-->
-    <select id="selectAuthorUid" resultType="java.lang.Integer">
+    <select id="judgeNoteExist" resultType="java.lang.Integer">
         select `uid`
         from huadiao_note
         where `uid` = #{uid}
@@ -201,7 +201,7 @@
         <result property="commentDate" column="comment_time"/>
         <result property="userAvatar" column="user_avatar"/>
         <result property="nickname" column="nickname"/>
-        <collection property="commentList" ofType="com.huadiao.entity.dto.note.NoteCommentDto" notNullColumn="sub_comment_id">
+        <collection property="commentList" ofType="com.huadiao.entity.dto.note.NoteCommentDto">
             <result property="commentId" column="sub_comment_id"/>
             <result property="uid" column="uid"/>
             <result property="likeNumber" column="like_number"/>
@@ -223,22 +223,32 @@
                `comment_content`,
                `user_avatar`,
                `nickname`,
-               if(t2.`uid` = #{uid}, 1, 0) as `my_like`,
-               if(t3.`uid` = #{uid}, 1, 0) as `my_unlike`,
-               count(distinct t2.`uid`) as `like_number`
+               if(t3.`uid` = #{uid}, 1, 0) as `my_like`,
+               if(t4.`uid` = #{uid}, 1, 0) as `my_unlike`,
+               count(t2.uid)          as `like_number`
         from huadiao_note_comment t1
-                 left join huadiao_note_comment_like t2 on t2.author_uid = t1.author_uid and
+                 left join huadiao_note_comment_like t2 on t2.root_comment_id = t1.root_comment_id and
+                                                           t2.author_uid = t1.author_uid and
+                                                           (t2.sub_comment_id = t1.sub_comment_id or
+                                                            (t2.sub_comment_id = 0 and t1.sub_comment_id = 0)) and
                                                            t2.note_id = t1.note_id and
-                                                           t2.root_comment_id = t1.root_comment_id and
-                                                           t2.status and
-                                                           (t2.sub_comment_id = t1.sub_comment_id or (t2.sub_comment_id = 0 and t1.sub_comment_id is null))
-                 left join huadiao_note_comment_unlike t3 on t3.author_uid = t1.author_uid and
-                                                             t3.note_id = t1.note_id and
-                                                             t3.root_comment_id = t1.root_comment_id and
-                                                             t3.status and
-                                                             (t3.sub_comment_id = t1.sub_comment_id or (t3.sub_comment_id = 0 and t1.sub_comment_id is null))
-                 left join huadiao_homepage t4 on t1.`uid` = t4.`uid`
-                 left join huadiao_user_info t5 on t1.`uid` = t5.`uid`
+                                                           t2.status
+                 left join huadiao_note_comment_like t3 on t3.uid = #{uid} and
+                                                           t3.author_uid = t1.author_uid and
+                                                           t3.note_id = t1.note_id and
+                                                           t3.root_comment_id = t1.root_comment_id and
+                                                           t3.status and
+                                                           (t3.sub_comment_id = t1.sub_comment_id or
+                                                            (t3.sub_comment_id = 0 and t1.sub_comment_id = 0))
+                 left join huadiao_note_comment_unlike t4 on t4.uid = #{uid} and
+                                                             t4.author_uid = t1.author_uid and
+                                                             t4.note_id = t1.note_id and
+                                                             t4.root_comment_id = t1.root_comment_id and
+                                                             t4.status and
+                                                             (t4.sub_comment_id = t1.sub_comment_id or
+                                                              (t4.sub_comment_id = 0 and t1.sub_comment_id = 0))
+                 left join huadiao_homepage t5 on t1.`uid` = t5.`uid`
+                 left join huadiao_user_info t6 on t1.`uid` = t6.`uid`
         where t1.note_id = #{noteId}
           and t1.author_uid = #{authorUid}
           and t1.`status`
@@ -251,7 +261,8 @@
                  `comment_content`,
                  `my_like`,
                  `my_unlike`
-        limit #{row}
+        order by `comment_time` desc
+        limit #{row} ;
     </select>
 
     <!--获取笔记评论数-->
@@ -259,7 +270,20 @@
         select count(*)
         from huadiao_note_comment
         where `note_id` = #{noteId}
-          and `author_uid` = #{uid};
+          and `author_uid` = #{uid}
+          and `status`;
+    </select>
+
+    <!--判断笔记评论是否存在-->
+    <select id="judgeNoteCommentExist" resultType="java.lang.Integer">
+        select 1
+        from huadiao_note_comment
+        where `uid` = #{uid}
+          and `author_uid` = #{authorUid}
+          and `note_id` = #{noteId}
+          and `root_comment_id` = #{rootCommentId}
+          and `sub_comment_id` = #{subCommentId}
+          and `status`;
     </select>
 
 

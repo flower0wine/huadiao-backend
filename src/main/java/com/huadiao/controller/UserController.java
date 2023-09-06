@@ -1,6 +1,7 @@
 package com.huadiao.controller;
 
 import com.huadiao.entity.AccountSettings;
+import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.accountsettings.MessageSettingsDto;
 import com.huadiao.entity.dto.userdto.UserAbstractDto;
 import com.huadiao.entity.dto.userdto.UserShareDto;
@@ -19,17 +20,18 @@ public interface UserController extends Controller {
 
     /**
      * 获取花凋头部面板用户信息
-     * @param request 请求对象
+     * @param session session 对象
      * @return 返回用户信息
      */
-    UserAbstractDto getHuadiaoHeaderUserInfo(HttpServletRequest request);
+    UserAbstractDto getHuadiaoHeaderUserInfo(HttpSession session);
 
     /**
      * 或吊用户进行登录
      * @param map 请求体参数集合
      * @throws Exception 可能抛出异常
+     * @return 返回提示信息
      */
-    void huadiaoUserLogin(Map<String, String> map) throws Exception;
+    Result<String> huadiaoUserLogin(Map<String, String> map) throws Exception;
 
     /**
      * 退出登录

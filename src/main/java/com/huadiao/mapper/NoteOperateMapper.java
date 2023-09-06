@@ -8,6 +8,17 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface NoteOperateMapper {
     /**
+     * 删除笔记评论, 如果是父评论将会删除其下的所有子评论
+     * @param deleteUid 删除者 uid
+     * @param noteId 笔记 id
+     * @param authorUid 作者 uid
+     * @param rootCommentId 父评论 id
+     * @param subCommentId 子评论 id, 如果为父评论时传入 0L 即可
+     */
+    void deleteNoteCommentByUid(@Param("deleteUid") Integer deleteUid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
+                                @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId);
+
+    /**
      * 新增笔记收藏或者再次收藏笔记
      * @param uid 用户 uid
      * @param noteId 笔记 id
@@ -140,4 +151,17 @@ public interface NoteOperateMapper {
      */
     void deleteNoteCommentUnlike(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
                                @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId);
+
+    /**
+     * 举报评论, 自己的评论不能举报
+     * @param uid 举报者 uid
+     * @param reportedUid 被举报者 uid
+     * @param noteId 笔记 id
+     * @param authorUid 作者 uid
+     * @param rootCommentId 根评论 id
+     * @param subCommentId 子评论 id
+     */
+    void insertNoteCommentReport(@Param("uid") Integer uid, @Param("reportedUid") Integer reportedUid, @Param("noteId") Integer noteId,
+                                 @Param("authorUid") Integer authorUid, @Param("rootCommentId") Long rootCommentId,
+                                 @Param("subCommentId") Long subCommentId);
 }

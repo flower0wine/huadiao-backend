@@ -6,7 +6,7 @@ package com.huadiao.service;
  * @projectName huadiao-user-back
  * @description
  */
-public abstract class AbstractNoteOperateService extends AbstractService implements NoteOperateService {
+public abstract class AbstractNoteOperateService extends AbstractNoteHandleService {
 
     /**
      * 最大收藏数量

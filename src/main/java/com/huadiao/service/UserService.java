@@ -1,6 +1,7 @@
 package com.huadiao.service;
 
 import com.huadiao.entity.AccountSettings;
+import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.userdto.UserAbstractDto;
 import com.huadiao.entity.dto.userdto.UserShareDto;
 
@@ -27,8 +28,9 @@ public interface UserService {
      * @param username 用户名
      * @param password 密码
      * @throws Exception 可能抛出异常
+     * @return 返回提示信息
      */
-    void huadiaoUserLogin(String username, String password) throws Exception;
+    Result<String> huadiaoUserLogin(String username, String password) throws Exception;
 
     /**
      * 退出登录

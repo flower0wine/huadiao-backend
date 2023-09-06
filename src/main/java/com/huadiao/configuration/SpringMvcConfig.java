@@ -4,7 +4,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +25,7 @@ public class SpringMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+        // 异常解析
         resolvers.add(new HandlerExceptionResolver() {
             @Override
             public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
@@ -31,6 +34,5 @@ public class SpringMvcConfig implements WebMvcConfigurer {
             }
         });
     }
-
 
 }

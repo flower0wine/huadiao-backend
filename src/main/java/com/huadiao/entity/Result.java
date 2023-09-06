@@ -43,7 +43,7 @@ public class Result<T> {
         return new Result<>(ResultCodeEnum.BLANK_PARAM, null);
     }
 
-    public static <T> Result<T> notExistParam() {
+    public static <T> Result<T> notExist() {
         return new Result<>(ResultCodeEnum.NOT_EXIST, null);
     }
 

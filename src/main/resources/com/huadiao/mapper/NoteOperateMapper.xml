@@ -50,6 +50,13 @@
                                 `unlike_time` = now();
     </insert>
 
+    <!--举报评论, 自己的评论不能举报-->
+    <insert id="insertNoteCommentReport">
+        insert into huadiao_note_comment_report(`uid`, `reported_uid`, `note_id`, `author_uid`, `root_comment_id`,
+                                                `sub_comment_id`, `report_time`)
+        values (#{uid}, #{reportedUid}, #{noteId}, #{authorUid}, #{rootCommentId}, #{subCommentId}, now());
+    </insert>
+
     <!--删除笔记收藏-->
     <update id="deleteNoteStarByUid">
         update huadiao_note_star
@@ -108,6 +115,19 @@
           and `sub_comment_id` = #{subCommentId};
     </update>
 
+    <!--删除笔记评论, 如果是父评论将会删除其下的所有子评论-->
+    <update id="deleteNoteCommentByUid">
+        update huadiao_note_comment
+        set `status`      = 0,
+            `delete_uid`  = #{deleteUid},
+            `delete_time` = now()
+        where (`uid` = #{deleteUid} or `author_uid` = #{deleteUid})
+          and `root_comment_id` = #{rootCommentId}
+          <if test="subCommentId != 0L">
+              and `sub_comment_id` = #{subCommentId}
+          </if>;
+    </update>
+
     <!--获取笔记收藏数量-->
     <select id="countNoteStarByUid" resultType="java.lang.Integer">
         select count(*)
@@ -132,7 +152,7 @@
         where `note_id` = #{noteId}
           and `author_uid` = #{authorUid}
           and `root_comment_id` = #{rootCommentId}
-          and (`sub_comment_id` = #{subCommentId} or (`sub_comment_id` is null and #{subCommentId} is null))
+          and (`sub_comment_id` = #{subCommentId} or (`sub_comment_id` = 0 and #{subCommentId} = 0))
           and `status`;
     </select>
 </mapper>

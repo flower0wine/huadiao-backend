@@ -1,10 +1,8 @@
 package com.huadiao.service.impl;
 
-import cn.hutool.http.server.HttpServerRequest;
 import com.huadiao.controller.ErrorController;
 import com.huadiao.entity.AccountSettings;
 import com.huadiao.entity.Result;
-import com.huadiao.entity.ResultCodeEnum;
 import com.huadiao.entity.dto.followfan.BothRelationDto;
 import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.NoteRelationDto;
@@ -14,25 +12,17 @@ import com.huadiao.entity.dto.userdto.UserAbstractDto;
 import com.huadiao.mapper.*;
 import com.huadiao.service.AbstractFollowFanService;
 import com.huadiao.service.AbstractNoteService;
-import com.huadiao.service.AbstractUserSettingsService;
-import com.huadiao.service.NoteOperateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import redis.clients.jedis.JedisPool;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author flowerwine
@@ -82,7 +72,7 @@ public class NoteServiceImpl extends AbstractNoteService {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取 uid 为 {} 的 noteId 为 {} 的笔记", uid, userId, authorUid, noteId);
 
         // 检查用户提供的 authorUid 和 笔记 id 是否存在
-        Integer queryAuthorUid = noteMapper.selectAuthorUid(authorUid, noteId);
+        Integer queryAuthorUid = noteMapper.judgeNoteExist(authorUid, noteId);
         if(queryAuthorUid == null) {
             log.debug("uid, userId 分别为 {}, {} 的用户提供的 authorUid: {} 并不存在 noteId: {} 的笔记, 返回 404", uid, userId, authorUid, noteId);
             request.getRequestDispatcher(ErrorController.NOT_FOUND_DISPATCHER_PATH).forward(request, response);
@@ -146,9 +136,28 @@ public class NoteServiceImpl extends AbstractNoteService {
             return Result.errorParam();
         }
         List<NoteCommentDto> noteCommentDtoList = noteMapper.selectNoteCommentByUid(uid, noteId, authorUid, offset, row);
+        // 由于本身的水平原因, 需要对查询的数据进一步处理
+        noteCommentDtoList.forEach((commentDto) -> {
+            List<NoteCommentDto> commentList = commentDto.getCommentList();
+            List<NoteCommentDto> collect = commentList.stream().filter((noteComment) -> {
+                if(noteComment.getCommentId() == 0) {
+                    commentDto.setCommentContent(noteComment.getCommentContent());
+                    commentDto.setMyLike(noteComment.getMyLike());
+                    commentDto.setMyUnlike(noteComment.getMyUnlike());
+                    commentDto.setLikeNumber(noteComment.getLikeNumber());
+                    commentDto.setNickname(noteComment.getNickname());
+                    commentDto.setUid(noteComment.getUid());
+                    commentDto.setUserAvatar(noteComment.getUserAvatar());
+                    commentDto.setCommentDate(noteComment.getCommentDate());
+                }
+                return noteComment.getCommentId() != 0;
+            }).collect(Collectors.toList());
+            System.out.println(collect);
+            commentDto.setCommentList(collect);
+        });
         log.debug("uid, userId 分别为 {}, {} 的用户成功获取用户 uid 为 {} 的笔记 noteId 为 {} 的评论, 获取页码为 {}, 指定获取行数为 {}, 实际获取行数为 {}", uid, userId, authorUid, noteId, offset, row, noteCommentDtoList.size());
         if(noteCommentDtoList.size() == 0) {
-            return Result.notExistParam();
+            return Result.notExist();
         }
         return Result.ok(noteCommentDtoList);
     }
@@ -226,60 +235,6 @@ public class NoteServiceImpl extends AbstractNoteService {
         map.put("authorInfo", authorInfo);
         map.put("noteList", shareNoteDtoList);
         return map;
-    }
-
-    @Override
-    public Result<Map<String, Object>> addNoteComment(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, String commentContent) {
-        log.debug("uid, userId 分别为 {}, {} 的用户尝试对 uid 为 {} 的用户的 noteId 为 {} 的笔记发布评论, rootCommentId: {}, commentContent: {}", uid, userId, authorUid, noteId, rootCommentId, commentContent);
-        Integer noteExist = noteMapper.selectExistByNoteIdAndUid(authorUid, noteId);
-        if(noteExist == null) {
-            log.debug("uid, userId 分别为 {}, {} 的用户提供的参数对应的笔记不存在, authorUid: {}, noteId: {}", uid, userId, authorUid, noteId);
-            return Result.existed();
-        }
-        // 如果 rootCommentId 为 null, 则为添加父评论, 否则为添加子评论
-        if(rootCommentId == null) {
-            log.debug("uid, userId 分别为 {}, {} 的用户尝试在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加父评论", uid, userId, authorUid, noteId);
-            // 生成笔记评论唯一 id
-            long commentId = idGeneratorJedisUtil.generateCommentId();
-            noteMapper.insertNoteCommentByUid(uid, noteId, authorUid, commentId, UNDISTRIBUTED_COMMENT_ID, commentContent);
-            log.debug("uid, userId 分别为 {}, {} 的用户成功在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加父评论, rotCommentId: {}", uid, userId, authorUid, noteId, commentId);
-
-            Map<String, Object> map = new HashMap<>(2);
-            map.put("rootCommentId", commentId);
-            return Result.ok(map);
-        }
-        // 新增子评论
-        else {
-            if(!checkCommentId(rootCommentId)) {
-                log.debug("uid, userId 分别为 {}, {} 的用户提供的 rootCommentId 为 {} 不符合要求", uid, userId, rootCommentId);
-                return Result.errorParam();
-            }
-            // 查询对应的笔记父评论是否存在
-            Integer commentExist = noteOperateMapper.selectNoteCommentExist(noteId, authorUid, rootCommentId, UNDISTRIBUTED_COMMENT_ID);
-            if(commentExist == null) {
-                log.debug("uid, userId 分别为 {}, {} 的用户提供的参数对应的评论不存在, authorUid: {}, noteId: {}, rootCommentId: {}", uid, userId, authorUid, noteId, rootCommentId);
-                return Result.notExistParam();
-            }
-            // 生成子评论 id
-            long commentId = idGeneratorJedisUtil.generateCommentId();
-            noteMapper.insertNoteCommentByUid(uid, noteId, authorUid, rootCommentId, commentId, commentContent);
-            log.debug("uid, userId 分别为 {}, {} 的用户成功在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加子评论, rootCommentId: {}, subCommentId: {}", uid, userId, authorUid, noteId, rootCommentId, commentId);
-
-            Map<String, Object> map = new HashMap<>(4);
-            map.put("rootCommentId", rootCommentId);
-            map.put("subCommentId", commentId);
-            return Result.ok(map);
-        }
-    }
-
-    /**
-     * 检查评论 id 是否符合要求, 要求评论 id 大于 0 并且评论 id 小于等于 redis 中保存的评论 id
-     * @param commentId 评论 id
-     * @return 返回检查结果
-     */
-    private boolean checkCommentId(Long commentId) {
-        long jedisCommentId = idGeneratorJedisUtil.getCommentId();
-        return commentId > 0 && commentId <= jedisCommentId;
     }
 
     /**
