@@ -68,17 +68,14 @@ public class NoteServiceImpl extends AbstractNoteService {
     }
 
     @Override
-    public Map<String, Object> getSingleNote(HttpServletRequest request, HttpServletResponse response, Integer uid, String userId, Integer authorUid, Integer noteId) throws Exception {
+    public Result<?> getSingleNote(HttpServletRequest request, HttpServletResponse response, Integer uid, String userId, Integer authorUid, Integer noteId) throws Exception {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取 uid 为 {} 的 noteId 为 {} 的笔记", uid, userId, authorUid, noteId);
 
         // 检查用户提供的 authorUid 和 笔记 id 是否存在
         Integer queryAuthorUid = noteMapper.judgeNoteExist(authorUid, noteId);
         if(queryAuthorUid == null) {
             log.debug("uid, userId 分别为 {}, {} 的用户提供的 authorUid: {} 并不存在 noteId: {} 的笔记, 返回 404", uid, userId, authorUid, noteId);
-            request.getRequestDispatcher(ErrorController.NOT_FOUND_DISPATCHER_PATH).forward(request, response);
-            Map<String, Object> map = new HashMap<>(2);
-            map.put(WRONG_MESSAGE_KEY, INVALID_PARAM);
-            return map;
+            return Result.notExist();
         }
 
         // 判断是否是本人
@@ -88,9 +85,7 @@ public class NoteServiceImpl extends AbstractNoteService {
             AccountSettings accountSettings = userSettingJedisUtil.getAccountSettings(authorUid);
             if(!accountSettings.getPublicNoteStatus()) {
                 log.debug("uid 为 {} 的用户选择不公开笔记", authorUid);
-                Map<String, Object> map = new HashMap<>(2);
-                map.put(PRIVATE_SETTINGS_KEY, PRIVATE_USER_INFO);
-                return map;
+                return Result.notAllowed();
             }
         }
 
@@ -125,7 +120,7 @@ public class NoteServiceImpl extends AbstractNoteService {
         map.put("authorInfo", authorInfo);
         map.put("authorAndMeRelation", relation);
         map.put("noteAndMeRelation", noteRelationDto);
-        return map;
+        return Result.ok(map);
     }
 
     @Override
@@ -208,12 +203,11 @@ public class NoteServiceImpl extends AbstractNoteService {
     }
 
     @Override
-    public Map<String, Object> getAllNote(Integer uid, String userId, Integer authorUid) {
+    public Result<?> getAllNote(Integer uid, String userId, Integer authorUid) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取 uid 为 {} 的用户的所有笔记", uid, userId, authorUid);
         if(authorUid == null) {
-            Map<String, Object> map = new HashMap<>(2);
-            map.put("wrongMessage", NULL_UID);
-            return map;
+            log.debug("uid 为 {} 提供的 authorUid: {} 不存在", uid, authorUid);
+            return Result.notExist();
         }
 
         boolean me = uid.equals(authorUid);
@@ -221,9 +215,8 @@ public class NoteServiceImpl extends AbstractNoteService {
         if(!me) {
             AccountSettings accountSettings = userSettingJedisUtil.getAccountSettings(authorUid);
             if(!accountSettings.getPublicNoteStatus()) {
-                Map<String, Object> map = new HashMap<>(2);
-                map.put(PRIVATE_SETTINGS_KEY, PRIVATE_USER_INFO);
-                return map;
+                log.debug("uid 为 {} 的用户不公开笔记", authorUid);
+                return Result.notAllowed();
             }
         }
 
@@ -234,7 +227,7 @@ public class NoteServiceImpl extends AbstractNoteService {
         map.put("me", me);
         map.put("authorInfo", authorInfo);
         map.put("noteList", shareNoteDtoList);
-        return map;
+        return Result.ok(map);
     }
 
     /**

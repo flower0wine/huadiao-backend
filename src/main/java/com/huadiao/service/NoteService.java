@@ -39,7 +39,7 @@ public interface NoteService {
      * @return 返回含有作者笔记的集合, 里面处理笔记还有是否是本人等信息
      * @throws  Exception 可能抛出异常
      */
-    Map<String, Object> getSingleNote(HttpServletRequest request, HttpServletResponse response, Integer uid, String userId, Integer authorUid, Integer noteId) throws Exception;
+    Result<?> getSingleNote(HttpServletRequest request, HttpServletResponse response, Integer uid, String userId, Integer authorUid, Integer noteId) throws Exception;
 
     /**
      * 获取用户的笔记, 与上面不同的是该方法是在编辑笔记页面进行的获取自己的笔记请求
@@ -77,7 +77,7 @@ public interface NoteService {
      * @param authorUid 作者 uid
      * @return 返回作者的所有笔记
      */
-    Map<String, Object> getAllNote(Integer uid, String userId, Integer authorUid);
+    Result<?> getAllNote(Integer uid, String userId, Integer authorUid);
 
     /**
      * 获取笔记评论

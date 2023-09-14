@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huadiao.mapper.HuadiaoHouseMapper">
+
+    <!--新增番剧页面信息-->
+    <insert id="insertHuadiaoHouseInfoByUid">
+        insert into huadiao_house_info(`uid`, `title_color`, `title_background`, `page_background`, `page_foreground`,
+                                       `card_border`, `card_background`)
+        values (#{uid}, #{titleColor}, #{titleBackground}, #{pageBackground}, #{pageForeground}, #{cardBorder},
+                #{cardBackground});
+    </insert>
+
+    <!--新增封面边框-->
+    <insert id="insertHuadiaoCardBorderImage">
+        insert into huadiao_card_border_image(`border_image_source`, `border_image_width`, `border_image_slice`,
+                                              `border_image_outset`)
+        values (#{borderImageSource}, #{borderImageWidth}, #{borderImageSlice}, #{borderImageOutset});
+    </insert>
+
+    <!--添加番剧信息-->
+    <insert id="insertHuadiaoAnimeByUid">
+        insert into huadiao_house_anime(`uid`, `anime_id`, `anime_title`, `anime_cover`)
+        values (#{uid}, #{animeId}, #{animeTitle}, #{animeCover});
+    </insert>
+
+    <!--修改番剧页面信息-->
+    <update id="updateHuadiaoHouseInfoByUid">
+        update huadiao_house_info set `modify_time` = now(),
+        <foreach collection="huadiaoHouseInfoMap" index="key" item="value" separator=",">
+            `${key}` = '${value}'
+        </foreach>
+        where `uid` = #{uid};
+    </update>
+
+    <!--删除番剧-->
+    <update id="deleteAnimeByUid">
+        update huadiao_house_anime
+        set `status` = 0
+        where `anime_id` = #{animeId}
+          and `uid` = #{uid};
+    </update>
+
+    <resultMap id="huadiaoHouseInfoResultMap" type="com.huadiao.entity.HuadiaoHouseInfo">
+        <result property="uid" column="uid"/>
+        <result property="titleColor" column="title_color"/>
+        <result property="titleBackground" column="title_background"/>
+        <result property="pageBackground" column="page_background"/>
+        <result property="pageForeground" column="page_foreground"/>
+        <result property="cardBorderImage" column="card_border"/>
+        <result property="cardBackground" column="card_background"/>
+    </resultMap>
+    <!--获取番剧页面信息-->
+    <select id="selectHuadiaoHouseInfoByUid" resultMap="huadiaoHouseInfoResultMap">
+        select `uid`,
+               `title_color`,
+               `title_background`,
+               `page_background`,
+               `page_foreground`,
+               `card_border`,
+               `card_background`
+        from huadiao_house_info
+        where `uid` = #{uid};
+    </select>
+
+    <resultMap id="cardBorderImageResultMap" type="com.huadiao.entity.CardBorderImage">
+        <result property="borderImageOutset" column="border_image_outset"/>
+        <result property="borderImageSource" column="border_image_source"/>
+        <result property="borderImageSlice" column="border_image_slice"/>
+        <result property="borderImageWidth" column="border_image_width"/>
+    </resultMap>
+    <!--获取图片边框信息-->
+    <select id="selectCardBorderImage" resultMap="cardBorderImageResultMap">
+        select `border_image_outset`, `border_image_source`, `border_image_slice`, `border_image_width`
+        from huadiao_card_border_image;
+    </select>
+
+    <resultMap id="animeInfoResultMap" type="com.huadiao.entity.AnimeInfo">
+        <result property="title" column="anime_title"/>
+        <result property="cover" column="anime_cover"/>
+        <result property="animeId" column="anime_id"/>
+        <result property="addTime" column="add_time"/>
+    </resultMap>
+    <!--获取番剧信息-->
+    <select id="selectAnimeInfoByUid" resultMap="animeInfoResultMap">
+        select `anime_title`, `anime_cover`, `anime_add_time`, `anime_id`
+        from huadiao_house_anime
+        where `uid` = #{uid}
+          and `status`;
+    </select>
+</mapper>

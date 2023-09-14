@@ -2,6 +2,7 @@ package com.huadiao.service.impl;
 
 import com.huadiao.entity.AccountSettings;
 import com.huadiao.entity.HomepageInfo;
+import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.userdto.UserShareDto;
 import com.huadiao.entity.dto.userinfodto.UserInfoDto;
 import com.huadiao.mapper.*;
@@ -48,14 +49,12 @@ public class HomepageServiceImpl extends AbstractHomepageService {
     }
 
     @Override
-    public Map<String, Object> getHomepageInfo(Integer uid, String userId, Integer viewedUid) {
-
+    public Result<?> getHomepageInfo(Integer uid, String userId, Integer viewedUid) {
         // 判断被访问者是否存在
         String viewerUserId = userMapper.selectUserIdByUid(viewedUid);
         if (viewerUserId == null) {
-            Map<String, Object> map = new HashMap<>(2);
-            map.put(WRONG_MESSAGE_KEY, NO_EXIST_UID);
-            return map;
+            log.debug("uid, userId 分别为 {}, {} 提供的 uid 为 {} 的个人主页不存在", uid, userId, viewedUid);
+            return Result.notExist();
         }
 
         boolean me = uid.equals(viewedUid);
@@ -65,9 +64,7 @@ public class HomepageServiceImpl extends AbstractHomepageService {
             // 如果用户选择不公开个人主页信息
             if (!accountSettings.getPublicHomepageStatus()) {
                 log.debug("uid 为 {} 的用户不公开个人主页信息", viewedUid);
-                Map<String, Object> map = new HashMap<>(2);
-                map.put(PRIVATE_SETTINGS_KEY, PRIVATE_USER_INFO);
-                return map;
+                return Result.notAllowed();
             }
         }
 
@@ -85,13 +82,14 @@ public class HomepageServiceImpl extends AbstractHomepageService {
         map.put("userInfo", userInfoDto);
         map.put("homepageInfo", homepageInfo);
         map.put("relation", AbstractFollowFanService.judgeRelationBetweenBoth(relation));
+        map.put("uid", uid);
         map.put("me", me);
 
         // 不是本人添加访问记录
         if (!me) {
             insertVisitRecord(uid, userId, viewedUid);
         }
-        return map;
+        return Result.ok(map);
     }
 
     @Override

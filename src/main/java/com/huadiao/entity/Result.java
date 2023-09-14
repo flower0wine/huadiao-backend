@@ -50,4 +50,12 @@ public class Result<T> {
     public static <T> Result<T> existed() {
         return new Result<>(ResultCodeEnum.EXISTED, null);
     }
+
+    public static <T> Result<T> notAllowed() {
+        return new Result<>(ResultCodeEnum.NOT_ALLOW, null);
+    }
+
+    public static <T> Result<T> exceedLimit() {
+        return new Result<>(ResultCodeEnum.EXCEED_LIMIT, null);
+    }
 }

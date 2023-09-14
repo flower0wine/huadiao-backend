@@ -26,5 +26,6 @@
             <bean class="com.huadiao.interceptor.LoginCheckInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
+
 </beans>
 

@@ -1,7 +1,6 @@
 package com.huadiao.service;
 
-import javax.servlet.http.HttpSession;
-import java.util.Map;
+import com.huadiao.entity.Result;
 
 /**
  * 业务层: 处理个人主页的接口
@@ -14,9 +13,9 @@ public interface HomepageService {
      * @param uid 访问者 uid
      * @param userId 用户 id
      * @param viewedUid 被访问者
-     * @return 个人主页信息
+     * @return 返回查询过程中的提示
      */
-    Map<String, Object> getHomepageInfo(Integer uid, String userId, Integer viewedUid);
+    Result<?> getHomepageInfo(Integer uid, String userId, Integer viewedUid);
 
     /**
      * 新增个人主页访问记录

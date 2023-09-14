@@ -42,6 +42,10 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
+    <!--文件解析器, 依赖 common-fileupload jar包-->
+    <!--在 springmvc 中, 文件解析器名称固定-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+
     <!--使用 spring 事务注解需要开启事务注解驱动-->
     <tx:annotation-driven transaction-manager="transactionManager"/>
 

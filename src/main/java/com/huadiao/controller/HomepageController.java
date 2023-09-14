@@ -1,5 +1,7 @@
 package com.huadiao.controller;
 
+import com.huadiao.entity.Result;
+
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
@@ -15,5 +17,5 @@ public interface HomepageController extends Controller {
      * @param viewedUid 被访问的人的 uid
      * @return 返回个人主页信息
      */
-    Map<String, Object> getHomepageInfo(HttpSession session, Integer viewedUid);
+    Result<?> getHomepageInfo(HttpSession session, Integer viewedUid);
 }

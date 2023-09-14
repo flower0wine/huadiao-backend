@@ -1,6 +1,7 @@
 package com.huadiao.controller.impl;
 
 import com.huadiao.controller.HomepageController;
+import com.huadiao.entity.Result;
 import com.huadiao.service.HomepageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class HomepageControllerImpl implements HomepageController {
 
     @Override
     @GetMapping("/info")
-    public Map<String, Object> getHomepageInfo(HttpSession session, Integer viewedUid) {
+    public Result<?> getHomepageInfo(HttpSession session, Integer viewedUid) {
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return homepageService.getHomepageInfo(uid, userId, viewedUid);

@@ -3,6 +3,7 @@ package com.huadiao.service.impl;
 import com.huadiao.entity.AccountSettings;
 import com.huadiao.entity.FollowFan;
 import com.huadiao.entity.FollowGroup;
+import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.followfan.FollowFanBaseInfoDto;
 import com.huadiao.mapper.FollowFanMapper;
 import com.huadiao.mapper.UserMapper;
@@ -79,14 +80,12 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
     }
 
     @Override
-    public Map<String, Object> getUserFollow(Integer uid, String userId, Integer viewedUid, Integer groupId, Integer begin, Integer page) {
+    public Result<?> getUserFollow(Integer uid, String userId, Integer viewedUid, Integer groupId, Integer begin, Integer page) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取 uid 为 {} 的用户的关注信息", uid, userId, viewedUid);
         // uid 最小为 1, 新增用户则增大
         if(viewedUid == null || viewedUid < 1) {
             log.debug("uid, userId 分别为 {}, {} 的用户访问 viewedUid 为 {} 的用户的关注信息, 但该用户不存在", uid, userId, viewedUid);
-            Map<String, Object> map = new HashMap<>(2);
-            map.put(WRONG_MESSAGE_KEY, NO_EXIST_UID);
-            return map;
+            return Result.notExist();
         }
         // 分组 id 校验
         if(groupId == null || groupId < 1) {
@@ -110,8 +109,7 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
             AccountSettings accountSettings = userSettingJedisUtil.getAccountSettings(viewedUid);
             if(!accountSettings.getPublicFollowStatus()) {
                 log.debug("viewedUid 为 {} 的用户已设置关注信息不公开", viewedUid);
-                map.put(PRIVATE_SETTINGS_KEY, PRIVATE_USER_INFO);
-                return map;
+                return Result.notAllowed();
             }
         }
         // 获取用户关注信息
@@ -119,19 +117,17 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
         log.debug("uid, userId 分别为 {}, {} 的用户获取 uid 为 {} 的用户的关注信息成功, (followFan: {}, me: {})", uid, userId, viewedUid, followFan, me);
         map.put("follow", followFan);
         map.put("me", me);
-        return map;
+        return Result.ok(map);
     }
 
     @Override
-    public Map<String, Object> getUserFan(Integer uid, String userId, Integer viewedUid, Integer begin, Integer page) {
+    public Result<?> getUserFan(Integer uid, String userId, Integer viewedUid, Integer begin, Integer page) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取 uid 为 {} 的用户的粉丝信息", uid, userId, viewedUid);
         String viewedUserId = userMapper.selectUserIdByUid(viewedUid);
         // 判断被访问的用户是否存在
         if(viewedUserId == null) {
             log.debug("uid, userId 分别为 {}, {} 的用户访问 viewedUid 为 {} 的用户的粉丝信息, 但该用户不存在", uid, userId, viewedUid);
-            Map<String, Object> map = new HashMap<>(2);
-            map.put(WRONG_MESSAGE_KEY, NO_EXIST_UID);
-            return map;
+            return Result.notExist();
         }
 
         // 是否是本人
@@ -141,9 +137,7 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
             AccountSettings accountSettings = userSettingJedisUtil.getAccountSettings(viewedUid);
             if(!accountSettings.getPublicFanStatus()) {
                 log.debug("viewedUid 为 {} 的用户已设置粉丝信息不公开", viewedUid);
-                Map<String, Object> map = new HashMap<>(2);
-                map.put(PRIVATE_SETTINGS_KEY, PRIVATE_USER_INFO);
-                return map;
+                return Result.notAllowed();
             }
         }
 
@@ -161,11 +155,11 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
         log.debug("uid, userId 分别为 {}, {} 的用户获取 uid 为 {} 的用户的粉丝信息成功, (followFan: {}, me: {})", uid, userId, viewedUid, followFan, me);
         map.put("fan", followFan);
         map.put("me", me);
-        return map;
+        return Result.ok(map);
     }
 
     @Override
-    public FollowFanBaseInfoDto getUserFollowFanInfo(Integer uid, String userId, Integer viewedUid) {
+    public Result<?> getUserFollowFanInfo(Integer uid, String userId, Integer viewedUid) {
         FollowFanBaseInfoDto followFanBaseInfoDto = new FollowFanBaseInfoDto();
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取 uid 为 {} 的用户的关注和粉丝数量", uid, userId, viewedUid);
         List<Integer> list = followFanMapper.countFollowAndFansByUid(viewedUid);
@@ -175,19 +169,19 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
             followFanBaseInfoDto.setUid(viewedUid);
         }
         log.debug("uid, userId 分别为 {}, {} 的用户成功获取 uid 为 {} 的用户的关注和粉丝数量, followFanBaseInfoDto: {}", uid, userId, viewedUid, followFanBaseInfoDto);
-        return followFanBaseInfoDto;
+        return Result.ok(followFanBaseInfoDto);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String buildRelationBetweenBoth(Integer uid, String fanUserId, Integer fanUid, Integer groupId) {
+    public Result<?> buildRelationBetweenBoth(Integer uid, String fanUserId, Integer fanUid, Integer groupId) {
         // 注意：uid 不是当前用户, fanUid 才是当前用户
         log.debug("uid, userId 分别为 {}, {} 的用户尝试与 uid 为 {} 的用户建立关系, 并将其加入关注分组 groupId: {}", fanUid, fanUserId, uid, groupId);
         // 判断用户是否存在
         String userId = userMapper.selectUserIdByUid(uid);
         if(userId == null) {
             log.debug("uid, userId 为 {}, {} 的用户提供了一个错误的 uid: {} 并试图与其建立关系, 错误原因：该用户不存在", fanUid, fanUserId, uid);
-            return NO_EXIST_UID;
+            return Result.notExist();
         }
         log.debug("uid 为 {} 的用户存在", uid);
         // 如果没有指定关注分组, 则默认为默认分组, groupId = 1
@@ -197,13 +191,13 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
         } else {
             if(groupId < 1) {
                 log.debug("uid, userId 为 {}, {} 的用户提供了一个错误的 groupId: {} , 错误原因：关注分组不存在", fanUid, fanUserId, groupId);
-                return NO_EXIST_GROUP_ID;
+                return Result.notExist();
             }
             // 检查分组是否存在
             FollowGroup followGroup = followFanMapper.selectFollowGroupByUidAndGroupId(fanUid, groupId);
             if(followGroup == null) {
                 log.debug("uid, userId 为 {}, {} 的用户提供了一个错误的 groupId: {} , 错误原因：关注分组不存在", fanUid, fanUserId, groupId);
-                return NO_EXIST_GROUP_ID;
+                return Result.notExist();
             }
             log.debug("用户提供的关注分组 groupId: {} 存在", groupId);
         }
@@ -211,12 +205,12 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
         Integer follow = followFanMapper.countFollowByUid(fanUid);
         if(follow > MAX_FOLLOW_AMOUNT) {
             log.debug("uid, userId 分别为 {}, {} 的用户已达到最大关注数量", fanUid, fanUserId);
-            return REACH_MAX_FOLLOW_AMOUNT;
+            return Result.exceedLimit();
         }
         log.debug("未达到最大关注数量, 并且通过参数校验, 分别为 uid: {}, groupId: {}", uid, groupId);
         followFanMapper.insertRelationByBothUid(uid, fanUid, groupId);
         log.debug("uid, userId 分别为 {}, {} 的用户成功与 uid 为 {} 的用户建立关系, 并将其加入关注分组 groupId: {}", fanUid, fanUserId, uid, groupId);
-        return BUILD_RELATION_SUCCEED;
+        return Result.ok(null);
     }
 
     @Override

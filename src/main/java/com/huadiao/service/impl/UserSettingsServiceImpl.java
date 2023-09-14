@@ -56,8 +56,6 @@ public class UserSettingsServiceImpl extends AbstractUserSettingsService {
     public String modifyAccountSettings(Integer uid, String userId, Set<String> settingsSet) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试更新自己的账号设置, 传递的参数为 settingsList: {}", uid, userId, settingsSet);
         String[] settingsArr = settingsSet.toArray(new String[0]);
-        String settingReplaceRegex = "([a-z])([A-Z])";
-        String replace = "$1_$2";
         // 格式转换, 例如将 publicStarStatus --> public_star_status
         for (int index = 0; index < settingsArr.length; index++) {
             String str = settingsArr[index];
@@ -66,7 +64,7 @@ public class UserSettingsServiceImpl extends AbstractUserSettingsService {
                 log.warn("uid, userId 分别为 {}, {} 的用户传入的参数存在问题, settingsArr[{}]: {}", uid, userId, index, settingsArr[index]);
                 return ACCOUNT_SETTING_UPDATE_FAIL;
             }
-            settingsArr[index] = str.replaceAll(settingReplaceRegex, replace).toLowerCase();
+            settingsArr[index] = fieldFormat(str);
             log.debug("将用户传递的参数格式进行转换, {} -> {}", str, settingsArr[index]);
         }
         userSettingsMapper.insertOrUpdateUserSettingsByUid(uid, settingsArr);

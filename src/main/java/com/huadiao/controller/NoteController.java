@@ -53,7 +53,7 @@ public interface NoteController extends Controller {
      * @return 返回 map 集合, 包含查找到的笔记, 是否是本人
      * @throws Exception 可能抛出异常
      */
-    Map<String, Object> getSingleNote(HttpServletRequest request, HttpServletResponse response, HttpSession session, Integer uid, Integer noteId) throws Exception;
+    Result<?> getSingleNote(HttpServletRequest request, HttpServletResponse response, HttpSession session, Integer uid, Integer noteId) throws Exception;
 
     /**
      * 获取单个笔记, 在编辑笔记时使用该接口
@@ -69,7 +69,7 @@ public interface NoteController extends Controller {
      * @param authorUid 作者 uid
      * @return 返回所有笔记
      */
-    Map<String, Object> getAllNotes(HttpSession session, Integer authorUid);
+    Result<?> getAllNotes(HttpSession session, Integer authorUid);
 
     /**
      * 获取笔记评论

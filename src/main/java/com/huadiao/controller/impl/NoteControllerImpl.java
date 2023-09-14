@@ -71,7 +71,7 @@ public class NoteControllerImpl implements NoteController {
 
     @Override
     @GetMapping("/search")
-    public Map<String, Object> getSingleNote(HttpServletRequest request, HttpServletResponse response, HttpSession session, Integer uid, Integer noteId) throws Exception {
+    public Result<?> getSingleNote(HttpServletRequest request, HttpServletResponse response, HttpSession session, Integer uid, Integer noteId) throws Exception {
         Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return noteService.getSingleNote(request, response, myUid, userId, uid, noteId);
@@ -87,7 +87,7 @@ public class NoteControllerImpl implements NoteController {
 
     @Override
     @GetMapping("/all")
-    public Map<String, Object> getAllNotes(HttpSession session, Integer authorUid) {
+    public Result<?> getAllNotes(HttpSession session, Integer authorUid) {
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return noteService.getAllNote(uid, userId, authorUid);

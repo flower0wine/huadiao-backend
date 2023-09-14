@@ -2,6 +2,7 @@ package com.huadiao.service;
 
 import com.huadiao.entity.FollowFan;
 import com.huadiao.entity.FollowGroup;
+import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.followfan.FollowFanBaseInfoDto;
 
 import javax.servlet.http.HttpSession;
@@ -57,7 +58,7 @@ public interface FollowFanService {
      * @param page 查询页数
      * @return 返回被访问者关注信息
      */
-    Map<String, Object> getUserFollow(Integer uid, String userId, Integer viewedUid, Integer groupId, Integer begin, Integer page);
+    Result<?> getUserFollow(Integer uid, String userId, Integer viewedUid, Integer groupId, Integer begin, Integer page);
 
     /**
      * 根据 viewedUid 获取用户粉丝信息
@@ -68,7 +69,7 @@ public interface FollowFanService {
      * @param page 每页数据条数
      * @return 返回被访问者粉丝信息
      */
-    Map<String, Object> getUserFan(Integer uid, String userId, Integer viewedUid, Integer begin, Integer page);
+    Result<?> getUserFan(Integer uid, String userId, Integer viewedUid, Integer begin, Integer page);
 
     /**
      * 获取指定 uid 的关注和粉丝信息, 关注数量和粉丝数量
@@ -77,7 +78,7 @@ public interface FollowFanService {
      * @param viewedUid 被访问的用户 uid
      * @return 返回关注和粉丝信息
      */
-    FollowFanBaseInfoDto getUserFollowFanInfo(Integer uid, String userId, Integer viewedUid);
+    Result<?> getUserFollowFanInfo(Integer uid, String userId, Integer viewedUid);
 
     /**
      * 建立用户关系
@@ -87,7 +88,7 @@ public interface FollowFanService {
      * @param groupId 分组 id, 分组 id 为 null 则分配到 默认分组
      * @return 返回添加成功或失败提示
      */
-    String buildRelationBetweenBoth(Integer uid, String fanUserId, Integer fanUid, Integer groupId);
+    Result<?> buildRelationBetweenBoth(Integer uid, String fanUserId, Integer fanUid, Integer groupId);
 
     /**
      * 解除两人的关系

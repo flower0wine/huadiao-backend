@@ -20,9 +20,4 @@ public abstract class AbstractUserSettingsService extends AbstractService implem
      */
     public static String ACCOUNT_SETTING_UPDATE_FAIL = "accountSettingUpdateFail";
 
-    /**
-     * 匹配设置字段, 要求全部为英文字母
-     */
-    public static Pattern pattern = Pattern.compile("^\\w+$");
-
 }

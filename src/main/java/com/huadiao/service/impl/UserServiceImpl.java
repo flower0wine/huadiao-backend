@@ -4,10 +4,7 @@ import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.userdto.*;
-import com.huadiao.mapper.FollowFanMapper;
-import com.huadiao.mapper.UserInfoMapper;
-import com.huadiao.mapper.UserMapper;
-import com.huadiao.mapper.UserSettingsMapper;
+import com.huadiao.mapper.*;
 import com.huadiao.service.AbstractUserInfoService;
 import com.huadiao.service.AbstractUserService;
 import com.huadiao.util.CreateHuadiaoUserId;
@@ -36,13 +33,15 @@ public class UserServiceImpl extends AbstractUserService {
     private FollowFanMapper followFanMapper;
     private UserInfoMapper userInfoMapper;
     private UserSettingsMapper userSettingsMapper;
+    private HuadiaoHouseMapper huadiaoHouseMapper;
 
     @Autowired
-    public UserServiceImpl(UserMapper userMapper, FollowFanMapper followFanMapper, UserInfoMapper userInfoMapper, UserSettingsMapper userSettingsMapper) {
+    public UserServiceImpl(UserMapper userMapper, FollowFanMapper followFanMapper, UserInfoMapper userInfoMapper, UserSettingsMapper userSettingsMapper, HuadiaoHouseMapper huadiaoHouseMapper) {
         this.userMapper = userMapper;
         this.followFanMapper = followFanMapper;
         this.userInfoMapper = userInfoMapper;
         this.userSettingsMapper = userSettingsMapper;
+        this.huadiaoHouseMapper = huadiaoHouseMapper;
     }
 
     @Override
@@ -175,6 +174,8 @@ public class UserServiceImpl extends AbstractUserService {
         // 新增用户设置
         userSettingsMapper.insertOrUpdateUserSettingsByUid(uid, null);
         log.trace("新增用户账号信息成功 (uid: {}, userId{})", uid, userId);
+        // 新增用户番剧信息
+        huadiaoHouseMapper.insertHuadiaoHouseInfoByUid(uid, null, null, null, null, null, null);
         log.info("用户 uid {}, nickname: {}, userId: {} 注册成功", uid, username, userId);
         return SUCCEED_REGISTER;
     }

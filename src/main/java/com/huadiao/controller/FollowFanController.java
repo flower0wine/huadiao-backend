@@ -1,6 +1,7 @@
 package com.huadiao.controller;
 
 import com.huadiao.entity.FollowGroup;
+import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.followfan.FollowFanBaseInfoDto;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,7 +42,7 @@ public interface FollowFanController extends Controller {
      * @param page 查询页数
      * @return 返回关注信息
      */
-    Map<String, Object> getUserFollow(HttpSession session, Integer viewedUid, Integer groupId, Integer begin, Integer page);
+    Result<?> getUserFollow(HttpSession session, Integer viewedUid, Integer groupId, Integer begin, Integer page);
 
     /**
      * 获取指定用户的粉丝
@@ -51,7 +52,7 @@ public interface FollowFanController extends Controller {
      * @param page 每页数据条数
      * @return 返回粉丝信息
      */
-    Map<String, Object> getUserFan(HttpSession session, Integer viewedUid, Integer begin, Integer page);
+    Result<?> getUserFan(HttpSession session, Integer viewedUid, Integer begin, Integer page);
 
     /**
      * 获取指定 uid 的关注和粉丝信息, 关注数量和粉丝数量
@@ -59,7 +60,7 @@ public interface FollowFanController extends Controller {
      * @param uid 用户 uid
      * @return 返回关注和粉丝信息
      */
-    FollowFanBaseInfoDto getUserFollowFanInfo(HttpSession session, Integer uid);
+    Result<?> getUserFollowFanInfo(HttpSession session, Integer uid);
 
     /**
      * 尝试建立两人的关系
@@ -68,7 +69,7 @@ public interface FollowFanController extends Controller {
      * @param groupId 关注分组 id
      * @return 返回建立关系成功与否提示
      */
-    String buildRelationBetweenBoth(HttpSession session, Integer uid, Integer groupId);
+    Result<?> buildRelationBetweenBoth(HttpSession session, Integer uid, Integer groupId);
 
     /**
      * 解除两人的关系

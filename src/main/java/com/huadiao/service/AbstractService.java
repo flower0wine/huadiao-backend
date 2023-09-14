@@ -1,13 +1,11 @@
 package com.huadiao.service;
 
-import com.huadiao.redis.IDGeneratorJedisUtil;
-import com.huadiao.redis.StarJedisUtil;
-import com.huadiao.redis.UserInfoJedisUtil;
-import com.huadiao.redis.UserSettingJedisUtil;
+import com.huadiao.redis.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.regex.Pattern;
 
 /**
  * @author flowerwine
@@ -32,38 +30,26 @@ public abstract class AbstractService implements Service {
     protected StarJedisUtil starJedisUtil;
 
     @Autowired
-    protected IDGeneratorJedisUtil idGeneratorJedisUtil;
+    protected FollowFanJedisUtil idGeneratorJedisUtil;
+
+    @Autowired
+    protected HuadiaoHouseJedisUtil huadiaoHouseJedisUtil;
 
     /**
-     * 用户设置私密 map 的键名, map 将返回
+     * 匹配设置字段, 要求全部为英文字母
      */
-    public static String PRIVATE_SETTINGS_KEY = "private";
+    public static Pattern pattern = Pattern.compile("^\\w+$");
+
+    public String imageHost = "/images/";
 
     /**
-     * 用户隐私信息, 用户已设置为不可公开, 私密 map 的键值
+     * 字段格式化, 例如: exampleExample --> example_example
+     * @param field 字段
+     * @return 转化后的字段
      */
-    public static String PRIVATE_USER_INFO = "privateUserInfo";
-
-    /**
-     * 错误提示信息键名
-     */
-    public static String WRONG_MESSAGE_KEY = "wrongMessage";
-
-
-    /**
-     * 错误的 uid, 该 uid 不存在
-     */
-    public static String NO_EXIST_UID = "noExistUid";
-
-    /**
-     * 提供了 null 的 uid
-     */
-    public static String NULL_UID = "nullUid";
-
-    /**
-     * 无效的参数, 一般是不能确定原因
-     */
-    public static String INVALID_PARAM = "invalidParam";
-
-
+    protected String fieldFormat(String field) {
+        String settingReplaceRegex = "([a-z])([A-Z])";
+        String replace = "$1_$2";
+        return  field.replaceAll(settingReplaceRegex, replace).toLowerCase();
+    }
 }

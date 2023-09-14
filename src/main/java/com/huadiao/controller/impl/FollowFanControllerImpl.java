@@ -2,6 +2,7 @@ package com.huadiao.controller.impl;
 
 import com.huadiao.controller.FollowFanController;
 import com.huadiao.entity.FollowGroup;
+import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.followfan.FollowFanBaseInfoDto;
 import com.huadiao.service.FollowFanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class FollowFanControllerImpl implements FollowFanController {
 
     @Override
     @GetMapping("/follow")
-    public Map<String, Object> getUserFollow(HttpSession session, Integer viewedUid, Integer groupId, Integer begin, Integer end) {
+    public Result<?> getUserFollow(HttpSession session, Integer viewedUid, Integer groupId, Integer begin, Integer end) {
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return followFanService.getUserFollow(uid, userId, viewedUid, groupId, begin, end);
@@ -53,7 +54,7 @@ public class FollowFanControllerImpl implements FollowFanController {
 
     @Override
     @GetMapping("/fan")
-    public Map<String, Object> getUserFan(HttpSession session, Integer viewedUid, Integer begin, Integer page) {
+    public Result<?> getUserFan(HttpSession session, Integer viewedUid, Integer begin, Integer page) {
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return followFanService.getUserFan(uid, userId, viewedUid, begin, page);
@@ -61,7 +62,7 @@ public class FollowFanControllerImpl implements FollowFanController {
 
     @Override
     @GetMapping("/stat")
-    public FollowFanBaseInfoDto getUserFollowFanInfo(HttpSession session, Integer viewedUid) {
+    public Result<?> getUserFollowFanInfo(HttpSession session, Integer viewedUid) {
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return followFanService.getUserFollowFanInfo(uid, userId, viewedUid);
@@ -69,7 +70,7 @@ public class FollowFanControllerImpl implements FollowFanController {
 
     @Override
     @GetMapping("/newFriend")
-    public String buildRelationBetweenBoth(HttpSession session, Integer uid, Integer groupId) {
+    public Result<?> buildRelationBetweenBoth(HttpSession session, Integer uid, Integer groupId) {
         Integer fanUid = (Integer) session.getAttribute("uid");
         String fanUserId = (String) session.getAttribute("userId");
         return followFanService.buildRelationBetweenBoth(uid, fanUserId, fanUid, groupId);

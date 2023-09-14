@@ -7,10 +7,12 @@ package com.huadiao.entity;
 public enum ResultCodeEnum {
     /** 状态码 */
     SUCCEED(1000, "succeed"),
+    EXCEED_LIMIT(1001, "exceedLimit"),
     ERROR_PARAM(2000, "error params"),
     BLANK_PARAM(2001, "blank params"),
     NOT_EXIST(3000, "not exist"),
     EXISTED(3001, "existed"),
+    NOT_ALLOW(3002, "notAllowed"),
     ;
 
     ResultCodeEnum(Integer code, String message) {
