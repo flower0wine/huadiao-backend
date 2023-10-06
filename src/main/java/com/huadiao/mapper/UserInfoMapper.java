@@ -3,6 +3,8 @@ package com.huadiao.mapper;
 import com.huadiao.entity.dto.userinfodto.UserInfoDto;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
+
 /**
  * @author flowerwine
  * @version 1.1
@@ -22,8 +24,8 @@ public interface UserInfoMapper {
      * @param school 学校
      */
     void insertOrUpdateUserInfoByUid(@Param("uid") Integer uid, @Param("nickname") String nickname,
-                             @Param("canvases") String canvases, @Param("sex") String sex,
-                             @Param("bornDate") String bornDate, @Param("school") String school);
+                                     @Param("canvases") String canvases, @Param("sex") String sex,
+                                     @Param("bornDate") Date bornDate, @Param("school") String school);
 
     /**
      * 新增个人主页
@@ -36,6 +38,6 @@ public interface UserInfoMapper {
      * @param uid 用户 uid
      * @return 返回用户详细信息
      */
-    UserInfoDto selectUserInfoByUid(Integer uid);
+    UserInfoDto selectUserInfoByUid(@Param("uid") Integer uid);
 
 }

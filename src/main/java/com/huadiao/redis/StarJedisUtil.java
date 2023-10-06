@@ -12,5 +12,17 @@ public interface StarJedisUtil {
      * @param uid 用户 uid
      * @return 收藏数量
      */
-    Integer getUserStarAmount(Integer uid);
+    int getUserStarAmount(Integer uid);
+
+    /**
+     * 生成笔记收藏分组唯一 id
+     * @return 返回分组 id
+     */
+    int generateNoteStarGroupId();
+
+    /**
+     * 生成番剧收藏分组唯一 id
+     * @return 返回分组 id
+     */
+    int generateAnimeStarGroupId();
 }

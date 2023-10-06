@@ -23,6 +23,14 @@
         values (#{uid}, #{animeId}, #{animeTitle}, #{animeCover});
     </insert>
 
+    <!--新增番剧馆访问记录-->
+    <insert id="insertHuadiaoHouseVisit">
+        insert into huadiao_house_visit(`uid`, `viewed_uid`)
+        values (#{uid}, #{viewedUid})
+        on duplicate key update `status`     = 1,
+                                `visit_time` = now();
+    </insert>
+
     <!--修改番剧页面信息-->
     <update id="updateHuadiaoHouseInfoByUid">
         update huadiao_house_info set `modify_time` = now(),
@@ -86,5 +94,13 @@
         from huadiao_house_anime
         where `uid` = #{uid}
           and `status`;
+    </select>
+
+    <!--获取番剧总数-->
+    <select id="selectAnimeCountByUid" resultType="java.lang.Integer">
+        select count(*)
+        from huadiao_house_anime
+        where `status`
+          and `uid` = #{uid};
     </select>
 </mapper>

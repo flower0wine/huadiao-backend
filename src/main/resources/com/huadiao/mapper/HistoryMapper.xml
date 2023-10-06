@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huadiao.mapper.HistoryMapper">
+
+    <!--新增笔记浏览记录-->
+    <insert id="insertNoteViewByUid">
+        insert into huadiao_note_view(`uid`, `author_uid`, `note_id`)
+        values (#{uid}, #{authorUid}, #{noteId})
+        on duplicate key update `status`    = 1,
+                                `view_time` = now();
+    </insert>
+
+    <!--删除特定的笔记访问历史记录-->
+    <update id="deleteSpecificNoteHistory">
+        update huadiao_note_view
+        set `status` = 0
+        where `uid` = #{uid}
+          and `author_uid` = #{authorUid}
+          and `note_id` = #{noteId};
+    </update>
+
+    <!--删除所有的笔记访问历史记录-->
+    <update id="deleteAllNoteHistory">
+        update huadiao_note_view
+        set `status` = 0
+        where `uid` = #{uid};
+    </update>
+
+    <!--删除特定的番剧馆访问历史记录-->
+    <update id="deleteSpecificAnimeHistory">
+        update huadiao_house_visit
+        set `status` = 0
+        where `uid` = #{uid}
+          and `viewed_uid` = #{viewedUid};
+    </update>
+
+    <!--删除所有的番剧馆访问历史记录-->
+    <delete id="deleteAllAnimeHistory">
+        update huadiao_house_visit
+        set `status` = 0
+        where `uid` = #{uid};
+    </delete>
+
+    <resultMap id="noteHistoryResultMap" type="com.huadiao.entity.NoteHistory">
+        <result property="uid" column="author_uid"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="userAvatar" column="user_avatar"/>
+        <result property="noteId" column="note_id"/>
+        <result property="noteContent" column="note_content"/>
+        <result property="noteTitle" column="note_title"/>
+        <result property="visitTime" column="view_time"/>
+    </resultMap>
+    <!--获取笔记历史访问记录-->
+    <select id="selectNoteHistoryByUid" resultMap="noteHistoryResultMap">
+        select t1.`author_uid`,
+               `nickname`,
+               `user_id`,
+               `user_avatar`,
+               `note_title`,
+               `note_content`,
+               t1.`note_id`,
+               `view_time`
+        from huadiao_note_view t1
+                 left join huadiao_homepage t2 on author_uid = t2.uid
+                 left join huadiao_user_info t3 on author_uid = t3.uid
+                 left join huadiao_note t4 on author_uid = t4.uid and t1.`note_id` = t4.`note_id`
+                 left join huadiao_user_base t5 on author_uid = t5.uid
+        where t1.uid = #{uid}
+          and t1.`status`
+          and t1.`id` >= (select `id` from huadiao_note_view where `uid` = #{uid} and `status` limit #{offset}, 1)
+        order by `view_time` desc
+        limit #{row};
+    </select>
+
+    <resultMap id="animeHistoryResultMap" type="com.huadiao.entity.AnimeHistory">
+        <result property="uid" column="viewed_uid"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="userAvatar" column="user_avatar"/>
+        <result property="animeTitle" column="anime_title"/>
+        <result property="animeCover" column="anime_cover"/>
+        <result property="visitTime" column="visit_time"/>
+    </resultMap>
+    <!--获取番剧馆访问历史记录-->
+    <select id="selectAnimeHistoryByUid" resultMap="animeHistoryResultMap">
+        select `viewed_uid`, `user_id`, `user_avatar`, `nickname`, `anime_title`, `anime_cover`, `visit_time`
+        from huadiao_house_visit t1
+                 left join huadiao_user_base t2 on viewed_uid = t2.uid
+                 left join huadiao_homepage t3 on viewed_uid = t3.uid
+                 left join huadiao_user_info t4 on viewed_uid = t4.uid
+                 left join huadiao_house_anime t5 on viewed_uid = t5.uid and t5.`status`
+        where t1.`status`
+          and t1.`uid` = #{uid}
+          and t1.`id` >= (select `id`
+                          from huadiao_house_visit
+                          where huadiao_house_visit.`uid` = #{uid}
+                            and huadiao_house_visit.`status`
+                          limit #{offset}, 1)
+        order by `visit_time` desc
+        limit #{row};
+    </select>
+</mapper>

@@ -43,9 +43,10 @@
         <result property="noteTitle" column="note_title"/>
         <result property="noteContent" column="note_content"/>
         <result property="publishTime" column="publish_time"/>
-        <result property="likeNumber" column="like_number"/>
-        <result property="viewNumber" column="view_number"/>
-        <result property="starNumber" column="star_number"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="starCount" column="star_count"/>
+        <result property="commentCount" column="comment_count"/>
     </resultMap>
     <!--查找笔记-->
     <select id="selectNoteByUidAndNoteId" resultMap="singleNoteDtoResultMap">
@@ -54,13 +55,15 @@
                `note_title`,
                `note_content`,
                `publish_time`,
-               count(distinct t2.uid) as `like_number`,
-               count(distinct t3.uid) as `view_number`,
-               count(distinct t4.uid) as `star_number`
+               count(distinct t2.uid) as `like_count`,
+               count(distinct t3.uid) as `view_count`,
+               count(distinct t4.uid) as `star_count`,
+               count(t5.uid)          as `comment_count`
         from huadiao_note t1
-                 left join huadiao_note_like t2 on t1.uid = t2.author_uid AND t2.status
-                 left join huadiao_note_view t3 on t1.uid = t3.author_uid AND t3.status
-                 left join huadiao_note_star t4 on t1.uid = t4.author_uid AND t4.status
+                 left join huadiao_note_view t3 on t1.uid = t3.author_uid and t1.`note_id` = t3.`note_id`
+                 left join huadiao_note_like t2 on t1.uid = t2.author_uid and t2.status and t1.`note_id` = t2.`note_id`
+                 left join huadiao_note_star t4 on t1.uid = t4.author_uid and t4.status and t1.`note_id` = t4.`note_id`
+                 left join huadiao_note_comment t5 on t1.uid = t5.author_uid and t5.status and t1.`note_id` = t5.`note_id`
         where t1.`uid` = #{uid}
           and t1.`note_id` = #{noteId};
     </select>
@@ -77,26 +80,38 @@
         <result property="noteContent" column="note_content"/>
         <result property="publishTime" column="publish_time"/>
         <result property="noteId" column="note_id"/>
-        <result property="likeNumber" column="like_number"/>
-        <result property="viewNumber" column="view_number"/>
-        <result property="starNumber" column="star_number"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="starCount" column="star_count"/>
+        <result property="commentCount" column="comment_count"/>
     </resultMap>
     <!--获取用户全部笔记-->
     <select id="selectAllNoteByUid" resultMap="noteDetailsResultMap">
-        SELECT n.`uid`,
-               n.`note_id`,
-               n.`note_title`,
-               n.`note_content`,
-               n.`publish_time`,
-               COUNT(l.uid) AS `like_number`,
-               COUNT(v.uid) AS `view_number`,
-               COUNT(w.uid) AS `star_number`
-        FROM huadiao_note n
-                 LEFT JOIN huadiao_note_like l ON n.note_id = l.note_id AND l.status
-                 LEFT JOIN huadiao_note_view v ON n.note_id = v.note_id AND v.status
-                 LEFT JOIN huadiao_note_star w ON n.note_id = w.note_id AND w.status
-        WHERE n.uid = #{uid}
-        GROUP BY n.uid, n.note_id;
+        select `uid`,
+               `note_id`,
+               `note_title`,
+               `note_content`,
+               `publish_time`,
+               (select count(*)
+                from huadiao_note_star t2
+                where t1.uid = author_uid and t1.`note_id` = t2.note_id and t2.status)                             as `star_count`,
+               (select count(*)
+                from huadiao_note_comment t3
+                where t1.uid = author_uid
+                  and t1.`note_id` = t3.note_id
+                  and t3.status)                                                                                   as `comment_count`,
+               (select count(*)
+                from huadiao_note_view t4
+                where t1.uid = author_uid
+                  and t1.`note_id` = t4.note_id)                                                                   as `view_count`,
+               (select count(*)
+                from huadiao_note_like t5
+                where t1.uid = author_uid
+                  and t1.`note_id` = t5.note_id
+                  and t5.status)                                                                                   as `like_count`
+        from huadiao_note t1
+        where `uid` = #{uid}
+          and `status`
     </select>
 
     <!--获取笔记喜欢次数-->
@@ -122,7 +137,6 @@
         select count(*)
         from huadiao_note_view
         where `author_uid` = #{authorUid}
-          and `status`
           and `note_id` = #{noteId};
     </select>
 
@@ -194,6 +208,7 @@
     <resultMap id="noteCommentResultMap" type="com.huadiao.entity.dto.note.NoteCommentDto">
         <id property="commentId" column="root_comment_id"/>
         <result property="uid" column="uid"/>
+        <result property="userId" column="user_id"/>
         <result property="likeNumber" column="like_number"/>
         <result property="myLike" column="my_like"/>
         <result property="myUnlike" column="my_unlike"/>
@@ -204,6 +219,7 @@
         <collection property="commentList" ofType="com.huadiao.entity.dto.note.NoteCommentDto">
             <result property="commentId" column="sub_comment_id"/>
             <result property="uid" column="uid"/>
+            <result property="userId" column="user_id"/>
             <result property="likeNumber" column="like_number"/>
             <result property="myLike" column="my_like"/>
             <result property="myUnlike" column="my_unlike"/>
@@ -223,9 +239,10 @@
                `comment_content`,
                `user_avatar`,
                `nickname`,
+               `user_id`,
                if(t3.`uid` = #{uid}, 1, 0) as `my_like`,
                if(t4.`uid` = #{uid}, 1, 0) as `my_unlike`,
-               count(t2.uid)          as `like_number`
+               count(t2.uid)               as `like_number`
         from huadiao_note_comment t1
                  left join huadiao_note_comment_like t2 on t2.root_comment_id = t1.root_comment_id and
                                                            t2.author_uid = t1.author_uid and
@@ -249,10 +266,16 @@
                                                               (t4.sub_comment_id = 0 and t1.sub_comment_id = 0))
                  left join huadiao_homepage t5 on t1.`uid` = t5.`uid`
                  left join huadiao_user_info t6 on t1.`uid` = t6.`uid`
+                 left join huadiao_user_base t7 on t1.`uid` = t7.`uid`
         where t1.note_id = #{noteId}
           and t1.author_uid = #{authorUid}
           and t1.`status`
-          and t1.`id` >= (select `id` from huadiao_note_comment limit #{offset}, 1)
+          and t1.`id` >= (select `id`
+                          from huadiao_note_comment
+                          where `author_uid` = #{authorUid}
+                            and `status`
+                            and `note_id` = #{noteId}
+                          limit #{offset}, 1)
         group by t1.`uid`,
                  t1.`note_id`,
                  t1.`root_comment_id`,
@@ -262,7 +285,7 @@
                  `my_like`,
                  `my_unlike`
         order by `comment_time` desc
-        limit #{row} ;
+        limit #{row};
     </select>
 
     <!--获取笔记评论数-->
@@ -284,6 +307,22 @@
           and `root_comment_id` = #{rootCommentId}
           and `sub_comment_id` = #{subCommentId}
           and `status`;
+    </select>
+
+    <!--获取笔记收藏总数-->
+    <select id="selectAllNoteStarCountByUid" resultType="java.lang.Integer">
+        select count(*)
+        from huadiao_note_star
+        where `status`
+          and `uid` = #{uid};
+    </select>
+
+    <!--获取笔记被点赞总数-->
+    <select id="selectAllNoteLikeCountByUid" resultType="java.lang.Integer">
+        select count(*)
+        from huadiao_note_like
+        where `status`
+          and `author_uid` = #{uid};
     </select>
 
 

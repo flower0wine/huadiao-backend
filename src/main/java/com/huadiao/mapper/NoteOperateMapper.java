@@ -23,8 +23,9 @@ public interface NoteOperateMapper {
      * @param uid 用户 uid
      * @param noteId 笔记 id
      * @param authorUid 作者 uid
+     * @param groupId 分组 id
      */
-    void insertNoteStarByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid);
+    void insertNoteStarByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid, @Param("groupId") Integer groupId);
 
     /**
      * 删除笔记收藏
@@ -56,14 +57,6 @@ public interface NoteOperateMapper {
      * @param authorUid 作者 uid
      */
     void deleteNoteUnlikeByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid);
-
-    /**
-     * 新增笔记访问记录
-     * @param uid 访问者
-     * @param noteId 笔记 id
-     * @param authorUid 作者 uid
-     */
-    void insertNoteViewByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid);
 
     /**
      * 删除笔记访问记录

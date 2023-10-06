@@ -2,6 +2,7 @@ package com.huadiao.redis;
 
 import com.huadiao.mapper.*;
 import com.huadiao.redis.impl.FollowFanJedis;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -32,29 +33,43 @@ public abstract class AbstractJedis {
     @Autowired
     protected HuadiaoHouseMapper huadiaoHouseMapper;
 
-    public void initialCommentIdGenerator(JedisPool jedisPool, String jedisKeyGeneratorId) {
+    protected void initialIdGenerator(JedisPool jedisPool, String jedisKeyGeneratorId, int initValue) {
         Jedis jedis = jedisPool.getResource();
         String generatorId = jedis.get(jedisKeyGeneratorId);
         if (generatorId == null) {
-            jedis.set(jedisKeyGeneratorId, String.valueOf(0L));
+            jedis.set(jedisKeyGeneratorId, String.valueOf(initValue));
         }
         jedis.close();
     }
 
-    public long generateGeneratorId(String jedisKeyGeneratorId) {
+    protected void initialIdGenerator(JedisPool jedisPool, String jedisKeyGeneratorId) {
+        initialIdGenerator(jedisPool, jedisKeyGeneratorId, 0);
+    }
+
+    protected int generateGeneratorId(String jedisKeyGeneratorId) {
         Jedis jedis = jedisPool.getResource();
-        long generatorId;
-        generatorId = Long.parseLong(jedis.get(jedisKeyGeneratorId));
+        int generatorId;
+        generatorId = Integer.parseInt(jedis.get(jedisKeyGeneratorId));
         generatorId++;
         jedis.set(jedisKeyGeneratorId, String.valueOf(generatorId));
         jedis.close();
         return generatorId;
     }
 
-    public long getGeneratorId(String jedisKeyGeneratorId) {
+    protected int getGeneratorId(String jedisKeyGeneratorId) {
         Jedis jedis = jedisPool.getResource();
-        long generatorId = Long.parseLong(jedis.get(jedisKeyGeneratorId));
+        int generatorId = Integer.parseInt(jedis.get(jedisKeyGeneratorId));
         jedis.close();
         return generatorId;
     }
+
+    /**
+     * 检查更新条数
+     * @param updateCount 执行更新语句后返回结果
+     * @return 大于 0 返回 true
+     */
+    protected boolean checkUpdateCount(Integer updateCount) {
+        return updateCount != null && updateCount > 0;
+    }
+
 }

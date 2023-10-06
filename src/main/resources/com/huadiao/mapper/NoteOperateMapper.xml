@@ -4,8 +4,8 @@
 
     <!--新增或者再次收藏笔记-->
     <insert id="insertNoteStarByUid">
-        insert into huadiao_note_star(`uid`, `author_uid`, `note_id`)
-        values (#{uid}, #{authorUid}, #{noteId})
+        insert into huadiao_note_star(`uid`, `author_uid`, `note_id`, `group_id`)
+        values (#{uid}, #{authorUid}, #{noteId}, #{groupId})
         on duplicate key update `status` = 1,
                                 `star_time` = now();
     </insert>
@@ -16,14 +16,6 @@
         values (#{uid}, #{authorUid}, #{noteId})
         on duplicate key update `status` = 1,
                                 `unlike_time` = now();
-    </insert>
-
-    <!--新增笔记浏览记录-->
-    <insert id="insertNoteViewByUid">
-        insert into huadiao_note_view(`uid`, `author_uid`, `note_id`)
-        values (#{uid}, #{authorUid}, #{noteId})
-        on duplicate key update `status`    = 1,
-                                `view_time` = now();
     </insert>
 
     <!--新增笔记喜欢-->

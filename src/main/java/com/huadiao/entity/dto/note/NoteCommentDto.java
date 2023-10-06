@@ -19,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 public class NoteCommentDto {
     private Integer uid;
+    private String userId;
     private String userAvatar;
     private String nickname;
     private Integer commentId;

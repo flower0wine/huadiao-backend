@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public abstract class AbstractHuadiaoHouseService extends AbstractService implements HuadiaoHouseService {
 
-    @Value("${huadiaoHouse.realPath}")
-    protected String realPath;
+    @Value("${huadiaoHouse.imageRealPath}")
+    protected String imageRealPath;
 
-    protected int animeTitleMinLength = 1;
+    @Value("${huadiaoHouse.animeTitleMinLength}")
+    protected int animeTitleMinLength;
 
-    protected int animeTitleMaxLength = 15;
+    @Value("${huadiaoHouse.animeTitleMaxLength}")
+    protected int animeTitleMaxLength;
 
     @Value("${huadiaoHouse.animeCoverMaxSize}")
     protected int animeCoverMaxSize;

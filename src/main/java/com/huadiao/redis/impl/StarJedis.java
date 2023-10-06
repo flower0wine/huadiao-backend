@@ -5,6 +5,7 @@ import com.huadiao.redis.AbstractJedis;
 import com.huadiao.redis.StarJedisUtil;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 /**
  * @author flowerwine
@@ -21,8 +22,16 @@ public class StarJedis extends AbstractJedis implements StarJedisUtil {
      */
     protected String redisKeyNoteStarAmount = "huadiao.noteStarAmount.{}";
 
+    private String jedisKeyNoteStarGroupId = "noteStarGroupId";
+
+    private String jedisKeyAnimeStarGroupId = "animeStarGroupId";
+
+    public StarJedis(JedisPool jedisPool) {
+        this.initialIdGenerator(jedisPool, jedisKeyNoteStarGroupId);
+    }
+
     @Override
-    public Integer getUserStarAmount(Integer uid) {
+    public int getUserStarAmount(Integer uid) {
         Jedis jedis = jedisPool.getResource();
         String jedisKey = StrUtil.format(redisKeyNoteStarAmount, uid);
         String noteStarAmount = jedis.get(jedisKey);
@@ -35,5 +44,15 @@ public class StarJedis extends AbstractJedis implements StarJedisUtil {
             jedis.close();
             return countNoteStar;
         }
+    }
+
+    @Override
+    public int generateNoteStarGroupId() {
+        return generateGeneratorId(jedisKeyNoteStarGroupId);
+    }
+
+    @Override
+    public int generateAnimeStarGroupId() {
+        return generateGeneratorId(jedisKeyAnimeStarGroupId);
     }
 }

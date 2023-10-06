@@ -29,79 +29,71 @@ public class FollowFanControllerImpl implements FollowFanController {
     }
 
     @Override
-    @PostMapping("/follow/group")
-    public String addNewFollowGroup(HttpSession session, @RequestBody Map<String, String> map) {
+    @GetMapping("/follow/group/add")
+    public Result<?> addNewFollowGroup(HttpSession session, String groupName) {
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
-        return followFanService.addNewFollowGroup(map.get("groupName"), uid, userId);
+        return followFanService.addNewFollowGroup(uid, userId, groupName);
     }
 
     @Override
     @GetMapping("/follow/group")
-    public List<FollowGroup> getFollowGroup(HttpSession httpSession) {
-        Integer uid = (Integer) httpSession.getAttribute("uid");
+    public Result<?> getFollowGroup(HttpSession httpSession) {
+        Integer myUid = (Integer) httpSession.getAttribute("uid");
         String userId = (String) httpSession.getAttribute("userId");
-        return followFanService.getFollowGroup(uid, userId);
+        return followFanService.getFollowGroup(myUid, userId);
     }
 
     @Override
     @GetMapping("/follow")
-    public Result<?> getUserFollow(HttpSession session, Integer viewedUid, Integer groupId, Integer begin, Integer end) {
-        Integer uid = (Integer) session.getAttribute("uid");
+    public Result<?> getUserFollow(HttpSession session, Integer uid, Integer groupId, Integer offset, Integer row) {
+        Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
-        return followFanService.getUserFollow(uid, userId, viewedUid, groupId, begin, end);
+        return followFanService.getUserFollow(myUid, userId, uid, groupId, offset, row);
     }
 
     @Override
     @GetMapping("/fan")
-    public Result<?> getUserFan(HttpSession session, Integer viewedUid, Integer begin, Integer page) {
-        Integer uid = (Integer) session.getAttribute("uid");
+    public Result<?> getUserFan(HttpSession session, Integer uid, Integer offset, Integer row) {
+        Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
-        return followFanService.getUserFan(uid, userId, viewedUid, begin, page);
+        return followFanService.getUserFan(myUid, userId, uid, offset, row);
     }
 
     @Override
-    @GetMapping("/stat")
-    public Result<?> getUserFollowFanInfo(HttpSession session, Integer viewedUid) {
-        Integer uid = (Integer) session.getAttribute("uid");
+    @GetMapping("/count")
+    public Result<?> getUserFollowFanInfo(HttpSession session, Integer uid) {
+        Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
-        return followFanService.getUserFollowFanInfo(uid, userId, viewedUid);
+        return followFanService.getUserFollowFanInfo(myUid, userId, uid);
     }
 
     @Override
-    @GetMapping("/newFriend")
-    public Result<?> buildRelationBetweenBoth(HttpSession session, Integer uid, Integer groupId) {
-        Integer fanUid = (Integer) session.getAttribute("uid");
-        String fanUserId = (String) session.getAttribute("userId");
-        return followFanService.buildRelationBetweenBoth(uid, fanUserId, fanUid, groupId);
-    }
-
-    @Override
-    @GetMapping("/modify")
-    public void cancelBuildRelationBetweenBoth(HttpSession session, Integer uid) {
-        Integer fanUid = (Integer) session.getAttribute("uid");
-        String fanUserId = (String) session.getAttribute("userId");
-        followFanService.cancelBuildRelationBetweenBoth(uid, fanUid, fanUserId);
-    }
-
-    @Override
-    @GetMapping("/removeFan")
-    public void removeFan(HttpSession session, Integer fanUid) {
-        Integer uid = (Integer) session.getAttribute("uid");
+    @GetMapping("/friend")
+    public Result<?> buildRelationBetweenBoth(HttpSession session, Integer uid) {
+        Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
-        followFanService.removeFan(uid, userId, fanUid);
+        return followFanService.buildRelationBetweenBoth(myUid, userId, uid);
     }
 
     @Override
-    @GetMapping("/moveFollow")
-    public void moveFollowGroup(HttpSession session, Integer uid, Integer groupId) {
-        Integer fanUid = (Integer) session.getAttribute("uid");
-        String fanUserId = (String) session.getAttribute("userId");
-        followFanService.moveFollowGroup(uid, fanUid, fanUserId, groupId);
+    @GetMapping("/friend/cancel")
+    public Result<?> cancelBuildRelationBetweenBoth(HttpSession session, Integer uid) {
+        Integer myUid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        return followFanService.cancelBuildRelationBetweenBoth(myUid, userId, uid);
     }
 
     @Override
-    @GetMapping("/modifyFollowGroupName")
+    @GetMapping("/fan/remove")
+    public void removeFan(HttpSession session, Integer uid) {
+        Integer myUid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        followFanService.removeFan(myUid, userId, uid);
+    }
+
+    @Override
+    @GetMapping("/follow/group/modify")
     public void modifyFollowGroupName(HttpSession session, String groupName, Integer groupId) {
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
@@ -109,10 +101,32 @@ public class FollowFanControllerImpl implements FollowFanController {
     }
 
     @Override
-    @GetMapping("/deleteFollowGroup")
-    public void deleteFollowGroup(HttpSession session, Integer groupId) {
+    @GetMapping("/follow/group/delete")
+    public Result<?> deleteFollowGroup(HttpSession session, Integer groupId) {
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
-        followFanService.deleteFollowGroup(uid, userId, groupId);
+        return followFanService.deleteFollowGroup(uid, userId, groupId);
+    }
+
+    @Override
+    @PostMapping("/follow/copy")
+    public Result<?> copyFollow(HttpSession session,
+                                @RequestParam Integer srcGroupId,
+                                @RequestParam Integer destGroupId,
+                                @RequestParam(name = "uid") List<Integer> followerList) {
+        Integer uid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        return followFanService.copyFollow(uid, userId, srcGroupId, destGroupId, followerList);
+    }
+
+    @Override
+    @PostMapping("/follow/move")
+    public Result<?> moveFollow(HttpSession session,
+                                @RequestParam Integer srcGroupId,
+                                @RequestParam Integer destGroupId,
+                                @RequestParam(name = "uid") List<Integer> followerList) {
+        Integer uid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        return followFanService.moveFollow(uid, userId, srcGroupId, destGroupId, followerList);
     }
 }

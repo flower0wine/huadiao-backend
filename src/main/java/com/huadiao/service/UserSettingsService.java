@@ -25,6 +25,7 @@ public interface UserSettingsService {
      * @param userId 用户 id
      * @param settingsSet 设置集合
      * @return 返回更新成功提示
+     * @throws Exception 可能会抛出异常
      */
-    String modifyAccountSettings(Integer uid, String userId, Set<String> settingsSet);
+    String modifyAccountSettings(Integer uid, String userId, Set<String> settingsSet) throws Exception;
 }

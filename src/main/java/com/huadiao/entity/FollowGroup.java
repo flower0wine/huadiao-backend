@@ -21,4 +21,5 @@ public class FollowGroup {
     private String groupName;
     private Date createDate;
     private Integer count;
+    private Boolean allowOperate;
 }

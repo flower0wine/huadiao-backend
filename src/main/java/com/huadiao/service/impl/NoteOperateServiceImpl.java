@@ -34,7 +34,7 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String addNewNoteStar(Integer uid, String userId, Integer noteId, Integer authorUid) {
+    public String addNewNoteStar(Integer uid, String userId, Integer noteId, Integer authorUid, Integer groupId) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试新增笔记收藏, noteId: {}, authorUid: {}", uid, userId, noteId, authorUid);
         // 获取笔记收藏数量
         Integer starAmount = starJedisUtil.getUserStarAmount(uid);
@@ -48,7 +48,10 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
             log.debug("uid, userId 分别为 {}, {} 的用户提供的 authorUid: {}, noteId: {} 不存在", uid, userId, authorUid, noteId);
             return NOTE_NOT_EXIST;
         }
-        noteOperateMapper.insertNoteStarByUid(uid, noteId, authorUid);
+        if(groupId == null) {
+            groupId = defaultNoteStarGroupId;
+        }
+        noteOperateMapper.insertNoteStarByUid(uid, noteId, authorUid, groupId);
         log.debug("uid, userId 分别为 {}, {} 的用户新增用户 authorUid: {} 的 noteId: {} 的笔记收藏成功", uid, userId, authorUid, noteId);
         return ADD_NOTE_STAR_SUCCEED;
     }
@@ -120,7 +123,7 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
         if(rootCommentId == null) {
             log.debug("uid, userId 分别为 {}, {} 的用户尝试在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加父评论", uid, userId, authorUid, noteId);
             // 生成笔记评论唯一 id
-            long commentId = idGeneratorJedisUtil.generateCommentId();
+            long commentId = noteJedisUtil.generateCommentId();
             noteMapper.insertNoteCommentByUid(uid, noteId, authorUid, commentId, UNDISTRIBUTED_COMMENT_ID, commentContent);
             log.debug("uid, userId 分别为 {}, {} 的用户成功在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加父评论, rotCommentId: {}", uid, userId, authorUid, noteId, commentId);
 
@@ -141,7 +144,7 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
                 return Result.notExist();
             }
             // 生成子评论 id
-            long commentId = idGeneratorJedisUtil.generateCommentId();
+            long commentId = noteJedisUtil.generateCommentId();
             noteMapper.insertNoteCommentByUid(uid, noteId, authorUid, rootCommentId, commentId, commentContent);
             log.debug("uid, userId 分别为 {}, {} 的用户成功在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加子评论, rootCommentId: {}, subCommentId: {}", uid, userId, authorUid, noteId, rootCommentId, commentId);
 

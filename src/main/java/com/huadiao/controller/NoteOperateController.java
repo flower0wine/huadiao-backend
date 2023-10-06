@@ -25,9 +25,10 @@ public interface NoteOperateController extends Controller {
      * @param session session 对象
      * @param uid 作者 uid
      * @param noteId 笔记 id
+     * @param groupId 分组 id
      * @return 返回新增笔记收藏过程的错误或者成功提示
      */
-    String addNewNoteStar(HttpSession session, Integer uid, Integer noteId);
+    String addNewNoteStar(HttpSession session, Integer uid, Integer noteId, Integer groupId);
 
     /**
      * 删除笔记收藏

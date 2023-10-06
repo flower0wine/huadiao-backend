@@ -3,6 +3,7 @@ package com.huadiao.service.impl;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import com.huadiao.entity.Result;
+import com.huadiao.entity.SexEnum;
 import com.huadiao.entity.dto.userdto.*;
 import com.huadiao.mapper.*;
 import com.huadiao.service.AbstractUserInfoService;
@@ -166,7 +167,7 @@ public class UserServiceImpl extends AbstractUserService {
         // 新增花凋用户
         userMapper.insertNewHuadiaoUser(uid, userId, username, password);
         // 新增用户信息
-        userInfoMapper.insertOrUpdateUserInfoByUid(uid, userId, AbstractUserInfoService.DEFAULT_USER_CANVASES, AbstractUserInfoService.DEFAULT_USER_SEX, AbstractUserInfoService.DEFAULT_USER_BORN_DATE, AbstractUserInfoService.DEFAULT_USER_SCHOOL);
+        userInfoMapper.insertOrUpdateUserInfoByUid(uid, userId, null, SexEnum.NO_KNOWN.value, null, null);
         log.trace("新增用户信息成功 (uid: {}, userId: {})", uid, userId);
         // 新增用户个人主页
         userInfoMapper.insertUserHomepageByUid(uid);

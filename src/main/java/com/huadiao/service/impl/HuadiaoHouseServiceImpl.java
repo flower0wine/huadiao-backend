@@ -29,6 +29,15 @@ public class HuadiaoHouseServiceImpl extends AbstractHuadiaoHouseService {
     @Override
     public Result<?> getHuadiaoHouseInfo(Integer uid, String userId, Integer viewedUid) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取 uid 为 {} 的用户的番剧信息", uid, userId, viewedUid);
+        boolean me = uid.equals(viewedUid);
+        if(!me) {
+            AccountSettings accountSettings = userSettingJedisUtil.getAccountSettings(viewedUid);
+            // 如果用户选择不公开个人主页信息
+            if (!accountSettings.getPublicFanjuStatus()) {
+                log.debug("uid 为 {} 的用户不公开番剧信息", viewedUid);
+                return Result.notAllowed();
+            }
+        }
         HuadiaoHouseInfo huadiaoHouseInfo = huadiaoHouseMapper.selectHuadiaoHouseInfoByUid(viewedUid);
         if(huadiaoHouseInfo == null) {
             log.debug("uid, userId 分别为 {}, {} 的用户提供的 viewedUid: {} 不存在", uid, userId, viewedUid);
@@ -36,6 +45,10 @@ public class HuadiaoHouseServiceImpl extends AbstractHuadiaoHouseService {
         }
         List<AnimeInfo> animeList = huadiaoHouseMapper.selectAnimeInfoByUid(viewedUid);
         huadiaoHouseInfo.setAnimeList(animeList);
+        // 新增番剧馆访问记录
+        if(!uid.equals(viewedUid)) {
+            huadiaoHouseMapper.insertHuadiaoHouseVisit(uid, viewedUid);
+        }
         log.debug("uid, userId 分别为 {}, {} 的用户成功获取 uid 为 {} 的用户的番剧信息", uid, userId, viewedUid);
         return Result.ok(huadiaoHouseInfo);
     }
@@ -92,7 +105,7 @@ public class HuadiaoHouseServiceImpl extends AbstractHuadiaoHouseService {
         }
         String filename = UUID.randomUUID() + originalFilename.substring(originalFilename.lastIndexOf("."));
         // 保存文件
-        background.transferTo(new File(realPath + File.separator + filename));
+        background.transferTo(new File(imageRealPath + File.separator + filename));
         Map<String, String> map = new HashMap<>(2);
         map.put(key, filename);
         huadiaoHouseMapper.updateHuadiaoHouseInfoByUid(uid, map);
@@ -136,9 +149,9 @@ public class HuadiaoHouseServiceImpl extends AbstractHuadiaoHouseService {
         }
         String filename = UUID.randomUUID() + originalFilename.substring(originalFilename.lastIndexOf("."));
         // 保存文件
-        animeCover.transferTo(new File(realPath + File.separator + filename));
+        animeCover.transferTo(new File(imageRealPath + File.separator + filename));
         // 强制转型
-        int animeId = (int) huadiaoHouseJedisUtil.generateAnimeId();
+        int animeId = huadiaoHouseJedisUtil.generateAnimeId();
         Map<String, Object> map = new HashMap<>(2);
         map.put("animeId", animeId);
         huadiaoHouseMapper.insertHuadiaoAnimeByUid(uid, animeTitle, filename, animeId);

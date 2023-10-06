@@ -1,5 +1,6 @@
 package com.huadiao.service;
 
+import com.huadiao.entity.FollowGroup;
 import com.huadiao.entity.dto.followfan.BothRelationDto;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -14,52 +15,22 @@ import java.util.List;
 public abstract class AbstractFollowFanService extends AbstractService implements FollowFanService {
 
     /**
-     * 关注分组添加成功
-     */
-    public String FOLLOW_GROUP_ADD_SUCCEED = "followGroupAddSucceed";
-
-    /**
-     * 最大关注名称长度
-     */
-    @Value("${followFan.followGroupNameLength}")
-    public int MAX_FOLLOW_GROUP_NAME_LENGTH = 16;
-
-    /**
-     * 分组名称不能为空
-     */
-    public String NULL_FOLLOW_GROUP_NAME = "nullFollowGroupName";
-
-    /**
-     * 关注分组名称长度最长不超过 16 字符
-     */
-    public String WRONG_FOLLOW_GROUP_NAME_LENGTH = "wrongFollowGroupNameLength";
-
-    /**
-     * 不存在的关注分组 id
-     */
-    public String NO_EXIST_GROUP_ID = "noExistGroupId";
-
-    /**
-     * 建立关系成功
-     */
-    public String BUILD_RELATION_SUCCEED = "buildRelationSucceed";
-
-    /**
-     * 最大关注数量
-     */
-    @Value("${followFan.maxFollowAmount}")
-    public int MAX_FOLLOW_AMOUNT = 200;
-
-    /**
-     * 达到最大关注数量
-     */
-    public String REACH_MAX_FOLLOW_AMOUNT = "reachMaxFollowAmount";
-
-    /**
      * 关注分组最多可建立的数量
      */
-    @Value("${followFan.maxFollowGroupAmount}")
-    public int MAX_FOLLOW_GROUP_AMOUNT = 20;
+    @Value("${followFan.followGroupMaxCount}")
+    protected int followGroupMaxCount;
+
+    @Value("${followFan.followGroupNameMaxLength}")
+    protected int followGroupNameMaxLength;
+
+    @Value("${followFan.followGroupNameMinLength}")
+    protected int followGroupNameMinLength;
+
+    @Value("${followFan.defaultAllGroupId}")
+    protected int defaultAllGroupId;
+
+    @Value("${followFan.defaultFollowGroupId}")
+    protected int defaultFollowGroupId;
 
     /**
      * 达到关注分组最大数量
@@ -96,6 +67,13 @@ public abstract class AbstractFollowFanService extends AbstractService implement
             relationDto.setFollowed(false);
         }
         return relationDto;
+    }
+
+    protected FollowGroup getDefaultFollowGroup() {
+        FollowGroup followGroup = new FollowGroup();
+        followGroup.setGroupId(defaultFollowGroupId);
+        followGroup.setGroupName("默认分组");
+        return followGroup;
     }
 
 }

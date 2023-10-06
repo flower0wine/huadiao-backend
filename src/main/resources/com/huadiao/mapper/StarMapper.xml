@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huadiao.mapper.StarMapper">
+
+    <!--新增笔记收藏分组-->
+    <insert id="insertNoteStarGroup">
+        insert into huadiao_note_star_group(`uid`, `group_name`, `group_description`, `group_id`, `public`)
+        values (#{uid}, #{groupName}, #{groupDescription}, #{groupId}, #{open});
+    </insert>
+
+    <!--复制到其他分组-->
+    <insert id="insertNoteStarToOtherGroup">
+        insert into huadiao_note_star(`uid`, `note_id`, `group_id`, `author_uid`) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{uid}, #{item.noteId}, #{groupId}, #{item.authorUid})
+        </foreach>
+        on duplicate key update `status` = 1;
+    </insert>
+
+    <!--修改笔记收藏分组-->
+    <update id="updateNoteStarGroup">
+        update huadiao_note_star_group
+        set `group_name`        = #{groupName},
+            `group_description` = #{groupDescription},
+            `public`            = #{open},
+            `modify_time`       = now()
+        where `uid` = #{uid}
+          and `status`
+          and `group_id` = #{groupId};
+    </update>
+
+    <!--删除笔记收藏分组-->
+    <update id="deleteNoteStarGroup">
+        update huadiao_note_star_group
+        set `status` = 0
+        where `uid` = #{uid}
+          and `group_id` = #{groupId};
+    </update>
+
+    <!--删除笔记收藏-->
+    <update id="deleteNoteStar">
+        update huadiao_note_star
+        set `status` = 0
+        where `uid` = #{uid} and `group_id` = #{groupId}
+        <if test="list != null">
+            and
+            <foreach collection="list" item="dao" open="(" close=")" separator=" or ">
+                (`note_id` = #{dao.noteId} and `author_uid` = #{dao.authorUid})
+            </foreach>
+        </if>
+        ;
+    </update>
+
+    <!--删除某个分组下的所有笔记收藏, 将 status 设为 0-->
+    <update id="deleteNoteStarByGroupId">
+        update huadiao_note_star
+        set `status` = 0
+        where `uid` = #{uid}
+          and `group_id` = #{groupId};
+    </update>
+
+    <!--删除某个分组下的笔记收藏-->
+    <delete id="deleteNoteStarReal">
+        delete from huadiao_note_star
+        where `uid` = #{uid}
+        and `group_id` = #{groupId}
+        <if test="list != null">
+            and
+            <foreach collection="list" item="dao" open="(" close=")" separator=" or ">
+                (`note_id` = #{dao.noteId} and `author_uid` = #{dao.authorUid})
+            </foreach>
+        </if>
+        ;
+    </delete>
+
+    <resultMap id="noteStarResultMap" type="com.huadiao.entity.NoteStarInfo">
+        <result property="uid" column="author_uid"/>
+        <result property="userAvatar" column="user_avatar"/>
+        <result property="nickname" column="nickname"/>
+        <result property="userId" column="user_id"/>
+        <result property="noteId" column="note_id"/>
+        <result property="groupId" column="group_id"/>
+        <result property="noteTitle" column="note_title"/>
+        <result property="noteContent" column="note_content"/>
+        <result property="starTime" column="star_time"/>
+    </resultMap>
+    <!--查询收藏的笔记-->
+    <select id="selectNoteStarByGroupId" resultMap="noteStarResultMap">
+        select `author_uid`,
+               `user_avatar`,
+               `nickname`,
+               t1.`note_id`,
+               `user_id`,
+               t1.`star_time`,
+               `note_title`,
+               `note_content`,
+               t1.`group_id`
+        from huadiao_note_star t1
+                 left join huadiao_note_star_group t2 on t2.`uid` = `author_uid` and t2.`status`
+                 left join huadiao_homepage t3 on t3.`uid` = `author_uid`
+                 left join huadiao_user_base t4 on t4.`uid` = `author_uid`
+                 left join huadiao_user_info t5 on t5.`uid` = `author_uid`
+                 left join huadiao_note t6 on t6.`uid` = `author_uid` and t1.`note_id` = t6.`note_id`
+        where t1.`uid` = #{uid}
+          and t1.`status`
+          and t1.`id` >= (select `id`
+                          from `huadiao_note_star`
+                          where `uid` = #{uid}
+                            and `status`
+                            and `group_id` = #{groupId}
+                          order by `id`
+                          limit #{offset}, 1)
+          and t1.`group_id` = #{groupId}
+        order by `star_time` desc
+        limit #{row};
+    </select>
+
+    <resultMap id="noteStarCatalogueResultMap" type="com.huadiao.entity.NoteStarCatalogue">
+        <result property="groupName" column="group_name"/>
+        <result property="groupDescription" column="group_description"/>
+        <result property="groupId" column="group_id"/>
+        <result property="count" column="star_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyTime" column="modify_time"/>
+        <result property="open" column="public"/>
+    </resultMap>
+    <!--获取笔记收藏分组-->
+    <select id="selectNoteStarCatalogueByUid" resultMap="noteStarCatalogueResultMap">
+        select `group_name`,
+               t1.`group_id`,
+               `group_description`,
+               `create_time`,
+               `public`,
+               `modify_time`,
+               count(t2.`group_id`) as `star_count`
+        from huadiao_note_star_group t1
+                 left join huadiao_note_star t2 on t1.`group_id` = t2.`group_id` and t2.`status`
+        where t1.`uid` = #{uid}
+          and t1.`status`
+        group by `group_name`, t1.`group_id`, `group_description`, `create_time`, `public`, `modify_time`
+        order by `create_time`;
+    </select>
+
+    <!--获取某个分组的数量-->
+    <select id="selectNoteStarCatalogueByGroupId" resultType="java.lang.Integer">
+        select count(distinct `note_id`, `author_uid`) as `count`
+        from huadiao_note_star
+        where `status`
+        and `uid` = #{uid}
+        <if test="groupId != null">
+            and `group_id` = #{groupId}
+        </if>;
+    </select>
+
+</mapper>

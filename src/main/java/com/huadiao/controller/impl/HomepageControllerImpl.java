@@ -6,9 +6,13 @@ import com.huadiao.service.HomepageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -35,5 +39,21 @@ public class HomepageControllerImpl implements HomepageController {
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
         return homepageService.getHomepageInfo(uid, userId, viewedUid);
+    }
+
+    @Override
+    @PostMapping("/avatar/modify")
+    public Result<?> updateUserAvatar(HttpSession session, MultipartFile userAvatar) throws IOException {
+        Integer uid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        return homepageService.updateUserAvatar(uid, userId, userAvatar);
+    }
+
+    @Override
+    @PostMapping("/background/modify")
+    public Result<?> updateHomepageBackground(HttpSession session, MultipartFile background) throws IOException {
+        Integer uid = (Integer) session.getAttribute("uid");
+        String userId = (String) session.getAttribute("userId");
+        return homepageService.updateHomepageBackground(uid, userId, background);
     }
 }

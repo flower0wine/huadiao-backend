@@ -15,42 +15,7 @@ import java.util.regex.Pattern;
  * @projectName huadiao-user-back
  * @description
  */
-public abstract class AbstractUserInfoService implements UserInfoService {
-
-    /**
-     * 默认的用户个人简介
-     */
-    public static String DEFAULT_USER_CANVASES = "这个人十分神秘...";
-
-    /**
-     * 默认的用户性别, 为未知, 0(未知), 1(男性), 2(女性)
-     */
-    public static String DEFAULT_USER_SEX = "0";
-
-    /**
-     * 男性
-     */
-    public static String SEX_MAN = "1";
-
-    /**
-     * 女性
-     */
-    public static String SEX_WOMEN = "2";
-
-    /**
-     * 默认的出生日期
-     */
-    public static String DEFAULT_USER_BORN_DATE = "";
-
-    /**
-     * 默认的学校
-     */
-    public static String DEFAULT_USER_SCHOOL = "";
-
-    /**
-     * 错误的日期格式
-     */
-    public static String WRONG_BORN_DATE = "wrongBornDate";
+public abstract class AbstractUserInfoService extends AbstractService implements UserInfoService {
 
     /**
      * 昵称不能为空或只包含空格

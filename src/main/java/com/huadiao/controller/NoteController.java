@@ -45,15 +45,12 @@ public interface NoteController extends Controller {
 
     /**
      * 获取单个笔记
-     * @param request 请求对象
-     * @param response 响应对象
      * @param session session 对象
      * @param uid 作者 uid
      * @param noteId 笔记唯一标识
      * @return 返回 map 集合, 包含查找到的笔记, 是否是本人
-     * @throws Exception 可能抛出异常
      */
-    Result<?> getSingleNote(HttpServletRequest request, HttpServletResponse response, HttpSession session, Integer uid, Integer noteId) throws Exception;
+    Result<?> getSingleNote(HttpSession session, Integer uid, Integer noteId);
 
     /**
      * 获取单个笔记, 在编辑笔记时使用该接口

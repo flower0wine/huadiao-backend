@@ -21,17 +21,17 @@ public interface FollowFanController extends Controller {
     /**
      * 新增用户关注分组
      * @param session session 对象
-     * @param map 请求体
+     * @param groupName 组名
      * @return 返回增加成功与否提示信息
      */
-    String addNewFollowGroup(HttpSession session, Map<String, String> map);
+    Result<?> addNewFollowGroup(HttpSession session, String groupName);
 
     /**
      * 获取用户关注分组
      * @param httpSession session 对象
      * @return 返回用户关注分组
      */
-    List<FollowGroup> getFollowGroup(HttpSession httpSession);
+    Result<?> getFollowGroup(HttpSession httpSession);
 
     /**
      * 获取指定用户的关注
@@ -47,12 +47,12 @@ public interface FollowFanController extends Controller {
     /**
      * 获取指定用户的粉丝
      * @param session session 对象
-     * @param viewedUid 被访问的用户 uid
-     * @param begin 开始分页
-     * @param page 每页数据条数
+     * @param uid 被访问的用户 uid
+     * @param offset 偏移量
+     * @param row 行数
      * @return 返回粉丝信息
      */
-    Result<?> getUserFan(HttpSession session, Integer viewedUid, Integer begin, Integer page);
+    Result<?> getUserFan(HttpSession session, Integer uid, Integer offset, Integer row);
 
     /**
      * 获取指定 uid 的关注和粉丝信息, 关注数量和粉丝数量
@@ -66,32 +66,24 @@ public interface FollowFanController extends Controller {
      * 尝试建立两人的关系
      * @param session session 对象
      * @param uid 用户 uid
-     * @param groupId 关注分组 id
      * @return 返回建立关系成功与否提示
      */
-    Result<?> buildRelationBetweenBoth(HttpSession session, Integer uid, Integer groupId);
+    Result<?> buildRelationBetweenBoth(HttpSession session, Integer uid);
 
     /**
      * 解除两人的关系
      * @param session session 对象
      * @param uid 用户 uid, 被关注的
+     * @return 返回解除关系成功与否提示
      */
-    void cancelBuildRelationBetweenBoth(HttpSession session, Integer uid);
+    Result<?> cancelBuildRelationBetweenBoth(HttpSession session, Integer uid);
 
     /**
      * 移除粉丝, 删除粉丝是被关注的人做的
      * @param session session 对象
-     * @param fanUid 关注者
+     * @param uid 关注者
      */
-    void removeFan(HttpSession session, Integer fanUid);
-
-    /**
-     * 修改关注的人的分组
-     * @param session session 对象
-     * @param uid 被关注者
-     * @param groupId 分组 id
-     */
-    void moveFollowGroup(HttpSession session, Integer uid, Integer groupId);
+    void removeFan(HttpSession session, Integer uid);
 
     /**
      * 修改关注分组名称
@@ -105,6 +97,27 @@ public interface FollowFanController extends Controller {
      * 删除关注分组
      * @param session session 对象
      * @param groupId 关注分组 id
+     * @return 返回删除分组成功与否提示
      */
-    void deleteFollowGroup(HttpSession session, Integer groupId);
+    Result<?> deleteFollowGroup(HttpSession session, Integer groupId);
+
+    /**
+     * 复制关注到其他分组
+     * @param session session 对象
+     * @param srcGroupId 原关注分组 id
+     * @param destGroupId 目标关注分组 id
+     * @param followerList 被关注的用户 uid
+     * @return 返回复制过程中的提示
+     */
+    Result<?> copyFollow(HttpSession session, Integer srcGroupId, Integer destGroupId, List<Integer> followerList);
+
+    /**
+     * 复制关注到其他分组
+     * @param session session 对象
+     * @param srcGroupId 原关注分组 id
+     * @param destGroupId 目标关注分组 id
+     * @param followerList 被关注的用户 uid
+     * @return 返回移动过程中的提示
+     */
+    Result<?> moveFollow(HttpSession session, Integer srcGroupId, Integer destGroupId, List<Integer> followerList);
 }

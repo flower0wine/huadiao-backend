@@ -31,6 +31,10 @@ public class Result<T> {
         this.data = data;
     }
 
+    public boolean succeed() {
+        return ResultCodeEnum.SUCCEED.getCode() == this.getCode();
+    }
+
     public static <T> Result<T> ok(T data) {
         return new Result<>(ResultCodeEnum.SUCCEED, data);
     }

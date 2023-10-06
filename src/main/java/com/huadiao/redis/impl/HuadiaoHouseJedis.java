@@ -24,16 +24,16 @@ public class HuadiaoHouseJedis extends AbstractJedis implements HuadiaoHouseJedi
     private String jedisKeyCardBorderImage = "cardBorderImage";
 
     public HuadiaoHouseJedis(JedisPool jedisPool) {
-        this.initialCommentIdGenerator(jedisPool, jedisKeyAnimeId);
+        this.initialIdGenerator(jedisPool, jedisKeyAnimeId);
     }
 
     @Override
-    public long generateAnimeId() {
+    public int generateAnimeId() {
         return generateGeneratorId(jedisKeyAnimeId);
     }
 
     @Override
-    public long getAnimeId() {
+    public int getAnimeId() {
         return getGeneratorId(jedisKeyAnimeId);
     }
 

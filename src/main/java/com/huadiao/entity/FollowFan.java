@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * @author flowerwine
  * @version 1.1
@@ -21,6 +23,23 @@ public class FollowFan {
     private String nickname;
     private String userAvatar;
     private String canvases;
-    private Integer groupId;
     private Boolean friend;
+    private Date followTime;
+
+    @Override
+    public int hashCode() {
+        return uid.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) {
+            return false;
+        }
+        if(obj instanceof FollowFan) {
+            FollowFan followFan = (FollowFan) obj;
+            return this.uid.equals(followFan.uid);
+        }
+        return false;
+    }
 }

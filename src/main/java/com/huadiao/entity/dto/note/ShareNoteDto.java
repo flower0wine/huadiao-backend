@@ -21,7 +21,8 @@ public class ShareNoteDto {
     private String noteTitle;
     private String noteContent;
     private Date publishTime;
-    private Integer viewNumber;
-    private Integer starNumber;
-    private Integer likeNumber;
+    private Integer viewCount;
+    private Integer starCount;
+    private Integer likeCount;
+    private Integer commentCount;
 }

@@ -15,22 +15,16 @@ import redis.clients.jedis.JedisPool;
 @Component
 public class FollowFanJedis extends AbstractJedis implements FollowFanJedisUtil {
 
-    /**
-     * 评论 id, redis key
-     */
-    private String jedisKeyCommentId = "commentId";
+
+
+    private String jedisKeyFollowGroupId = "followGroupId";
 
     public FollowFanJedis(JedisPool jedisPool) {
-        this.initialCommentIdGenerator(jedisPool, jedisKeyCommentId);
+        this.initialIdGenerator(jedisPool, jedisKeyFollowGroupId);
     }
 
     @Override
-    public long generateCommentId() {
-        return generateGeneratorId(jedisKeyCommentId);
-    }
-
-    @Override
-    public long getCommentId() {
-        return getGeneratorId(jedisKeyCommentId);
+    public int generateFollowGroupId() {
+        return super.generateGeneratorId(jedisKeyFollowGroupId);
     }
 }

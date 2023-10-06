@@ -12,4 +12,19 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class NoteJedis extends AbstractJedis implements NoteJedisUtil {
+
+    /**
+     * 评论 id, redis key
+     */
+    private String jedisKeyCommentId = "commentId";
+
+    @Override
+    public int generateCommentId() {
+        return generateGeneratorId(jedisKeyCommentId);
+    }
+
+    @Override
+    public int getCommentId() {
+        return getGeneratorId(jedisKeyCommentId);
+    }
 }

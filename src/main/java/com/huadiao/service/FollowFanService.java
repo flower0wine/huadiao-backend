@@ -27,26 +27,21 @@ public interface FollowFanService {
     int FAN_INDEX = 1;
 
     /**
-     * 用户自定义的关注分组最少为 10, 规定前 10 个是官方定义的关注分组, 用户不可对其进行操作
-     */
-    int FOLLOW_GROUP_ORIGIN_ID = 10;
-
-    /**
      * 新增用户关注分组
      * @param groupName 分组名称
      * @param uid 用户 uid
      * @param userId 用户 id
      * @return 返回增加成功与否提示信息
      */
-    String addNewFollowGroup(String groupName, Integer uid, String userId);
+    Result<?> addNewFollowGroup(Integer uid, String userId, String groupName);
 
     /**
      * 获取用户关注分组
-     * @param uid 用户 uid, 访问者
+     * @param uid 用户 uid
      * @param userId 用户 id
      * @return 返回关注分组
      */
-    List<FollowGroup> getFollowGroup(Integer uid, String userId);
+    Result<?> getFollowGroup(Integer uid, String userId);
 
     /**
      * 根据 viewedUid 获取用户关注信息
@@ -54,11 +49,11 @@ public interface FollowFanService {
      * @param userId 用户 id
      * @param viewedUid 被访问者
      * @param groupId 关注分组 id
-     * @param begin 开始分页
-     * @param page 查询页数
+     * @param offset 偏移量
+     * @param row 行数
      * @return 返回被访问者关注信息
      */
-    Result<?> getUserFollow(Integer uid, String userId, Integer viewedUid, Integer groupId, Integer begin, Integer page);
+    Result<?> getUserFollow(Integer uid, String userId, Integer viewedUid, Integer groupId, Integer offset, Integer row);
 
     /**
      * 根据 viewedUid 获取用户粉丝信息
@@ -82,21 +77,21 @@ public interface FollowFanService {
 
     /**
      * 建立用户关系
-     * @param uid 被关注者
-     * @param fanUserId 用户 id
-     * @param fanUid 关注者
-     * @param groupId 分组 id, 分组 id 为 null 则分配到 默认分组
+     * @param uid 关注者
+     * @param userId 用户 id
+     * @param followUid 被关注者 uid
      * @return 返回添加成功或失败提示
      */
-    Result<?> buildRelationBetweenBoth(Integer uid, String fanUserId, Integer fanUid, Integer groupId);
+    Result<?> buildRelationBetweenBoth(Integer uid, String userId, Integer followUid);
 
     /**
      * 解除两人的关系
-     * @param uid 被关注折
-     * @param fanUid 关注者
-     * @param fanUserId 用户 id
+     * @param uid 关注者
+     * @param userId 用户 id
+     * @param followUid 被关注者 uid
+     * @return 返回删除成功或失败提示
      */
-    void cancelBuildRelationBetweenBoth(Integer uid, Integer fanUid, String fanUserId);
+    Result<?> cancelBuildRelationBetweenBoth(Integer uid, String userId, Integer followUid);
 
     /**
      * 移除粉丝
@@ -105,15 +100,6 @@ public interface FollowFanService {
      * @param fanUid 关注者 uid
      */
     void removeFan(Integer uid, String userId, Integer fanUid);
-
-    /**
-     * 修改关注的人的分组
-     * @param uid 被关注者
-     * @param fanUid 关注者
-     * @param fanUserId 用户 id
-     * @param groupId 分组 id
-     */
-    void moveFollowGroup(Integer uid, Integer fanUid, String fanUserId, Integer groupId);
 
     /**
      * 修改关注分组名称
@@ -129,6 +115,29 @@ public interface FollowFanService {
      * @param uid 用户 uid
      * @param userId 用户 id
      * @param groupId 关注分组 id
+     * @return 返回删除成功或失败提示
      */
-    void deleteFollowGroup(Integer uid, String userId, Integer groupId);
+    Result<?> deleteFollowGroup(Integer uid, String userId, Integer groupId);
+
+    /**
+     * 复制关注到其他分组
+     * @param uid 用户 uid
+     * @param userId 用户 id
+     * @param srcGroupId 原关注分组 id
+     * @param destGroupId 目标关注分组 id
+     * @param followerList 被关注的用户 uid
+     * @return 返回复制过程中的提示
+     */
+    Result<?> copyFollow(Integer uid, String userId, Integer srcGroupId, Integer destGroupId, List<Integer> followerList);
+
+    /**
+     * 复制关注到其他分组
+     * @param uid 用户 uid
+     * @param userId 用户 id
+     * @param srcGroupId 原关注分组 id
+     * @param destGroupId 目标关注分组 id
+     * @param followerList 被关注的用户 uid
+     * @return 返回移动过程中的提示
+     */
+    Result<?> moveFollow(Integer uid, String userId, Integer srcGroupId, Integer destGroupId, List<Integer> followerList);
 }

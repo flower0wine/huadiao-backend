@@ -71,10 +71,10 @@ public class NoteControllerImpl implements NoteController {
 
     @Override
     @GetMapping("/search")
-    public Result<?> getSingleNote(HttpServletRequest request, HttpServletResponse response, HttpSession session, Integer uid, Integer noteId) throws Exception {
+    public Result<?> getSingleNote(HttpSession session, Integer uid, Integer noteId) {
         Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
-        return noteService.getSingleNote(request, response, myUid, userId, uid, noteId);
+        return noteService.getSingleNote(myUid, userId, uid, noteId);
     }
 
     @Override

@@ -1,12 +1,26 @@
 package com.huadiao.service;
 
+import org.springframework.beans.factory.annotation.Value;
+
 /**
  * @author flowerwine
  * @version 1.1
  * @projectName huadiao-user-back
  * @description
  */
-public abstract class AbstractNoteOperateService extends AbstractNoteHandleService {
+public abstract class AbstractNoteOperateService extends AbstractService implements NoteOperateService {
+    /**
+     * 检查评论 id 是否符合要求, 要求评论 id 大于 0 并且评论 id 小于等于 redis 中保存的评论 id
+     * @param commentId 评论 id
+     * @return 返回检查结果
+     */
+    protected boolean checkCommentId(Long commentId) {
+        long jedisCommentId = noteJedisUtil.getCommentId();
+        return commentId > 0 && commentId <= jedisCommentId;
+    }
+
+    @Value("${star.defaultNoteStarGroupId}")
+    protected int defaultNoteStarGroupId;
 
     /**
      * 最大收藏数量

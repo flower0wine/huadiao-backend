@@ -24,4 +24,5 @@ public class UserInfoDto {
     private String school;
     private String bornDate;
     private String nickname;
+    private String userId;
 }

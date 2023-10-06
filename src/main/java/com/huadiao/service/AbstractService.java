@@ -2,6 +2,7 @@ package com.huadiao.service;
 
 import com.huadiao.redis.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,10 +31,22 @@ public abstract class AbstractService implements Service {
     protected StarJedisUtil starJedisUtil;
 
     @Autowired
-    protected FollowFanJedisUtil idGeneratorJedisUtil;
+    protected FollowFanJedisUtil followFanJedisUtil;
 
     @Autowired
     protected HuadiaoHouseJedisUtil huadiaoHouseJedisUtil;
+
+    @Autowired
+    protected NoteJedisUtil noteJedisUtil;
+
+    @Value("${huadiao.defaultOffset}")
+    protected int defaultOffset;
+
+    @Value("${huadiao.defaultRow}")
+    protected int defaultRow;
+
+    @Value("${userInfo.defaultCanvases}")
+    protected String defaultCanvases;
 
     /**
      * 匹配设置字段, 要求全部为英文字母
@@ -44,12 +57,13 @@ public abstract class AbstractService implements Service {
 
     /**
      * 字段格式化, 例如: exampleExample --> example_example
+     *
      * @param field 字段
      * @return 转化后的字段
      */
     protected String fieldFormat(String field) {
         String settingReplaceRegex = "([a-z])([A-Z])";
         String replace = "$1_$2";
-        return  field.replaceAll(settingReplaceRegex, replace).toLowerCase();
+        return field.replaceAll(settingReplaceRegex, replace).toLowerCase();
     }
 }

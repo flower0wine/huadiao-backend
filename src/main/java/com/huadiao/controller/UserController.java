@@ -67,7 +67,7 @@ public interface UserController extends Controller {
      * @return 返回错误提示信息, 如日期错误返回 wrongBornDate
      * @throws Exception 可能抛出异常
      */
-    String insertOrUpdateUserInfo(Map<String, String> map, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception;
+    Result<?> insertOrUpdateUserInfo(Map<String, String> map, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
     /**
      * 获取用户信息
@@ -76,7 +76,7 @@ public interface UserController extends Controller {
      * @param session session 对象
      * @return 返回用户详细信息
      */
-    UserInfoDto getUserInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session);
+    Result<?> getUserInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session);
 
     /**
      * 获取用户消息设置
@@ -97,8 +97,9 @@ public interface UserController extends Controller {
      * @param request 请求对象
      * @param settingMap 设置集合
      * @return 返回更新成功提示信息
+     * @throws Exception 可能会抛出异常
      */
-    String modifyUserSettings(HttpServletRequest request, Map<String, String> settingMap);
+    String modifyUserSettings(HttpServletRequest request, Map<String, String> settingMap) throws Exception;
 
     /**
      * 获取可共享用户信息

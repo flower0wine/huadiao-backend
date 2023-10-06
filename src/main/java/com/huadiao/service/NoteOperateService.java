@@ -15,9 +15,10 @@ public interface NoteOperateService {
      * @param userId 用户 id
      * @param noteId 笔记 id
      * @param authorUid 作者 uid
+     * @param groupId 分组 id
      * @return 返回新增过程中错误或者成功提示
      */
-    String addNewNoteStar(Integer uid, String userId, Integer noteId, Integer authorUid);
+    String addNewNoteStar(Integer uid, String userId, Integer noteId, Integer authorUid, Integer groupId);
 
     /**
      * 删除笔记收藏

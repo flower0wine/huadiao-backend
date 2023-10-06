@@ -45,6 +45,13 @@ public interface HuadiaoHouseMapper {
                                  @Param("animeId") Integer animeId);
 
     /**
+     * 新增番剧馆访问记录
+     * @param uid 访问者 uid
+     * @param viewedUid 被访问者 uid
+     */
+    void insertHuadiaoHouseVisit(@Param("uid") Integer uid, @Param("viewedUid") Integer viewedUid);
+
+    /**
      * 根据用户 uid 获取番剧页面信息
      * @param uid 用户 uid
      * @return 返回番剧页面信息
@@ -63,6 +70,13 @@ public interface HuadiaoHouseMapper {
      * @return 返回番剧信息
      */
     List<AnimeInfo> selectAnimeInfoByUid(@Param("uid") Integer uid);
+
+    /**
+     * 获取用户番剧总数
+     * @param uid 用户 uid
+     * @return 番剧总数
+     */
+    Integer selectAnimeCountByUid(@Param("uid") Integer uid);
 
     /**
      * 修改番剧页面信息

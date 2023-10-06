@@ -16,10 +16,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author flowerwine
@@ -76,9 +73,9 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @PostMapping("/userInfo")
-    public String insertOrUpdateUserInfo(@RequestBody Map<String, String> map, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public Result<?> insertOrUpdateUserInfo(@RequestBody Map<String, String> map, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Integer uid = (Integer) session.getAttribute("uid");
-        String bornDate = map.get("bornDate");
+        Date bornDate = new Date(Long.parseLong(map.get("bornDate")));
         String sex = map.get("sex");
         String school = map.get("school");
         String canvases = map.get("canvases");
@@ -89,10 +86,10 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/userInfo")
-    public UserInfoDto getUserInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public Result<?> getUserInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
-        return userInfoService.getUserInfo(uid, userId);
+        return userInfoService.getMineInfo(uid, userId);
     }
 
     @Override
@@ -112,7 +109,7 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @PostMapping("/accountSettings")
-    public String modifyUserSettings(HttpServletRequest request, @RequestBody Map<String, String> settingMap) {
+    public String modifyUserSettings(HttpServletRequest request, @RequestBody Map<String, String> settingMap) throws Exception {
         HttpSession session = request.getSession();
         Integer uid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");

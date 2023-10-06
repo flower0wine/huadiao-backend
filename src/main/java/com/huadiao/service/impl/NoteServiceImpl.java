@@ -39,14 +39,16 @@ public class NoteServiceImpl extends AbstractNoteService {
     private UserSettingsMapper userSettingsMapper;
     private FollowFanMapper followFanMapper;
     private NoteOperateMapper noteOperateMapper;
+    private HistoryMapper historyMapper;
 
     @Autowired
-    public NoteServiceImpl(UserMapper userMapper, NoteMapper noteMapper, UserSettingsMapper userSettingsMapper, FollowFanMapper followFanMapper, NoteOperateMapper noteOperateMapper) {
+    public NoteServiceImpl(UserMapper userMapper, NoteMapper noteMapper, UserSettingsMapper userSettingsMapper, FollowFanMapper followFanMapper, NoteOperateMapper noteOperateMapper, HistoryMapper historyMapper) {
         this.userMapper = userMapper;
         this.noteMapper = noteMapper;
         this.userSettingsMapper = userSettingsMapper;
         this.followFanMapper = followFanMapper;
         this.noteOperateMapper = noteOperateMapper;
+        this.historyMapper = historyMapper;
     }
 
     @Override
@@ -68,7 +70,7 @@ public class NoteServiceImpl extends AbstractNoteService {
     }
 
     @Override
-    public Result<?> getSingleNote(HttpServletRequest request, HttpServletResponse response, Integer uid, String userId, Integer authorUid, Integer noteId) throws Exception {
+    public Result<?> getSingleNote(Integer uid, String userId, Integer authorUid, Integer noteId) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取 uid 为 {} 的 noteId 为 {} 的笔记", uid, userId, authorUid, noteId);
 
         // 检查用户提供的 authorUid 和 笔记 id 是否存在
@@ -101,8 +103,6 @@ public class NoteServiceImpl extends AbstractNoteService {
         noteRelationDto.setMyLike(uid.equals(noteMapper.selectMyLikeWithNote(uid, noteId, authorUid)));
         noteRelationDto.setMyUnlike(uid.equals(noteMapper.selectMyUnlikeWithNote(uid, noteId, authorUid)));
         noteRelationDto.setMyStar(uid.equals(noteMapper.selectMyStarWithNote(uid, noteId, authorUid)));
-        // 获取评论数
-        Integer countComment = noteMapper.countAllNoteCommentByUidNoteId(noteId, authorUid);
         // 新增笔记浏览记录, 一个人一条浏览记录, 不包含作者本身
         if(!uid.equals(authorUid)) {
             addNewNoteView(uid, userId, noteId, authorUid);
@@ -112,10 +112,10 @@ public class NoteServiceImpl extends AbstractNoteService {
         Map<String, Object> map = new HashMap<>(16);
         map.put("noteTitle", shareNoteDto.getNoteTitle());
         map.put("noteContent", shareNoteDto.getNoteContent());
-        map.put("viewNumber", shareNoteDto.getViewNumber());
-        map.put("likeNumber", shareNoteDto.getLikeNumber());
-        map.put("starNumber", shareNoteDto.getStarNumber());
-        map.put("commentNumber", countComment);
+        map.put("viewCount", shareNoteDto.getViewCount());
+        map.put("likeCount", shareNoteDto.getLikeCount());
+        map.put("starCount", shareNoteDto.getStarCount());
+        map.put("commentCount", shareNoteDto.getCommentCount());
         map.put("publishTime", shareNoteDto.getPublishTime());
         map.put("authorInfo", authorInfo);
         map.put("authorAndMeRelation", relation);
@@ -142,12 +142,12 @@ public class NoteServiceImpl extends AbstractNoteService {
                     commentDto.setLikeNumber(noteComment.getLikeNumber());
                     commentDto.setNickname(noteComment.getNickname());
                     commentDto.setUid(noteComment.getUid());
+                    commentDto.setUserId(noteComment.getUserId());
                     commentDto.setUserAvatar(noteComment.getUserAvatar());
                     commentDto.setCommentDate(noteComment.getCommentDate());
                 }
                 return noteComment.getCommentId() != 0;
             }).collect(Collectors.toList());
-            System.out.println(collect);
             commentDto.setCommentList(collect);
         });
         log.debug("uid, userId 分别为 {}, {} 的用户成功获取用户 uid 为 {} 的笔记 noteId 为 {} 的评论, 获取页码为 {}, 指定获取行数为 {}, 实际获取行数为 {}", uid, userId, authorUid, noteId, offset, row, noteCommentDtoList.size());
@@ -160,7 +160,7 @@ public class NoteServiceImpl extends AbstractNoteService {
     @Transactional(rollbackFor = Exception.class)
     public void addNewNoteView(Integer uid, String userId, Integer noteId, Integer authorUid) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试新增对用户 uid 为 {} 的笔记 noteId 为 {} 的访问记录", uid, userId, authorUid, noteId);
-        noteOperateMapper.insertNoteViewByUid(uid, noteId, authorUid);
+        historyMapper.insertNoteViewByUid(uid, noteId, authorUid);
         log.debug("uid, userId 分别为 {}, {} 的用户成功新增对用户 uid 为 {} 的笔记 noteId 为 {} 的访问记录", uid, userId, authorUid, noteId);
     }
 

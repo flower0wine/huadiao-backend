@@ -4,13 +4,31 @@
 
     <!--添加访问记录-->
     <insert id="insertVisitRecordByUid">
-        insert into huadiao_homepage_visit(`uid`, `viewed_uid`, `visit_time`)
-        values (#{uid}, #{viewedUid}, now());
+        insert into huadiao_homepage_visit(`uid`, `viewed_uid`)
+        values (#{uid}, #{viewedUid})
+        on duplicate key update `visit_time` = now(),
+                                `status`     = 1;
     </insert>
+
+    <!--修改用户头像-->
+    <update id="updateUserAvatarByUid">
+        update huadiao_homepage
+        set `user_avatar`        = #{userAvatar},
+            `avatar_change_date` = now()
+        where `uid` = #{uid};
+    </update>
+
+    <!--修改个人主页背景-->
+    <update id="updateHomepageBackgroundByUid">
+        update huadiao_homepage
+        set `homepage_background`    = #{homepageBackground},
+            `background_change_date` = now()
+        where `uid` = #{uid};
+    </update>
 
     <resultMap id="homepageInfoResultMap" type="com.huadiao.entity.HomepageInfo">
         <result property="userAvatar" column="user_avatar"/>
-        <result property="pageBackground" column="page_background"/>
+        <result property="pageBackground" column="homepage_background"/>
         <result property="visitCount" column="visit_count"/>
         <result property="uid" column="uid"/>
     </resultMap>

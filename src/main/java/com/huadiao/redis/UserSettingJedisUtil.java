@@ -2,6 +2,8 @@ package com.huadiao.redis;
 
 import com.huadiao.entity.AccountSettings;
 
+import java.util.Set;
+
 /**
  * redis 用户设置接口类
  * @author flowerwine
@@ -18,7 +20,9 @@ public interface UserSettingJedisUtil {
     /**
      * 设置用户设置
      * @param uid 用户 uid
-     * @param accountSettings 用户设置
+     * @param settingsArr 用户设置, public_xxx 格式
+     * @param settingsSet 用户设置, publicXxx 格式
+     * @throws Exception 可能会抛出异常
      */
-    void setAccountSettings(Integer uid, AccountSettings accountSettings);
+    void setAccountSettings(Integer uid, String[] settingsArr, Set<String> settingsSet) throws Exception;
 }

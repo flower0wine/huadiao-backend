@@ -37,10 +37,10 @@ public class NoteOperateControllerImpl implements NoteOperateController {
 
     @Override
     @GetMapping("/star/new")
-    public String addNewNoteStar(HttpSession session, Integer uid, Integer noteId) {
+    public String addNewNoteStar(HttpSession session, Integer uid, Integer noteId, Integer groupId) {
         Integer myUid = (Integer) session.getAttribute("uid");
         String userId = (String) session.getAttribute("userId");
-        return noteOperateService.addNewNoteStar(myUid, userId, noteId, uid);
+        return noteOperateService.addNewNoteStar(myUid, userId, noteId, uid, groupId);
     }
 
     @Override

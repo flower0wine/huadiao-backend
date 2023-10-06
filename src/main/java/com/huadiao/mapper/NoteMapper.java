@@ -1,5 +1,6 @@
 package com.huadiao.mapper;
 
+import com.huadiao.entity.NoteHistory;
 import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.NoteRelationDto;
 import com.huadiao.entity.dto.note.ShareNoteDto;
@@ -184,5 +185,19 @@ public interface NoteMapper {
      */
     void deleteNoteCommentByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
                                 @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId);
+
+    /**
+     * 获取用户的所有笔记收藏数量
+     * @param uid 用户 uid
+     * @return 返回笔记收藏总数
+     */
+    Integer selectAllNoteStarCountByUid(@Param("uid") Integer uid);
+
+    /**
+     * 获取用户所有的笔记被点赞的数量
+     * @param uid 用户 uid
+     * @return 返回所有笔记点赞总数
+     */
+    Integer selectAllNoteLikeCountByUid(@Param("uid") Integer uid);
 
 }
