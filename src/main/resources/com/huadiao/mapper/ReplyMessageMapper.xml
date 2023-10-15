@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huadiao.mapper.ReplyMessageMapper">
+
+    <!--删除回复我的笔记评论-->
+    <update id="deleteReplyNoteMessage">
+        update huadiao_note_comment
+        set `message_status` = 0
+        where `uid` = #{uid}
+          and `replied_uid` = #{repliedUid}
+          and `note_id` = #{noteId}
+          and `root_comment_id` = #{rootCommentId}
+          and `sub_comment_id` = #{subCommentId};
+    </update>
+
+    <resultMap id="replyMessageResultMap" type="com.huadiao.entity.message.reply.ReplyComment">
+        <result property="uid" column="uid"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="noteId" column="note_id"/>
+        <result property="noteTitle" column="note_title"/>
+        <result property="avatar" column="user_avatar"/>
+        <result property="rootCommentId" column="root_comment_id"/>
+        <result property="subCommentId" column="sub_comment_id"/>
+        <result property="commentContent" column="comment_content"/>
+        <result property="authorUid" column="author_uid"/>
+        <result property="time" column="comment_time"/>
+    </resultMap>
+    <!--回复我的评论的消息-->
+    <select id="selectReplyCommentMessage" resultMap="replyMessageResultMap">
+        select t1.`uid`,
+               `user_id`,
+               `user_avatar`,
+               `nickname`,
+               `root_comment_id`,
+               `sub_comment_id`,
+               t1.`note_id`,
+               t1.`author_uid`,
+               `comment_content`,
+               `comment_time`
+        from huadiao_note_comment t1
+                 left join huadiao_user_base t2 on t2.`uid` = t1.`uid`
+                 left join huadiao_user_info t3 on t3.`uid` = t1.`uid`
+                 left join huadiao_homepage t4 on t4.`uid` = t1.`uid`
+                 left join huadiao_note t5 on t5.`uid` = `author_uid` and t5.`note_id` = t1.`note_id` and t5.`status`
+        where `replied_uid` = #{uid}
+          and t1.`status`
+          and t1.`message_status`
+          and t1.`id` >=
+              (select `id`
+               from huadiao_note_comment
+               where `replied_uid` = #{uid}
+                 and `status`
+                 and `message_status`
+               limit #{offset}, 1)
+        order by `comment_time` desc
+        limit #{row};
+    </select>
+</mapper>

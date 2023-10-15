@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huadiao.mapper.SystemMessageMapper">
+
+    <!--新增系统消息-->
+    <insert id="insertSystemMessage">
+        insert into huadiao_system_message(`message_id`, `message_title`, `message_content`, `form`, `admin_id`)
+        values (#{messageId}, #{messageTitle}, #{messageContent}, #{form}, #{adminId});
+    </insert>
+
+    <!--删除消息-->
+    <delete id="deleteSystemMessage">
+        delete
+        from huadiao_system_message
+        where `message_id` = #{messageId};
+    </delete>
+
+    <resultMap id="systemMessageResultMap" type="com.huadiao.entity.message.system.SystemMessage">
+        <result property="messageId" column="message_id"/>
+        <result property="messageTitle" column="message_title"/>
+        <result property="messageContent" column="message_content"/>
+        <result property="form" column="form"/>
+        <result property="sendTime" column="send_time"/>
+    </resultMap>
+    <!--获取系统消息-->
+    <select id="selectSystemMessage" resultMap="systemMessageResultMap">
+        select `message_id`, `message_content`, `message_title`, `send_time`, `form`
+        from huadiao_system_message
+        where `id` >= (select `id` from huadiao_system_message limit #{offset}, 1)
+        limit #{row};
+    </select>
+</mapper>

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
@@ -50,7 +51,7 @@ public class UserServiceImpl extends AbstractUserService {
         UserAbstractDto userAbstractDto = userInfoJedisUtil.getUserInfoByUid(uid);
         // 用户已登录
         userAbstractDto.setLogin(USER_LOGIN_STATUS);
-        log.info("用户具有登录状态, uid 为 {} 的用户获取了自己在花凋首页的相关信息", uid);
+        log.debug("uid 为 {} 的用户已登录, 并获取了导航栏信息", uid);
         return userAbstractDto;
     }
 
@@ -91,14 +92,8 @@ public class UserServiceImpl extends AbstractUserService {
     }
 
     @Override
-    public void logoutHuadiao(Cookie cookie, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Object uid = session.getAttribute("uid");
-        Object userId = session.getAttribute("userId");
-        Object nickname = session.getAttribute("nickname");
+    public void logoutHuadiao(Cookie cookie, Integer uid, String userId, String nickname) {
         log.info("uid 为 {}, nickname 为 {}, userId 为 {} 的用户尝试退出登录", uid, nickname, userId);
-        // 销毁 session
-        session.invalidate();
         // 删除 cookie
         cookie.setMaxAge(0);
         log.info("uid 为 {}, nickname 为 {}, userId 为 {} 的用户退出登录成功", uid, nickname, userId);

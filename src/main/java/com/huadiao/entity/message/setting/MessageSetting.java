@@ -1,4 +1,4 @@
-package com.huadiao.entity.dto.accountsettings;
+package com.huadiao.entity.message.setting;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,19 +7,15 @@ import lombok.ToString;
 
 /**
  * @author flowerwine
- * @version 1.1
- * @projectName huadiao-user-back
- * @description
+ * @date 2023 年 10 月 07 日
  */
-@Getter
 @Setter
+@Getter
 @ToString
 @NoArgsConstructor
-public class MessageSettingsDto {
-    /**
-     * 消息设置
-     */
+public class MessageSetting {
     private Boolean messageRemindStatus;
     private Boolean messageReplyStatus;
     private Boolean messageLikeStatus;
+    private Boolean messageFoldStatus;
 }

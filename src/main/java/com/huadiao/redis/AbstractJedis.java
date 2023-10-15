@@ -4,6 +4,7 @@ import com.huadiao.mapper.*;
 import com.huadiao.redis.impl.FollowFanJedis;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -32,6 +33,11 @@ public abstract class AbstractJedis {
     protected NoteOperateMapper noteOperateMapper;
     @Autowired
     protected HuadiaoHouseMapper huadiaoHouseMapper;
+    @Autowired
+    protected SystemMessageMapper systemMessageMapper;
+
+    @Value("${jedis.defaultRedisInitialId}")
+    protected int defaultRedisInitialId;
 
     protected void initialIdGenerator(JedisPool jedisPool, String jedisKeyGeneratorId, int initValue) {
         Jedis jedis = jedisPool.getResource();
@@ -43,7 +49,7 @@ public abstract class AbstractJedis {
     }
 
     protected void initialIdGenerator(JedisPool jedisPool, String jedisKeyGeneratorId) {
-        initialIdGenerator(jedisPool, jedisKeyGeneratorId, 0);
+        initialIdGenerator(jedisPool, jedisKeyGeneratorId, defaultRedisInitialId);
     }
 
     protected int generateGeneratorId(String jedisKeyGeneratorId) {

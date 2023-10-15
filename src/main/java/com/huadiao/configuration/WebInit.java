@@ -42,6 +42,4 @@ public class WebInit extends AbstractAnnotationConfigDispatcherServletInitialize
         return new Filter[]{characterEncodingFilter, consumeTimeFilter};
     }
 
-
-
 }

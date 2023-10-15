@@ -40,18 +40,6 @@
         where uid = #{uid};
     </select>
 
-    <resultMap id="messageSettingsResultMap" type="com.huadiao.entity.dto.accountsettings.MessageSettingsDto">
-        <result property="messageRemindStatus" column="message_remind_status"/>
-        <result property="messageReplyStatus" column="message_reply_status"/>
-        <result property="messageLikeStatus" column="message_like_status"/>
-    </resultMap>
-    <!--获取用户消息设置-->
-    <select id="selectUserMessageSettingsByUid" resultMap="messageSettingsResultMap">
-        select `message_remind_status`, `message_reply_status`, `message_like_status`
-        from huadiao_user_settings
-        where uid = #{uid};
-    </select>
-
     <resultMap id="accountSettingsResultMap" type="com.huadiao.entity.AccountSettings">
         <result property="publicHomepageStatus" column="public_homepage_status"/>
         <result property="publicCanvasesStatus" column="public_canvases_status"/>

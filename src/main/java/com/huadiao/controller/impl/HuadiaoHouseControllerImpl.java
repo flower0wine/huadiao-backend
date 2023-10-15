@@ -1,5 +1,6 @@
 package com.huadiao.controller.impl;
 
+import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.HuadiaoHouseController;
 import com.huadiao.entity.Result;
 import com.huadiao.service.HuadiaoHouseService;
@@ -20,7 +21,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/huadiaohouse")
-public class HuadiaoHouseControllerImpl implements HuadiaoHouseController {
+public class HuadiaoHouseControllerImpl extends AbstractController implements HuadiaoHouseController {
     private HuadiaoHouseService huadiaoHouseService;
 
     @Autowired
@@ -31,48 +32,48 @@ public class HuadiaoHouseControllerImpl implements HuadiaoHouseController {
     @Override
     @GetMapping("/info")
     public Result<?> getHuadiaoHouseInfo(HttpSession session, Integer uid) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return huadiaoHouseService.getHuadiaoHouseInfo(myUid, userId, uid);
     }
 
     @Override
     @GetMapping("/border")
     public Result<?> getCardBorerImage(HttpSession session) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return huadiaoHouseService.getHuadiaoHouseCardBorderImage(myUid, userId);
     }
 
     @Override
     @PostMapping("/info/modify")
     public Result<?> updateHuadiaoHouseInfo(HttpSession session, @RequestBody Map<String, String> map) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return huadiaoHouseService.updateHuadiaoHouseInfo(myUid, userId, map);
     }
 
     @Override
     @PostMapping("/info/picture/modify")
     public Result<?> updateHuadiaoHouseInfo(HttpSession session, String field, MultipartFile background) throws IOException {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return huadiaoHouseService.updateHuadiaoHouseInfo(myUid, userId, field, background);
     }
 
     @Override
     @GetMapping("/anime/delete")
     public Result<?> deleteHuadiaoAnime(HttpSession session, Integer animeId) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return huadiaoHouseService.deleteHuadiaoAnime(myUid, userId, animeId);
     }
 
     @Override
     @PostMapping("/anime/add")
     public Result<?> addHuadiaoAnime(HttpSession session, String animeTitle, MultipartFile animeCover) throws IOException {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return huadiaoHouseService.addHuadiaoAnime(myUid, userId, animeTitle, animeCover);
     }
 

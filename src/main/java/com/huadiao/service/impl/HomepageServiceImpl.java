@@ -90,6 +90,16 @@ public class HomepageServiceImpl extends AbstractHomepageService {
                 log.debug("uid 为 {} 的用户不公开个人介绍", viewedUid);
                 userInfoDto.setCanvases(null);
             }
+            else {
+                if(userInfoDto.getCanvases() == null) {
+                    userInfoDto.setCanvases(defaultCanvases);
+                }
+            }
+        }
+        else {
+            if(userInfoDto.getCanvases() == null) {
+                userInfoDto.setCanvases(defaultCanvases);
+            }
         }
 
         // 获取个人主页信息

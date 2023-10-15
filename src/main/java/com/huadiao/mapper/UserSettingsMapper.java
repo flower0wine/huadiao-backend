@@ -1,12 +1,8 @@
 package com.huadiao.mapper;
 
 import com.huadiao.entity.AccountSettings;
-import com.huadiao.entity.dto.accountsettings.MessageSettingsDto;
 import com.huadiao.entity.dto.accountsettings.PublicInfoSettingsDto;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author flowerwine
@@ -30,15 +26,6 @@ public interface UserSettingsMapper {
      * @return 返回公开信息设置
      */
     PublicInfoSettingsDto selectUserPublicInfoSettingsByUid(@Param("uid") Integer uid);
-
-    /**
-     * 根据 uid 获取用户消息设置
-     *
-     * @param uid 用户 uid
-     * @return 返回用户消息设置
-     */
-    MessageSettingsDto selectUserMessageSettingsByUid(@Param("uid") Integer uid);
-
 
     /**
      * 根据 uid 获取用户账号设置

@@ -82,8 +82,9 @@ public interface FollowFanController extends Controller {
      * 移除粉丝, 删除粉丝是被关注的人做的
      * @param session session 对象
      * @param uid 关注者
+     * @return 返回移除粉丝成功与否提示
      */
-    void removeFan(HttpSession session, Integer uid);
+    Result<?> removeFan(HttpSession session, Integer uid);
 
     /**
      * 修改关注分组名称

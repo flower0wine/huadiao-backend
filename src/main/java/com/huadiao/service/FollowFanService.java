@@ -98,8 +98,9 @@ public interface FollowFanService {
      * @param uid 被关注者 uid
      * @param userId 用户 id
      * @param fanUid 关注者 uid
+     * @return 返回移除成功或失败提示
      */
-    void removeFan(Integer uid, String userId, Integer fanUid);
+    Result<?> removeFan(Integer uid, String userId, Integer fanUid);
 
     /**
      * 修改关注分组名称

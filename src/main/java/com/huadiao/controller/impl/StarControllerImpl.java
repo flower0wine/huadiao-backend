@@ -1,5 +1,6 @@
 package com.huadiao.controller.impl;
 
+import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.StarController;
 import com.huadiao.entity.Result;
 import com.huadiao.service.StarService;
@@ -17,7 +18,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/star")
-public class StarControllerImpl implements StarController {
+public class StarControllerImpl extends AbstractController implements StarController {
     private StarService starService;
 
     @Autowired
@@ -28,40 +29,40 @@ public class StarControllerImpl implements StarController {
     @Override
     @GetMapping("/note/group/add")
     public Result<?> addNoteStarGroup(HttpSession session, String groupName, String groupDescription, Integer open) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return starService.addNoteStarGroup(myUid, userId, groupName, groupDescription, open);
     }
 
     @Override
     @GetMapping("/note/group/delete")
     public Result<?> deleteNoteStarGroup(HttpSession session, Integer groupId) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return starService.deleteNoteStarGroup(myUid, userId, groupId);
     }
 
     @Override
     @GetMapping("/note/group/modify")
     public Result<?> modifyNoteStarGroup(HttpSession session, String groupName, String groupDescription, Integer groupId, Integer open) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return starService.modifyNoteStarGroup(myUid, userId, groupName, groupDescription, groupId, open);
     }
 
     @Override
     @GetMapping("/note/get")
     public Result<?> selectNoteStar(HttpSession session, Integer uid, Integer groupId, Integer offset, Integer row) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return starService.getNoteStar(myUid, userId, uid, groupId, offset, row);
     }
 
     @Override
     @GetMapping("/note/group")
     public Result<?> getNoteStarGroup(HttpSession session, Integer uid) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return starService.getNoteStarGroup(myUid, userId, uid);
     }
 
@@ -70,8 +71,8 @@ public class StarControllerImpl implements StarController {
     public Result<?> deleteNoteStar(HttpSession session, @RequestParam Integer groupId,
                                     @RequestParam(required = false) List<Integer> uid,
                                     @RequestParam(required = false) List<Integer> noteId) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return starService.deleteNoteStar(myUid, userId, groupId, uid, noteId);
     }
 
@@ -80,8 +81,8 @@ public class StarControllerImpl implements StarController {
     public Result<?> copyNoteStar(HttpSession session, Integer srcGroupId, Integer destGroupId,
                                   @RequestParam List<Integer> uid,
                                   @RequestParam List<Integer> noteId) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return starService.copyNoteStarToOtherGroup(myUid, userId, srcGroupId, destGroupId, noteId, uid);
     }
 
@@ -90,8 +91,8 @@ public class StarControllerImpl implements StarController {
     public Result<?> modifyNoteStar(HttpSession session, Integer srcGroupId, Integer destGroupId,
                                     @RequestParam List<Integer> uid,
                                     @RequestParam List<Integer> noteId) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return starService.moveNoteStarToOtherGroup(myUid, userId, srcGroupId, destGroupId, noteId, uid);
     }
 }

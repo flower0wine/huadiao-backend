@@ -33,11 +33,6 @@ public abstract class AbstractFollowFanService extends AbstractService implement
     protected int defaultFollowGroupId;
 
     /**
-     * 达到关注分组最大数量
-     */
-    public String REACH_MAX_FOLLOW_GROUP_AMOUNT = "reachMaxFollowGroupAmount";
-
-    /**
      * 从集合中的数据判断两人的关系
      * @param relation 装载有两人的关系的集合
      * @return 如果是互关返回 friend, 是关注返回 follow, 是粉丝返回 fan, 是陌生人返回 stranger

@@ -1,7 +1,5 @@
 package com.huadiao.entity;
 
-import com.huadiao.entity.dto.accountsettings.MessageSettingsDto;
-import com.huadiao.entity.dto.accountsettings.PublicInfoSettingsDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

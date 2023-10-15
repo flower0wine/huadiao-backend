@@ -1,13 +1,10 @@
 package com.huadiao.controller.impl;
 
+import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.UserController;
-import com.huadiao.entity.AccountSettings;
 import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.accountsettings.MessageSettingsDto;
-import com.huadiao.entity.dto.accountsettings.PublicInfoSettingsDto;
 import com.huadiao.entity.dto.userdto.UserAbstractDto;
 import com.huadiao.entity.dto.userdto.UserShareDto;
-import com.huadiao.entity.dto.userinfodto.UserInfoDto;
 import com.huadiao.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +23,7 @@ import java.util.*;
  */
 @RestController
 @CrossOrigin
-public class UserControllerImpl implements UserController {
+public class UserControllerImpl extends AbstractController implements UserController {
     private UserService userService;
     private PoemService poemService;
     private UserInfoService userInfoService;
@@ -43,7 +40,7 @@ public class UserControllerImpl implements UserController {
     @Override
     @GetMapping("/huadiaoHeader")
     public UserAbstractDto getHuadiaoHeaderUserInfo(HttpSession session) {
-        Integer uid = (Integer) session.getAttribute("uid");
+        Integer uid = (Integer) session.getAttribute(uidKey);
         return userService.getHuadiaoHeaderUserInfo(uid);
     }
 
@@ -55,8 +52,12 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/logoutHuadiao")
-    public void logoutHuadiao(@CookieValue("User_ID") Cookie cookie, HttpServletRequest request) {
-        userService.logoutHuadiao(cookie, request);
+    public void logoutHuadiao(@CookieValue("User_ID") Cookie cookie, HttpSession session) {
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
+        String nickname = (String) session.getAttribute(nicknameKey);
+        userService.logoutHuadiao(cookie, uid, userId, nickname);
+        session.invalidate();
     }
 
     @Override
@@ -67,54 +68,54 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @PostMapping("/common/register")
-    public String registerHuadiao(@RequestBody Map<String, String> map, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public String registerHuadiao(@RequestBody Map<String, String> map, HttpSession session) throws Exception {
         return userService.registerHuadiao(session, map.get("username"), map.get("password"), map.get("confirmPassword"), map.get("checkCode"));
     }
 
     @Override
     @PostMapping("/userInfo")
-    public Result<?> insertOrUpdateUserInfo(@RequestBody Map<String, String> map, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Integer uid = (Integer) session.getAttribute("uid");
+    public Result<?> insertOrUpdateUserInfo(@RequestBody Map<String, String> map, HttpSession session) throws Exception {
+        Integer uid = (Integer) session.getAttribute(uidKey);
         Date bornDate = new Date(Long.parseLong(map.get("bornDate")));
         String sex = map.get("sex");
         String school = map.get("school");
         String canvases = map.get("canvases");
-        String nickname = map.get("nickname");
-        String userId = session.getAttribute("userId").toString();
+        String nickname = map.get(nicknameKey);
+        String userId = session.getAttribute(userIdKey).toString();
         return userInfoService.insertOrUpdateUserInfo(uid, userId, nickname, canvases, sex, bornDate, school);
     }
 
     @Override
     @GetMapping("/userInfo")
-    public Result<?> getUserInfo(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+    public Result<?> getUserInfo(HttpSession session) {
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return userInfoService.getMineInfo(uid, userId);
     }
 
     @Override
-    @GetMapping("/messageSettings")
-    public MessageSettingsDto getUserMessageSettings(HttpServletRequest request) {
-        return null;
+    @GetMapping("/setting/message/get")
+    public Result<?> getUserMessageSettings(HttpSession session) {
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
+        return userSettingsService.getMessageSettings(uid, userId);
     }
 
     @Override
-    @GetMapping("/accountSettings")
-    public AccountSettings getUserAccountSettings(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+    @GetMapping("/setting/account/get")
+    public Result<?> getUserAccountSettings(HttpSession session) {
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return userSettingsService.getUserSettings(uid, userId);
     }
 
     @Override
-    @PostMapping("/accountSettings")
-    public String modifyUserSettings(HttpServletRequest request, @RequestBody Map<String, String> settingMap) throws Exception {
-        HttpSession session = request.getSession();
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+    @PostMapping("/setting/modify")
+    public Result<?> modifyUserSettings(HttpSession session, @RequestBody Map<String, String> settingMap) throws Exception {
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         if(settingMap == null) {
-            return AbstractUserSettingsService.ACCOUNT_SETTING_UPDATE_FAIL;
+            return Result.blankParam();
         }
         // set 集合去重, 防止可能的错误, 或者入侵
         Set<String> settingsSet = new HashSet<>(settingMap.values());
@@ -124,7 +125,7 @@ public class UserControllerImpl implements UserController {
     @Override
     @GetMapping("/share")
     public UserShareDto getUserShare(HttpSession httpSession) {
-        Integer uid = (Integer) httpSession.getAttribute("uid");
+        Integer uid = (Integer) httpSession.getAttribute(uidKey);
         return userService.getUserShareInfo(uid);
     }
 }

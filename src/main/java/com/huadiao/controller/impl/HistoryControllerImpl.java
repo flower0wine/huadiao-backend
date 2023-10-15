@@ -1,5 +1,6 @@
 package com.huadiao.controller.impl;
 
+import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.HistoryController;
 import com.huadiao.entity.Result;
 import com.huadiao.service.HistoryService;
@@ -16,7 +17,7 @@ import javax.servlet.http.HttpSession;
  */
 @RestController
 @RequestMapping("/history")
-public class HistoryControllerImpl implements HistoryController {
+public class HistoryControllerImpl extends AbstractController implements HistoryController {
     private HistoryService historyService;
 
     @Autowired
@@ -27,32 +28,32 @@ public class HistoryControllerImpl implements HistoryController {
     @Override
     @GetMapping("/note")
     public Result<?> getNoteHistory(HttpSession session, Integer row, Integer offset) {
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return historyService.getNoteHistory(uid, userId, row, offset);
     }
 
     @Override
     @GetMapping("/anime")
     public Result<?> getAnimeHistory(HttpSession session, Integer row, Integer offset) {
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return historyService.getAnimeHistory(uid, userId, row, offset);
     }
 
     @Override
     @GetMapping("/note/delete")
     public Result<?> deleteNoteHistory(HttpSession session, Integer uid, Integer noteId) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return historyService.deleteNoteHistory(myUid, userId, uid, noteId);
     }
 
     @Override
     @GetMapping("/anime/delete")
     public Result<?> deleteAnimeHistory(HttpSession session, Integer uid) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return historyService.deleteAnimeHistory(myUid, userId, uid);
     }
 }

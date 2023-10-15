@@ -105,8 +105,10 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
                 log.debug("uid, userId 分别为 {}, {} 的用户访问 viewedUid 为 {} 的用户不存在", uid, userId, viewedUid);
                 return Result.notExist();
             }
-            if (offset == null || row == null || offset < 0 || row < 0 || row > defaultRow) {
-                offset = defaultOffset;
+            if (offset == null || row == null || offset < 0 || row < 0) {
+                return Result.errorParam();
+            }
+            if(row > defaultRow) {
                 row = defaultRow;
             }
             Result<?> result = checkPublicFollowStatus(uid, userId, viewedUid);
@@ -210,6 +212,10 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
     @Transactional(rollbackFor = Exception.class)
     public Result<?> buildRelationBetweenBoth(Integer uid, String userId, Integer followUid) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试与 uid 为 {} 的用户建立关系", uid, userId, followUid);
+        if(uid.equals(followUid)) {
+            log.debug("uid, userId 分别为 {}, {} 的用户试图与自身建立关系", uid, userId);
+            return Result.notAllowed();
+        }
         // 判断用户是否存在
         String followUserId = userMapper.selectUserIdByUid(uid);
         if (followUserId == null) {
@@ -238,10 +244,11 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void removeFan(Integer uid, String userId, Integer fanUid) {
+    public Result<?> removeFan(Integer uid, String userId, Integer fanUid) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试移除 uid 为 {} 的粉丝", uid, userId, fanUid);
         followFanMapper.deleteRelationByBothUid(uid, fanUid);
         log.debug("uid, userId 分别为 {}, {} 的用户成功移除 uid 为 {} 的粉丝", uid, userId, fanUid);
+        return Result.ok(null);
     }
 
     @Override

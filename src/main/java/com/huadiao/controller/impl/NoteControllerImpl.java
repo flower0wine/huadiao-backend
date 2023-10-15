@@ -1,6 +1,7 @@
 package com.huadiao.controller.impl;
 
 import cn.hutool.http.server.HttpServerRequest;
+import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.NoteController;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.note.NoteCommentDto;
@@ -24,7 +25,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/note")
-public class NoteControllerImpl implements NoteController {
+public class NoteControllerImpl extends AbstractController implements NoteController {
 
     private UserService userService;
     private FollowFanService followFanService;
@@ -44,8 +45,8 @@ public class NoteControllerImpl implements NoteController {
     @Override
     @PostMapping("/publish")
     public String publishNote(HttpSession session, @RequestBody Map<String, String> map) {
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         String noteTitle = map.get("title");
         String noteContent = map.get("content");
         return noteService.insertNewNote(uid, userId, noteTitle, noteContent);
@@ -54,16 +55,16 @@ public class NoteControllerImpl implements NoteController {
     @Override
     @GetMapping("/delete")
     public String deleteNote(HttpSession session, Integer noteId) {
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return noteService.deleteNote(uid, userId, noteId);
     }
 
     @Override
     @PostMapping("/modify")
     public String modifyNote(HttpSession session, Integer noteId, @RequestBody Map<String, String> map) {
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         String noteTitle = map.get("title");
         String noteContent = map.get("content");
         return noteService.modifyNote(uid, userId, noteId, noteTitle, noteContent);
@@ -72,40 +73,40 @@ public class NoteControllerImpl implements NoteController {
     @Override
     @GetMapping("/search")
     public Result<?> getSingleNote(HttpSession session, Integer uid, Integer noteId) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return noteService.getSingleNote(myUid, userId, uid, noteId);
     }
 
     @Override
     @GetMapping("/myNote")
     public SelfNoteDto getSingleNote(HttpSession session, Integer noteId) {
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return noteService.getSingleNote(uid, userId, noteId);
     }
 
     @Override
     @GetMapping("/all")
     public Result<?> getAllNotes(HttpSession session, Integer authorUid) {
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return noteService.getAllNote(uid, userId, authorUid);
     }
 
     @Override
     @GetMapping("/comment")
     public Result<List<NoteCommentDto>> getNoteComment(HttpSession session, Integer uid, Integer noteId, Integer offset, Integer row) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return noteService.getNoteComment(myUid, userId, uid, noteId, offset, row);
     }
 
     @Override
     @PostMapping("/comment/add")
     public Result<Map<String, Object>> addNoteComment(HttpSession session, Integer uid, Integer noteId, @RequestBody Map<String, String> map) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer myUid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         String rootCommentId = map.get("rootCommentId");
         String commentContent = map.get("commentContent");
         Long commentId = null;

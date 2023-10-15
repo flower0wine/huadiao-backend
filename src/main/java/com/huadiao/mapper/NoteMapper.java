@@ -63,11 +63,11 @@ public interface NoteMapper {
 
     /**
      * 根据笔记被喜欢次数
-     * @param authorUid 作者 uid
+     * @param uid 作者 uid
      * @param noteId 笔记 id
      * @return 笔记喜欢次数
      */
-    Integer countNoteLikeByUid(@Param("authorUid") Integer authorUid, @Param("noteId") Integer noteId);
+    Integer countNoteLikeByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId);
 
     /**
      * 获取笔记被不喜欢
@@ -199,5 +199,16 @@ public interface NoteMapper {
      * @return 返回所有笔记点赞总数
      */
     Integer selectAllNoteLikeCountByUid(@Param("uid") Integer uid);
+
+    /**
+     * 获取笔记某条评论被点赞数
+     * @param uid 用户 uid
+     * @param noteId 笔记 id
+     * @param rootCommentId 父评论 id
+     * @param subCommentId 子评论 id
+     * @return 返回评论被点赞数
+     */
+    Integer countCommentLikeByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("rootCommentId") Integer rootCommentId,
+                                  @Param("subCommentId") Integer subCommentId);
 
 }

@@ -11,6 +11,6 @@ public abstract class AbstractHistoryService extends AbstractService implements 
     /**
      * 单次请求最多能获取的数据量
      */
-    @Value("${history.requestMaxRow}")
+    @Value("${huadiao.defaultRow}")
     protected int requestMaxRow;
 }

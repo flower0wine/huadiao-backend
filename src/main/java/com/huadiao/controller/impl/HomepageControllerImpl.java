@@ -1,5 +1,6 @@
 package com.huadiao.controller.impl;
 
+import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.HomepageController;
 import com.huadiao.entity.Result;
 import com.huadiao.service.HomepageService;
@@ -24,7 +25,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/homepage")
-public class HomepageControllerImpl implements HomepageController {
+public class HomepageControllerImpl extends AbstractController implements HomepageController {
 
     private HomepageService homepageService;
 
@@ -36,24 +37,24 @@ public class HomepageControllerImpl implements HomepageController {
     @Override
     @GetMapping("/info")
     public Result<?> getHomepageInfo(HttpSession session, Integer viewedUid) {
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return homepageService.getHomepageInfo(uid, userId, viewedUid);
     }
 
     @Override
     @PostMapping("/avatar/modify")
     public Result<?> updateUserAvatar(HttpSession session, MultipartFile userAvatar) throws IOException {
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return homepageService.updateUserAvatar(uid, userId, userAvatar);
     }
 
     @Override
     @PostMapping("/background/modify")
     public Result<?> updateHomepageBackground(HttpSession session, MultipartFile background) throws IOException {
-        Integer uid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        String userId = (String) session.getAttribute(userIdKey);
         return homepageService.updateHomepageBackground(uid, userId, background);
     }
 }
