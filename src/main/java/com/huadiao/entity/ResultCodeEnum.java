@@ -10,6 +10,7 @@ public enum ResultCodeEnum {
     EXCEED_LIMIT(1001, "exceedLimit"),
     ERROR_PARAM(2000, "error params"),
     BLANK_PARAM(2001, "blank params"),
+    NOT_AUTHORITATIVE(2003, "not authoritative"),
     NOT_EXIST(3000, "not exist"),
     EXISTED(3001, "existed"),
     NOT_ALLOW(3002, "notAllowed"),

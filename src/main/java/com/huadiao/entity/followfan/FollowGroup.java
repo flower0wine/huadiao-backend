@@ -1,4 +1,4 @@
-package com.huadiao.entity;
+package com.huadiao.entity.followfan;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

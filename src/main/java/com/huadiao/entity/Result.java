@@ -43,6 +43,10 @@ public class Result<T> {
         return new Result<>(ResultCodeEnum.ERROR_PARAM,  null);
     }
 
+    public static <T> Result<T> errorParam(T data) {
+        return new Result<>(ResultCodeEnum.ERROR_PARAM,  data);
+    }
+
     public static <T> Result<T> blankParam() {
         return new Result<>(ResultCodeEnum.BLANK_PARAM, null);
     }
@@ -61,5 +65,9 @@ public class Result<T> {
 
     public static <T> Result<T> exceedLimit() {
         return new Result<>(ResultCodeEnum.EXCEED_LIMIT, null);
+    }
+
+    public static <T> Result<T> notAuthorize() {
+        return new Result<>(ResultCodeEnum.NOT_AUTHORITATIVE, null);
     }
 }

@@ -29,5 +29,5 @@ public interface UserInfoJedisUtil {
      * @param uid 用户 uid
      * @return 返回基本完整的用户信息
      */
-    UserAbstractDto getUserInfoByUid(Integer uid);
+    UserAbstractDto getUserAbstractDto(Integer uid);
 }

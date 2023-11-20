@@ -1,5 +1,7 @@
 package com.huadiao.service;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.util.regex.Pattern;
 
 /**
@@ -28,6 +30,12 @@ public abstract class AbstractNoteService extends AbstractService implements Not
      * 评论 id 的长度
      */
     public int COMMENT_LENGTH = 20;
+
+    @Value("${note.noteSummaryMinLength}")
+    protected int noteSummaryMinLength;
+
+    @Value("${note.noteSummaryMaxLength}")
+    protected int noteSummaryMaxLength;
 
     /**
      * 未分配的评论 id, 在笔记评论表中父评论 sub_comment_id 为 null, 在笔记评论喜欢表和不喜欢表中则为 0

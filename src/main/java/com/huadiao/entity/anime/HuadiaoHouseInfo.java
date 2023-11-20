@@ -1,5 +1,6 @@
-package com.huadiao.entity;
+package com.huadiao.entity.anime;
 
+import com.huadiao.entity.anime.AnimeInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -1,20 +1,18 @@
 package com.huadiao.service.impl;
 
-import com.huadiao.entity.AccountSettings;
-import com.huadiao.entity.FollowFan;
-import com.huadiao.entity.FollowGroup;
+import com.huadiao.entity.account.AccountSettings;
+import com.huadiao.entity.followfan.FollowFan;
+import com.huadiao.entity.followfan.FollowGroup;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.followfan.FollowFanBaseInfoDto;
 import com.huadiao.mapper.FollowFanMapper;
 import com.huadiao.mapper.UserMapper;
 import com.huadiao.mapper.UserSettingsMapper;
 import com.huadiao.service.AbstractFollowFanService;
-import com.huadiao.service.AbstractUserSettingsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import redis.clients.jedis.JedisPool;
 
 import java.util.*;
 

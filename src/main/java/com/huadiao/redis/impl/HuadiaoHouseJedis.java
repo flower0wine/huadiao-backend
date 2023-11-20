@@ -1,8 +1,7 @@
 package com.huadiao.redis.impl;
 
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.huadiao.entity.CardBorderImage;
+import com.huadiao.entity.anime.CardBorderImage;
 import com.huadiao.redis.AbstractJedis;
 import com.huadiao.redis.HuadiaoHouseJedisUtil;
 import org.springframework.stereotype.Component;

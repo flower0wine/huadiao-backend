@@ -1,4 +1,4 @@
-package com.huadiao.entity;
+package com.huadiao.entity.account;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -48,7 +48,7 @@
           and `uid` = #{uid};
     </update>
 
-    <resultMap id="huadiaoHouseInfoResultMap" type="com.huadiao.entity.HuadiaoHouseInfo">
+    <resultMap id="huadiaoHouseInfoResultMap" type="com.huadiao.entity.anime.HuadiaoHouseInfo">
         <result property="uid" column="uid"/>
         <result property="titleColor" column="title_color"/>
         <result property="titleBackground" column="title_background"/>
@@ -70,7 +70,7 @@
         where `uid` = #{uid};
     </select>
 
-    <resultMap id="cardBorderImageResultMap" type="com.huadiao.entity.CardBorderImage">
+    <resultMap id="cardBorderImageResultMap" type="com.huadiao.entity.anime.CardBorderImage">
         <result property="borderImageOutset" column="border_image_outset"/>
         <result property="borderImageSource" column="border_image_source"/>
         <result property="borderImageSlice" column="border_image_slice"/>
@@ -82,7 +82,7 @@
         from huadiao_card_border_image;
     </select>
 
-    <resultMap id="animeInfoResultMap" type="com.huadiao.entity.AnimeInfo">
+    <resultMap id="animeInfoResultMap" type="com.huadiao.entity.anime.AnimeInfo">
         <result property="title" column="anime_title"/>
         <result property="cover" column="anime_cover"/>
         <result property="animeId" column="anime_id"/>

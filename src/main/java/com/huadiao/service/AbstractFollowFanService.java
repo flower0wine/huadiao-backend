@@ -1,6 +1,6 @@
 package com.huadiao.service;
 
-import com.huadiao.entity.FollowGroup;
+import com.huadiao.entity.followfan.FollowGroup;
 import com.huadiao.entity.dto.followfan.BothRelationDto;
 import org.springframework.beans.factory.annotation.Value;
 

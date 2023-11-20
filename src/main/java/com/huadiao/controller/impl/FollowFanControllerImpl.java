@@ -2,15 +2,12 @@ package com.huadiao.controller.impl;
 
 import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.FollowFanController;
-import com.huadiao.entity.FollowGroup;
 import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.followfan.FollowFanBaseInfoDto;
 import com.huadiao.service.FollowFanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author flowerwine

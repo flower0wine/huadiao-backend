@@ -73,7 +73,7 @@
         limit #{row};
     </select>
 
-    <resultMap id="animeHistoryResultMap" type="com.huadiao.entity.AnimeHistory">
+    <resultMap id="animeHistoryResultMap" type="com.huadiao.entity.history.AnimeHistory">
         <result property="uid" column="viewed_uid"/>
         <result property="userId" column="user_id"/>
         <result property="nickname" column="nickname"/>
@@ -99,5 +99,13 @@
                           limit #{offset}, 1)
         order by `visit_time` desc
         limit #{row};
+    </select>
+
+    <!--获取所有的笔记 id-->
+    <select id="selectAllNoteIdHistoryByUid" resultType="java.lang.Integer">
+        select `note_id`
+        from huadiao_note_history
+        where `status`
+          and `uid` = #{uid};
     </select>
 </mapper>

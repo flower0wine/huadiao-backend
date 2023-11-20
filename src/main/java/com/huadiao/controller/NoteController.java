@@ -24,7 +24,7 @@ public interface NoteController extends Controller {
      * @param map 请求体
      * @return 返回是否发布成功
      */
-    String publishNote(HttpSession session, Map<String, String> map);
+    Result<?> publishNote(HttpSession session, Map<String, String> map);
 
     /**
      * 删除笔记
@@ -41,7 +41,7 @@ public interface NoteController extends Controller {
      * @param map 请求体
      * @return 返回修改成功与否
      */
-    String modifyNote(HttpSession session, Integer noteId, Map<String, String> map);
+    Result<?> modifyNote(HttpSession session, Integer noteId, Map<String, String> map);
 
     /**
      * 获取单个笔记
@@ -77,15 +77,16 @@ public interface NoteController extends Controller {
      * @param row 行数
      * @return 返回评论
      */
-    Result<List<NoteCommentDto>> getNoteComment(HttpSession session, Integer uid, Integer noteId, Integer offset, Integer row);
+    Result<?> getNoteComment(HttpSession session, Integer uid, Integer noteId, Integer offset, Integer row);
 
     /**
      * 添加笔记评论
      * @param session session 对象
+     * @param repliedUid 被回复人 uid
      * @param uid 作者 uid
      * @param noteId 笔记 id
      * @param map 请求体
      * @return 返回增加过程中的提示
      */
-    Result<Map<String, Object>> addNoteComment(HttpSession session, Integer uid, Integer noteId, Map<String, String> map);
+    Result<Map<String, Object>> addNoteComment(HttpSession session, Integer repliedUid, Integer uid, Integer noteId, Map<String, String> map);
 }

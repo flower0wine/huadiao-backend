@@ -1,6 +1,5 @@
 package com.huadiao.service;
 
-import com.huadiao.entity.HuadiaoHouseInfo;
 import org.springframework.beans.factory.annotation.Value;
 
 /**

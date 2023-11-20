@@ -112,8 +112,8 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
     }
 
     @Override
-    public Result<Map<String, Object>> addNoteComment(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, String commentContent) {
-        log.debug("uid, userId 分别为 {}, {} 的用户尝试对 uid 为 {} 的用户的 noteId 为 {} 的笔记发布评论, rootCommentId: {}, commentContent: {}", uid, userId, authorUid, noteId, rootCommentId, commentContent);
+    public Result<Map<String, Object>> addNoteComment(Integer uid, String userId, Integer noteId, Integer repliedUid, Integer authorUid, Long rootCommentId, String commentContent) {
+        log.debug("uid, userId 分别为 {}, {} 的用户尝试对 uid 为 {} 的用户的 noteId 为 {} 的笔记发布评论, repliedUid: {}, rootCommentId: {}, commentContent: {}", uid, userId, authorUid, noteId, repliedUid, rootCommentId, commentContent);
         Integer noteExist = noteMapper.selectExistByNoteIdAndUid(authorUid, noteId);
         if(noteExist == null) {
             log.debug("uid, userId 分别为 {}, {} 的用户提供的参数对应的笔记不存在, authorUid: {}, noteId: {}", uid, userId, authorUid, noteId);
@@ -124,7 +124,7 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
             log.debug("uid, userId 分别为 {}, {} 的用户尝试在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加父评论", uid, userId, authorUid, noteId);
             // 生成笔记评论唯一 id
             long commentId = noteJedisUtil.generateCommentId();
-            noteMapper.insertNoteCommentByUid(uid, noteId, authorUid, commentId, UNDISTRIBUTED_COMMENT_ID, commentContent);
+            noteMapper.insertNoteCommentByUid(uid, noteId, authorUid, authorUid, commentId, UNDISTRIBUTED_COMMENT_ID, commentContent);
             log.debug("uid, userId 分别为 {}, {} 的用户成功在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加父评论, rotCommentId: {}", uid, userId, authorUid, noteId, commentId);
 
             Map<String, Object> map = new HashMap<>(2);
@@ -145,8 +145,8 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
             }
             // 生成子评论 id
             long commentId = noteJedisUtil.generateCommentId();
-            noteMapper.insertNoteCommentByUid(uid, noteId, authorUid, rootCommentId, commentId, commentContent);
-            log.debug("uid, userId 分别为 {}, {} 的用户成功在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加子评论, rootCommentId: {}, subCommentId: {}", uid, userId, authorUid, noteId, rootCommentId, commentId);
+            noteMapper.insertNoteCommentByUid(uid, noteId, repliedUid, authorUid, rootCommentId, commentId, commentContent);
+            log.debug("uid, userId 分别为 {}, {} 的用户成功在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加子评论, repliedUid: {}, rootCommentId: {}, subCommentId: {}", uid, userId, authorUid, noteId, repliedUid, rootCommentId, commentId);
 
             Map<String, Object> map = new HashMap<>(4);
             map.put("rootCommentId", rootCommentId);

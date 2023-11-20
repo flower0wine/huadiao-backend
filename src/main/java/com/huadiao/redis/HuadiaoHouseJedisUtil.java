@@ -1,6 +1,6 @@
 package com.huadiao.redis;
 
-import com.huadiao.entity.CardBorderImage;
+import com.huadiao.entity.anime.CardBorderImage;
 
 import java.util.List;
 

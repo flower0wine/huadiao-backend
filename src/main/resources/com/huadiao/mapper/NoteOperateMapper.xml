@@ -6,7 +6,7 @@
     <insert id="insertNoteStarByUid">
         insert into huadiao_note_star(`uid`, `author_uid`, `note_id`, `group_id`)
         values (#{uid}, #{authorUid}, #{noteId}, #{groupId})
-        on duplicate key update `status` = 1,
+        on duplicate key update `status`    = 1,
                                 `star_time` = now();
     </insert>
 
@@ -14,7 +14,7 @@
     <insert id="insertNoteUnlikeByUid">
         insert into huadiao_note_unlike(`uid`, `author_uid`, `note_id`)
         values (#{uid}, #{authorUid}, #{noteId})
-        on duplicate key update `status` = 1,
+        on duplicate key update `status`      = 1,
                                 `unlike_time` = now();
     </insert>
 
@@ -38,7 +38,7 @@
     <insert id="insertNoteCommentUnlike">
         insert into huadiao_note_comment_unlike(`uid`, `note_id`, `author_uid`, `root_comment_id`, `sub_comment_id`)
         values (#{uid}, #{noteId}, #{authorUid}, #{rootCommentId}, #{subCommentId})
-        on duplicate key update `status`    = 1,
+        on duplicate key update `status`      = 1,
                                 `unlike_time` = now();
     </insert>
 
@@ -110,14 +110,29 @@
     <!--删除笔记评论, 如果是父评论将会删除其下的所有子评论-->
     <update id="deleteNoteCommentByUid">
         update huadiao_note_comment
-        set `status`      = 0,
-            `delete_uid`  = #{deleteUid},
-            `delete_time` = now()
+        set `status` = 0,
+        `delete_uid` = #{deleteUid},
+        `delete_time` = now()
         where (`uid` = #{deleteUid} or `author_uid` = #{deleteUid})
-          and `root_comment_id` = #{rootCommentId}
-          <if test="subCommentId != 0L">
-              and `sub_comment_id` = #{subCommentId}
-          </if>;
+        and `root_comment_id` = #{rootCommentId}
+        <if test="subCommentId != 0L">
+            and `sub_comment_id` = #{subCommentId}
+        </if>;
+    </update>
+
+    <!--删除用户的所有笔记访问记录-->
+    <update id="deleteAllNoteHistoryByUid">
+        update `huadiao_note_history`
+        set `status` = 0
+        where `uid` = #{uid};
+    </update>
+
+    <!--删除指定的访问记录-->
+    <update id="deleteSpecificNoteHistoryByUid">
+        update `huadiao_note_history`
+        set `status` = 0
+        where `uid` = #{uid}
+          and `note_id` = #{noteId};
     </update>
 
     <!--获取笔记收藏数量-->

@@ -1,21 +1,18 @@
 package com.huadiao.service;
 
+import com.huadiao.entity.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-
-import java.beans.ConstructorProperties;
-import java.util.HashMap;
-import java.util.Map;
+import javax.annotation.PostConstruct;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * 这里主要聚集了用户的配置
  * @author flowerwine
- * @version 1.1
- * @projectName huadiao-user-back
- * @description
  */
+@Slf4j
 public abstract class AbstractUserService extends AbstractService implements UserService {
-
 
     /**
      * 确认登录状态为已登录
@@ -25,159 +22,199 @@ public abstract class AbstractUserService extends AbstractService implements Use
     /**
      * 维持用户登录状态的 session, 服务端 session 存活时间, 以秒为单位, 存活时间为一个月
      */
-    protected static int SESSION_SURVIVAL_TIME = 2592000;
+    @Value("${user.sessionSurvivalTime}")
+    protected int sessionSurvivalTime;
 
     /**
      * 验证码图片宽度
      */
-    protected static int CODE_IMAGE_WIDTH = 200;
+    @Value("${user.codeImageWidth}")
+    protected int codeImageWidth;
 
     /**
      * 验证码图片高度
      */
-    protected static int CODE_IMAGE_HEIGHT = 100;
+    @Value("${user.codeImageHeight}")
+    protected int codeImageHeight;
 
     /**
      * 验证码长度
      */
-    protected static int CODE_LENGTH = 6;
+    @Value("${user.codeLength}")
+    protected int codeLength;
 
     /**
      * 干扰字符的数量
      */
-    protected static int CODE_DISTURB_COUNT = 30;
+    @Value("${user.codeDisturbCount}")
+    protected int codeDisturbCount;
+
+    /**
+     * 用户名最小长度
+     */
+    @Value("${user.usernameMinLength}")
+    protected int usernameMinLength;
+
+    /**
+     * 用户名最大长度
+     */
+    @Value("${user.usernameMaxLength}")
+    protected int usernameMaxLength;
+
+    /**
+     * 密码最小长度
+     */
+    @Value("${user.passwordMinLength}")
+    protected int passwordMinLength;
+
+    /**
+     * 密码最大长度
+     */
+    @Value("${user.passwordMaxLength}")
+    protected int passwordMaxLength;
 
     /**
      * 这个用户名太受欢迎了, 已经有人使用, 换一个吧!
      */
-    protected static final String SAME_USERNAME = "sameUsername";
+    @Value("${user.sameUsername}")
+    protected String sameUsername;
 
     /**
      * 恭喜! 注册成功!
      */
-    protected static final String SUCCEED_REGISTER = "succeedRegister";
+    @Value("${user.succeedRegister}")
+    protected String succeedRegister;
 
     /**
      * 用户名不能包含数字、字母和下划线以外的字符!
      */
-    protected static final String WRONG_USERNAME = "wrongUsername";
+    @Value("${user.wrongUsername}")
+    protected String wrongUsername;
 
     /**
      * 密码必须包含数字, 小写字母, 大写字母, 并且不能包含数字、字母和下划线以及 !, -, @ 以外的字符!
      */
-    protected static final String WRONG_PASSWORD = "wrongPassword";
+    @Value("${user.wrongPassword}")
+    protected String wrongPassword;
 
     /**
      * 验证码错误!
      */
-    protected static final String WRONG_CODE = "wrongCode";
+    @Value("${user.wrongCode}")
+    protected String wrongCode;
 
     /**
      * 用户名长度应为 8 至 20 之间!
      */
-    protected static final String WRONG_USERNAME_LENGTH = "wrongUsernameLength";
+    @Value("${user.wrongUsernameLength}")
+    protected String wrongUsernameLength;
 
     /**
      * 密码长度应为 8 至 32 之间!
      */
-    protected static final String WRONG_PASSWORD_LENGTH = "wrongPasswordLength";
+    @Value("${user.wrongPasswordLength}")
+    protected String wrongPasswordLength;
 
     /**
      * 两次输入的密码不一样! 按下 ctrl + alt 可以返回重新输入!
      */
-    protected static final String NO_SAME_PASSWORD = "noSamePassword";
+    @Value("${user.noSamePassword}")
+    protected String noSamePassword;
 
     /**
      * 请填写用户名!
      */
-    protected static final String NULL_USERNAME = "nullUsername";
+    @Value("${user.nullUsername}")
+    protected String nullUsername;
 
     /**
      * 请填写密码!
      */
-    protected static final String NULL_PASSWORD = "nullPassword";
+    @Value("${user.nullPassword}")
+    protected String nullPassword;
 
     /**
      * 请填写验证码!
      */
-    protected static final String NULL_CHECK_CODE = "nullCheckCode";
+    @Value("${user.nullCheckCode}")
+    protected String nullCheckCode;
+
+    /**
+     * 用户名符合要求
+     */
+    @Value("${user.conformUsername}")
+    protected String conformUsername;
+
+    /**
+     * 密码符合要求
+     */
+    @Value("${user.conformPassword}")
+    protected String conformPassword;
+
+    @Value("${user.usernameRegStr.regexp}")
+    private String usernameRegStr;
+
+    @Value("${user.passwordRegStr.regexp}")
+    private String passwordRegStr;
 
     /**
      * 用户名正则表达式
      */
-    public static Pattern usernameReg = Pattern.compile("[^0-9a-zA-Z_]");
+    public Pattern usernameReg;
 
     /**
      * 密码正则表达式
      */
-    public static Pattern passwordReg = Pattern.compile("[^0-9a-zA-Z_!@-]");
+    public Pattern passwordReg;
+
+    @PostConstruct
+    private void init() {
+        this.usernameReg = Pattern.compile(usernameRegStr);
+        this.passwordReg = Pattern.compile(passwordRegStr);
+    }
 
     /**
      * 检查用户名是否符合要求
+     *
      * @param username 用户名
      * @return 返回错误标识, 符合要求返回 null
      */
-    protected String checkUsername(String username) {
-        final int usernameMinLength = 8;
-        final int usernameMaxLength = 20;
-        if(!(usernameMinLength <= username.length() && username.length() <= usernameMaxLength)) {
-            return WRONG_USERNAME_LENGTH;
+    protected Result<?> checkUsername(String username) {
+        if (!(usernameMinLength <= username.length() && username.length() <= usernameMaxLength)) {
+            log.debug("用户名长度不符合要求!");
+            return Result.errorParam(wrongUsernameLength);
         }
         // 检查账号是否符合要求
         Matcher matcher = usernameReg.matcher(username);
-        if(matcher.find()) {
-            return WRONG_USERNAME;
+        if (matcher.find()) {
+            return Result.ok(conformUsername);
         }
-        return null;
+        log.debug("username: {}, 用户名不符合要求!", username);
+        return Result.errorParam(wrongUsername);
     }
 
     /**
      * 检查密码是否符合要求
-     * @param password 密码
+     *
+     * @param password        密码
      * @param confirmPassword 再次确认的密码
      * @return 返回错误标识, 符合要求返回 null
      */
-    protected String checkPassword(String password, String confirmPassword) {
-        if(password == null) {
-            return NULL_PASSWORD;
+    protected Result<?> checkPassword(String password, String confirmPassword) {
+        if (password == null) {
+            return Result.errorParam(nullPassword);
         }
-        if(!password.equals(confirmPassword)) {
-            return NO_SAME_PASSWORD;
+        if (!password.equals(confirmPassword)) {
+            return Result.errorParam(noSamePassword);
         }
-        final int passwordMinLength = 8;
-        final int passwordMaxLength = 32;
-        if(!(passwordMinLength <= password.length() && password.length() <= passwordMaxLength)) {
-            return WRONG_PASSWORD_LENGTH;
+        if (!(passwordMinLength <= password.length() && password.length() <= passwordMaxLength)) {
+            return Result.errorParam(wrongPasswordLength);
         }
         // 检查密码是否符合要求
         Matcher matcher = passwordReg.matcher(password);
-        if(matcher.find()) {
-            return WRONG_PASSWORD;
+        if (matcher.find()) {
+            return Result.ok(conformPassword);
         }
-        final String capital = "capital";
-        final String ordinary = "ordinary";
-        final String number = "number";
-        // 至少要求包含一个
-        Map<String, Boolean> map = new HashMap<String, Boolean>(4){{
-            // 大写字母
-            put(capital, true);
-            // 小写字母
-            put(ordinary, false);
-            // 数字
-            put(number, false);
-        }};
-        for(char c : password.toCharArray()) {
-            if ('0' <= c && c <= '9') {
-                map.put(number, true);
-            } else if ('A' <= c && c <= 'Z') {
-                map.put(capital, true);
-            } else if ('a' <= c && c <= 'z') {
-                map.put(ordinary, true);
-            }
-        }
-        if(!(map.get(capital) && map.get(ordinary) && map.get(number))) {
-            return WRONG_PASSWORD;
-        }
-        return null;
+        return Result.errorParam(wrongPassword);
     }
 }

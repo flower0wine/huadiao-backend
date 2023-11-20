@@ -22,7 +22,6 @@ import java.util.*;
  * @description 用户信息控制器实现类
  */
 @RestController
-@CrossOrigin
 public class UserControllerImpl extends AbstractController implements UserController {
     private UserService userService;
     private PoemService poemService;
@@ -38,7 +37,7 @@ public class UserControllerImpl extends AbstractController implements UserContro
     }
 
     @Override
-    @GetMapping("/huadiaoHeader")
+    @GetMapping("/header")
     public UserAbstractDto getHuadiaoHeaderUserInfo(HttpSession session) {
         Integer uid = (Integer) session.getAttribute(uidKey);
         return userService.getHuadiaoHeaderUserInfo(uid);
@@ -46,8 +45,8 @@ public class UserControllerImpl extends AbstractController implements UserContro
 
     @Override
     @PostMapping("/common/login")
-    public Result<String> huadiaoUserLogin(@RequestBody Map<String, String> map) throws Exception {
-        return userService.huadiaoUserLogin(map.get("username"), map.get("password"));
+    public Result<String> huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, String> map) throws Exception {
+        return userService.huadiaoUserLogin(request, response, map.get("username"), map.get("password"));
     }
 
     @Override
@@ -62,70 +61,25 @@ public class UserControllerImpl extends AbstractController implements UserContro
 
     @Override
     @GetMapping("/common/registerCode")
-    public void getCheckCode(HttpSession session) throws Exception {
-        userService.getCheckCode(session);
+    public void getCheckCode(HttpServletResponse response,
+                             HttpSession session,
+                             @CookieValue("JSESSIONID") String jsessionid) throws Exception {
+        userService.getCheckCode(response, session, jsessionid);
     }
 
     @Override
     @PostMapping("/common/register")
-    public String registerHuadiao(@RequestBody Map<String, String> map, HttpSession session) throws Exception {
-        return userService.registerHuadiao(session, map.get("username"), map.get("password"), map.get("confirmPassword"), map.get("checkCode"));
+    public Result<?> registerHuadiao(@RequestBody Map<String, String> map,
+                                     HttpSession session,
+                                     @CookieValue("JSESSIONID") String jsessionid) throws Exception {
+        return userService.registerHuadiao(
+                session,
+                map.get("username"),
+                map.get("password"),
+                map.get("confirmPassword"),
+                map.get("checkCode"),
+                jsessionid
+        );
     }
 
-    @Override
-    @PostMapping("/userInfo")
-    public Result<?> insertOrUpdateUserInfo(@RequestBody Map<String, String> map, HttpSession session) throws Exception {
-        Integer uid = (Integer) session.getAttribute(uidKey);
-        Date bornDate = new Date(Long.parseLong(map.get("bornDate")));
-        String sex = map.get("sex");
-        String school = map.get("school");
-        String canvases = map.get("canvases");
-        String nickname = map.get(nicknameKey);
-        String userId = session.getAttribute(userIdKey).toString();
-        return userInfoService.insertOrUpdateUserInfo(uid, userId, nickname, canvases, sex, bornDate, school);
-    }
-
-    @Override
-    @GetMapping("/userInfo")
-    public Result<?> getUserInfo(HttpSession session) {
-        Integer uid = (Integer) session.getAttribute(uidKey);
-        String userId = (String) session.getAttribute(userIdKey);
-        return userInfoService.getMineInfo(uid, userId);
-    }
-
-    @Override
-    @GetMapping("/setting/message/get")
-    public Result<?> getUserMessageSettings(HttpSession session) {
-        Integer uid = (Integer) session.getAttribute(uidKey);
-        String userId = (String) session.getAttribute(userIdKey);
-        return userSettingsService.getMessageSettings(uid, userId);
-    }
-
-    @Override
-    @GetMapping("/setting/account/get")
-    public Result<?> getUserAccountSettings(HttpSession session) {
-        Integer uid = (Integer) session.getAttribute(uidKey);
-        String userId = (String) session.getAttribute(userIdKey);
-        return userSettingsService.getUserSettings(uid, userId);
-    }
-
-    @Override
-    @PostMapping("/setting/modify")
-    public Result<?> modifyUserSettings(HttpSession session, @RequestBody Map<String, String> settingMap) throws Exception {
-        Integer uid = (Integer) session.getAttribute(uidKey);
-        String userId = (String) session.getAttribute(userIdKey);
-        if(settingMap == null) {
-            return Result.blankParam();
-        }
-        // set 集合去重, 防止可能的错误, 或者入侵
-        Set<String> settingsSet = new HashSet<>(settingMap.values());
-        return userSettingsService.modifyAccountSettings(uid, userId, settingsSet);
-    }
-
-    @Override
-    @GetMapping("/share")
-    public UserShareDto getUserShare(HttpSession httpSession) {
-        Integer uid = (Integer) httpSession.getAttribute(uidKey);
-        return userService.getUserShareInfo(uid);
-    }
 }

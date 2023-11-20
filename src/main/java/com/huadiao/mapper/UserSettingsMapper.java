@@ -1,6 +1,6 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.AccountSettings;
+import com.huadiao.entity.account.AccountSettings;
 import com.huadiao.entity.dto.accountsettings.PublicInfoSettingsDto;
 import org.apache.ibatis.annotations.Param;
 

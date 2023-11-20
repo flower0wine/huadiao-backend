@@ -1,16 +1,9 @@
 package com.huadiao.controller;
 
-import com.huadiao.entity.FollowGroup;
 import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.followfan.FollowFanBaseInfoDto;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户关注与粉丝控制器接口

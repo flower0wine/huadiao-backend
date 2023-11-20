@@ -5,8 +5,8 @@ import cn.hutool.captcha.CircleCaptcha;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.SexEnum;
 import com.huadiao.entity.dto.userdto.*;
+import com.huadiao.entity.elasticsearch.UserEs;
 import com.huadiao.mapper.*;
-import com.huadiao.service.AbstractUserInfoService;
 import com.huadiao.service.AbstractUserService;
 import com.huadiao.util.CreateHuadiaoUserId;
 import com.huadiao.util.GeneratorCookie;
@@ -14,13 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author flowerwine
@@ -48,7 +48,9 @@ public class UserServiceImpl extends AbstractUserService {
 
     @Override
     public UserAbstractDto getHuadiaoHeaderUserInfo(Integer uid) {
-        UserAbstractDto userAbstractDto = userInfoJedisUtil.getUserInfoByUid(uid);
+        UserShareDto userShareDto = userMapper.selectUserShareDtoByUid(uid);
+        List<Integer> followFans = followFanMapper.countFollowAndFansByUid(uid);
+        UserAbstractDto userAbstractDto = UserAbstractDto.loadUserAbstractInfo(userShareDto, followFans);
         // 用户已登录
         userAbstractDto.setLogin(USER_LOGIN_STATUS);
         log.debug("uid 为 {} 的用户已登录, 并获取了导航栏信息", uid);
@@ -57,7 +59,7 @@ public class UserServiceImpl extends AbstractUserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<String> huadiaoUserLogin(String username, String password) throws ServletException, IOException {
+    public Result<String> huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, String username, String password) throws ServletException, IOException {
         UserBaseDto userBaseDto = userMapper.selectUserByUsernameAndPassword(username, password);
         log.debug("用户使用用户名为 {} 和密码为 {} 的账号进行登录", username, password);
         // 不存在该用户
@@ -75,18 +77,11 @@ public class UserServiceImpl extends AbstractUserService {
             // 添加 cookie 维持用户登录状态
             response.addCookie(GeneratorCookie.createIdentityCookie(userBaseDto.getUserId()));
 
-
-            /**
-             * 2023-06-26 留下:
-             * 无法登录, 每次获取的 session 不同
-             */
-
-
             HttpSession session = request.getSession();
             session.setAttribute("uid", uid);
             session.setAttribute("userId", userBaseDto.getUserId());
             session.setAttribute("nickname", userBaseDto.getUsername());
-            session.setMaxInactiveInterval(SESSION_SURVIVAL_TIME);
+            session.setMaxInactiveInterval(sessionSurvivalTime);
             return Result.ok(null);
         }
     }
@@ -100,60 +95,60 @@ public class UserServiceImpl extends AbstractUserService {
     }
 
     @Override
-    public void getCheckCode(HttpSession session) throws Exception {
-        CircleCaptcha circleCaptcha = CaptchaUtil.createCircleCaptcha(CODE_IMAGE_WIDTH, CODE_IMAGE_HEIGHT, CODE_LENGTH, CODE_DISTURB_COUNT);
+    public void getCheckCode(HttpServletResponse response, HttpSession session, String jsessionid) throws Exception {
+        CircleCaptcha circleCaptcha = CaptchaUtil.createCircleCaptcha(codeImageWidth, codeImageHeight, codeLength, codeDisturbCount);
         circleCaptcha.write(response.getOutputStream());
         String code = circleCaptcha.getCode();
-        session.setAttribute("checkCode", code);
-        log.debug("用户获取验证码为 {}", code);
+        // 保存验证码到 redis
+        userBaseJedisUtil.setCheckCode(jsessionid, code);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String registerHuadiao(HttpSession session, String username, String password, String confirmPassword, String checkCode) throws Exception {
+    public Result<?> registerHuadiao(HttpSession session, String username, String password, String confirmPassword, String checkCode, String jsessionid) throws Exception {
         log.info("用户尝试注册花凋账号, 用户名 {}, 验证码 {}", username, checkCode);
         if (username == null) {
-            return NULL_USERNAME;
+            return Result.errorParam(nullUsername);
         } else if (password == null) {
-            return NULL_PASSWORD;
+            return Result.errorParam(nullPassword);
         } else if (checkCode == null) {
-            return NULL_CHECK_CODE;
+            return Result.errorParam(nullCheckCode);
         }
         // 检查用户名
-        String checkUsername = checkUsername(username);
-        if (checkUsername != null) {
-            log.debug("用户输入的用户名不符合要求, 为 {}, 错误标识为 {}", username, checkUsername);
-            return checkUsername;
+        Result<?> result = checkUsername(username);
+        if (!result.succeed()) {
+            log.debug("用户输入的用户名不符合要求, 为 {}, 错误标识为 {}", username, result.getData());
+            return result;
         }
         // 检查密码
-        String checkPassword = checkPassword(password, confirmPassword);
-        if (checkPassword != null) {
-            log.debug("用户输入的密码不符合要求, 第一次密码为 {}, 第二次密码为 {}, 错误标识为 {}", password, confirmPassword, checkPassword);
-            return checkPassword;
+        result = checkPassword(password, confirmPassword);
+        if (!result.succeed()) {
+            log.debug("用户输入的密码不符合要求, 第一次密码为 {}, 第二次密码为 {}, 错误标识为 {}", password, confirmPassword, result.getData());
+            return result;
         }
         // 检查验证码
-        Object code = session.getAttribute("checkCode");
+        String code = userBaseJedisUtil.getCheckCode(jsessionid);
         if (!checkCode.equals(code)) {
             log.debug("用户输入的验证码不一致, 正确的验证码为 {}, 用户输入的验证码为 {}", code, checkCode);
-            return WRONG_CODE;
+            return Result.errorParam(wrongCode);
         }
 
         // 检查用户名是否重复
         UserBaseDto userBaseDto = userMapper.selectUserByUsername(username);
         if (userBaseDto != null) {
             log.debug("用户名输入的用户名已存在, 用户名为 {}", username);
-            return SAME_USERNAME;
+            return Result.errorParam(sameUsername);
         }
         log.debug("用户通过所有的注册检查! 下面开始注册新花凋用户");
         boolean end = false;
         String userId = null;
-        // 计数不会产生 null
-        int uid = userMapper.countAllUser() + 1;
+        int uid = userBaseJedisUtil.generateUid();
         log.debug("第 {} (uid) 位用户即将加入!", uid);
+        // 生成的 userId 如果重复, 循环生成
         while (!end) {
             userId = CreateHuadiaoUserId.createUserId();
-            String existedUserId = userMapper.selectUserIdByUid(uid);
-            if(userId.equals(existedUserId)) {
+            Integer existedUid = userMapper.selectUidByUserId(userId);
+            if(existedUid != null) {
                 log.trace("为新用户创建的 userId {} 重复, 准备再次创建", userId);
                 continue;
             }
@@ -172,16 +167,15 @@ public class UserServiceImpl extends AbstractUserService {
         log.trace("新增用户账号信息成功 (uid: {}, userId{})", uid, userId);
         // 新增用户番剧信息
         huadiaoHouseMapper.insertHuadiaoHouseInfoByUid(uid, null, null, null, null, null, null);
-        log.info("用户 uid {}, nickname: {}, userId: {} 注册成功", uid, username, userId);
-        return SUCCEED_REGISTER;
-    }
-
-    @Override
-    public UserShareDto getUserShareInfo(Integer uid) {
-        log.debug("uid 为 {} 的用户尝试获取共享信息", uid);
-        UserShareDto userShareDto = userMapper.selectUserShareDtoByUid(uid);
-        log.debug("uid 为 {} 的用户成功获取共享信息, userShareDto: {}", uid, userShareDto);
-        return userShareDto;
+        UserEs userEs = new UserEs();
+        userEs.setUid(uid);
+        userEs.setUserId(userId);
+        // 保存至 elasticsearch
+        userRepository.save(userEs);
+        log.info("用户 uid {}, username: {}, userId: {} 注册成功", uid, username, userId);
+        // 注册成功删除验证码
+        userBaseJedisUtil.deleteCheckCode(jsessionid);
+        return Result.ok(succeedRegister);
     }
 
     @Override

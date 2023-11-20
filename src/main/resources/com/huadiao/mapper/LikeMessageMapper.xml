@@ -13,7 +13,7 @@
         <association property="likeMessageItem" resultMap="likeNoteMessageItemResultMap"/>
         <association property="count" select="com.huadiao.mapper.NoteMapper.countNoteLikeByUid"
                      column="{uid=author_uid, noteId=note_id}"/>
-        <collection property="userList" select="com.huadiao.mapper.LikeMessageMapper.selectLikeNoteUserByUid"
+        <collection property="userEsList" select="com.huadiao.mapper.LikeMessageMapper.selectLikeNoteUserByUid"
                     column="{noteId=note_id, uid=author_uid, limit=limit}"/>
     </resultMap>
 
@@ -70,7 +70,7 @@
         <association property="count" select="com.huadiao.mapper.NoteMapper.countCommentLikeByUid"
                      column="{uid=author_uid, noteId=note_id, rootCommentId=root_comment_id, subCommentId=sub_comment_id}"/>
         <association property="likeMessageItem" resultMap="likeCommentMessageItemResultMap"/>
-        <collection property="userList" select="com.huadiao.mapper.LikeMessageMapper.selectLikeCommentUserByUid"
+        <collection property="userEsList" select="com.huadiao.mapper.LikeMessageMapper.selectLikeCommentUserByUid"
                     column="{rootCommentId=root_comment_id, subCommentId=sub_comment_id, noteId=note_id, uid=author_uid, limit=limit}">
         </collection>
     </resultMap>

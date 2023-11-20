@@ -1,8 +1,8 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.AnimeInfo;
-import com.huadiao.entity.CardBorderImage;
-import com.huadiao.entity.HuadiaoHouseInfo;
+import com.huadiao.entity.anime.AnimeInfo;
+import com.huadiao.entity.anime.CardBorderImage;
+import com.huadiao.entity.anime.HuadiaoHouseInfo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

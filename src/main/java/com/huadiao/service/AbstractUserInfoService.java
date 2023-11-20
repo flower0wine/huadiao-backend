@@ -4,6 +4,7 @@ import com.huadiao.entity.dto.userdto.UserAbstractDto;
 import com.huadiao.entity.dto.userdto.UserShareDto;
 import com.huadiao.mapper.FollowFanMapper;
 import com.huadiao.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Value;
 import redis.clients.jedis.JedisPool;
 
 import java.util.List;
@@ -31,5 +32,20 @@ public abstract class AbstractUserInfoService extends AbstractService implements
      * 学校最大长度为 30
      */
     public static int SCHOOL_MAX_LENGTH = 30;
+
+    @Value("${userInfo.nullNickname}")
+    protected String nullNickname;
+
+    @Value("${userInfo.wrongNicknameLength}")
+    protected String wrongNicknameLength;
+
+    @Value("${userInfo.wrongSex}")
+    protected String wrongSex;
+
+    @Value("${userInfo.wrongSchoolLength}")
+    protected String wrongSchoolLength;
+
+    @Value("${userInfo.wrongBornDate}")
+    protected String wrongBornDate;
 
 }

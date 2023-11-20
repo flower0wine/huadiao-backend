@@ -22,7 +22,6 @@ import java.util.Map;
  * @projectName huadiao-user-back
  * @description 用户个人主页控制器实现类
  */
-@Slf4j
 @RestController
 @RequestMapping("/homepage")
 public class HomepageControllerImpl extends AbstractController implements HomepageController {

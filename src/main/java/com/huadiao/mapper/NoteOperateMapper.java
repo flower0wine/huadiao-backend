@@ -157,4 +157,19 @@ public interface NoteOperateMapper {
     void insertNoteCommentReport(@Param("uid") Integer uid, @Param("reportedUid") Integer reportedUid, @Param("noteId") Integer noteId,
                                  @Param("authorUid") Integer authorUid, @Param("rootCommentId") Long rootCommentId,
                                  @Param("subCommentId") Long subCommentId);
+
+    /**
+     * 删除指定的用户笔记访问记录
+     * @param uid 用户 uid
+     * @param noteId 笔记 id
+     * @return 返回删除条数
+     */
+    Integer deleteSpecificNoteHistoryByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId);
+
+    /**
+     * 删除用户所有的笔记访问记录
+     * @param uid 用户 uid
+     * @return 删除记录条数
+     */
+    Integer deleteAllNoteHistoryByUid(@Param("uid") Integer uid);
 }

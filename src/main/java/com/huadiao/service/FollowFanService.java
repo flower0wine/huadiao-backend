@@ -1,13 +1,8 @@
 package com.huadiao.service;
 
-import com.huadiao.entity.FollowFan;
-import com.huadiao.entity.FollowGroup;
 import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.followfan.FollowFanBaseInfoDto;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 业务层: 关注与粉丝处理接口

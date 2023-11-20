@@ -2,6 +2,7 @@ package com.huadiao.service;
 
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.userdto.UserAbstractDto;
+import com.huadiao.entity.dto.userdto.UserShareDto;
 import com.huadiao.entity.dto.userinfodto.UserInfoDto;
 import com.huadiao.mapper.FollowFanMapper;
 import com.huadiao.mapper.UserMapper;
@@ -30,7 +31,7 @@ public interface UserInfoService {
      */
     Result<?> insertOrUpdateUserInfo(Integer uid, String userId, String nickname,
                                   String canvases, String sex,
-                                  Date bornDate, String school) throws Exception;
+                                  Long bornDate, String school) throws Exception;
 
     /**
      * 获取用户信息
@@ -48,4 +49,13 @@ public interface UserInfoService {
      * @return 返回用户信息
      */
     Result<?> getUserInfo(Integer uid, String userId, Integer viewedUid);
+
+    /**
+     * 获取用户共享信息
+     *
+     * @param uid 用户 uid
+     * @return 返回共享信息
+     */
+    UserShareDto getUserShareInfo(Integer uid);
+
 }

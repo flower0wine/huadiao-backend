@@ -2,7 +2,7 @@ package com.huadiao.redis.impl;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.huadiao.entity.AccountSettings;
+import com.huadiao.entity.account.AccountSettings;
 import com.huadiao.redis.AbstractJedis;
 import com.huadiao.redis.UserSettingJedisUtil;
 import lombok.extern.slf4j.Slf4j;

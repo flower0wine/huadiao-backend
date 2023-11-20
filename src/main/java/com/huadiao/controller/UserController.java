@@ -28,11 +28,13 @@ public interface UserController extends Controller {
     /**
      * 或吊用户进行登录
      *
+     * @param request 请求
+     * @param response 响应
      * @param map 请求体参数集合
      * @return 返回提示信息
      * @throws Exception 可能抛出异常
      */
-    Result<String> huadiaoUserLogin(Map<String, String> map) throws Exception;
+    Result<String> huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, Map<String, String> map) throws Exception;
 
     /**
      * 退出登录
@@ -45,70 +47,22 @@ public interface UserController extends Controller {
     /**
      * 获取注册账号的验证码
      *
+     * @param response 响应
      * @param session session
+     * @param jsessionid jsessionid
      * @throws Exception 可能抛出异常
      */
-    void getCheckCode(HttpSession session) throws Exception;
+    void getCheckCode(HttpServletResponse response, HttpSession session, String jsessionid) throws Exception;
 
     /**
      * 注册花凋账号
      *
      * @param map     账号, 密码, 验证码的集合
      * @param session session 对象
+     * @param jsessionid jsessionid
      * @return 返回错误或正确标识
      * @throws Exception 可能抛出异常
      */
-    String registerHuadiao(Map<String, String> map, HttpSession session) throws Exception;
+    Result<?> registerHuadiao(Map<String, String> map, HttpSession session, String jsessionid) throws Exception;
 
-    /**
-     * 新增用户信息, 如果用户信息存在则更改用户信息
-     *
-     * @param map     用户信息集合
-     * @param session session 对象
-     * @return 返回错误提示信息, 如日期错误返回 wrongBornDate
-     * @throws Exception 可能抛出异常
-     */
-    Result<?> insertOrUpdateUserInfo(Map<String, String> map, HttpSession session) throws Exception;
-
-    /**
-     * 获取用户信息
-     *
-     * @param session session 对象
-     * @return 返回用户详细信息
-     */
-    Result<?> getUserInfo(HttpSession session);
-
-    /**
-     * 获取用户消息设置
-     *
-     * @param session session 对象
-     * @return 返回消息设置
-     */
-    Result<?> getUserMessageSettings(HttpSession session);
-
-    /**
-     * 获取用户设置
-     *
-     * @param session session 对象
-     * @return 返回用户设置
-     */
-    Result<?> getUserAccountSettings(HttpSession session);
-
-    /**
-     * 更新账号设置
-     *
-     * @param settingMap 设置集合
-     * @param session    session 对象
-     * @return 返回更新成功提示信息
-     * @throws Exception 可能会抛出异常
-     */
-    Result<?> modifyUserSettings(HttpSession session, Map<String, String> settingMap) throws Exception;
-
-    /**
-     * 获取可共享用户信息
-     *
-     * @param httpSession session 对象
-     * @return 返回可共享对象
-     */
-    UserShareDto getUserShare(HttpSession httpSession);
 }

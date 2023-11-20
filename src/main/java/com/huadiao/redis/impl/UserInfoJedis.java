@@ -75,25 +75,10 @@ public class UserInfoJedis extends AbstractJedis implements UserInfoJedisUtil {
         jedis.close();
     }
 
-    private UserAbstractDto getUserAbstractDto(Integer uid) {
+    @Override
+    public UserAbstractDto getUserAbstractDto(Integer uid) {
         UserShareDto userShareDto = userMapper.selectUserShareDtoByUid(uid);
         List<Integer> followFans = followFanMapper.countFollowAndFansByUid(uid);
         return UserAbstractDto.loadUserAbstractInfo(userShareDto, followFans);
-    }
-
-    @Override
-    public UserAbstractDto getUserInfoByUid(Integer uid) {
-        Jedis jedis = jedisPool.getResource();
-        String jedisKey = StrUtil.format(redisKeyUserInfo, uid);
-        String userInfo = jedis.get(jedisKey);
-        if (userInfo != null) {
-            jedis.close();
-            return JSONUtil.toBean(userInfo, UserAbstractDto.class);
-        } else {
-            UserAbstractDto userAbstractDto = getUserAbstractDto(uid);
-            jedis.set(jedisKey, JSONUtil.toJsonStr(userAbstractDto));
-            jedis.close();
-            return userAbstractDto;
-        }
     }
 }

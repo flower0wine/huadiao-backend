@@ -1,6 +1,6 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.HomepageInfo;
+import com.huadiao.entity.homepage.HomepageInfo;
 import org.apache.ibatis.annotations.Param;
 
 /**

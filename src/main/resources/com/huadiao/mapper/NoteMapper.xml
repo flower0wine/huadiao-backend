@@ -4,8 +4,8 @@
 
     <!--新增笔记-->
     <insert id="insertNewNoteByUid">
-        insert into huadiao_note(`note_id`, `uid`, `note_title`, `note_content`, `publish_time`)
-        values (#{noteId}, #{uid}, #{noteTitle}, #{noteContent}, now())
+        insert into huadiao_note(`note_id`, `uid`, `note_title`, `note_abstract`, `note_content`, `publish_time`)
+        values (#{noteId}, #{uid}, #{noteTitle}, #{noteAbstract}, #{noteContent}, now())
         on duplicate key update `modify_date`  = now(),
                                 `modify_times` = `modify_times` + 1,
                                 `note_title`   = #{noteTitle},
@@ -14,9 +14,11 @@
 
     <!--新增笔记评论-->
     <insert id="insertNoteCommentByUid">
-        insert into huadiao_note_comment(`uid`, `note_id`, `author_uid`, `root_comment_id`, `sub_comment_id`,
+        insert into huadiao_note_comment(`uid`, `note_id`, `replied_uid`, `author_uid`, `root_comment_id`,
+                                         `sub_comment_id`,
                                          `comment_time`, `comment_content`)
-        values (#{uid}, #{noteId}, #{authorUid}, #{rootCommentId}, #{subCommentId}, now(), #{commentContent});
+        values (#{uid}, #{noteId}, #{replyUid}, #{authorUid}, #{rootCommentId}, #{subCommentId}, now(),
+                #{commentContent});
     </insert>
 
     <!--删除笔记-->
@@ -38,7 +40,7 @@
           and `sub_comment_id` = #{subCommentId};
     </delete>
 
-    <resultMap id="singleNoteDtoResultMap" type="com.huadiao.entity.dto.note.ShareNoteDto">
+    <resultMap id="singleNoteDtoResultMap" type="com.huadiao.entity.note.Note">
         <result property="noteId" column="note_id"/>
         <result property="noteTitle" column="note_title"/>
         <result property="noteContent" column="note_content"/>
@@ -55,13 +57,13 @@
                `note_title`,
                `note_content`,
                `publish_time`,
-               count(distinct t2.uid) as `like_count`,
-               count(distinct t3.uid) as `view_count`,
-               count(distinct t4.uid) as `star_count`,
-               count(t5.uid)          as `comment_count`
+               count(distinct t2.uid)                              as `like_count`,
+               count(distinct t3.uid)                              as `view_count`,
+               count(distinct t4.uid)                              as `star_count`,
+               count(distinct `root_comment_id`, `sub_comment_id`) as `comment_count`
         from huadiao_note t1
-                 left join huadiao_note_view t3 on t1.uid = t3.author_uid and t1.`note_id` = t3.`note_id`
                  left join huadiao_note_like t2 on t1.uid = t2.author_uid and t2.status and t1.`note_id` = t2.`note_id`
+                 left join huadiao_note_view t3 on t1.uid = t3.author_uid and t1.`note_id` = t3.`note_id`
                  left join huadiao_note_star t4 on t1.uid = t4.author_uid and t4.status and t1.`note_id` = t4.`note_id`
                  left join huadiao_note_comment t5
                            on t1.uid = t5.author_uid and t5.status and t1.`note_id` = t5.`note_id`
@@ -78,7 +80,7 @@
 
     <resultMap id="noteDetailsResultMap" type="com.huadiao.entity.dto.note.ShareNoteDto">
         <result property="noteTitle" column="note_title"/>
-        <result property="noteContent" column="note_content"/>
+        <result property="noteAbstract" column="note_abstract"/>
         <result property="publishTime" column="publish_time"/>
         <result property="noteId" column="note_id"/>
         <result property="likeCount" column="like_count"/>
@@ -91,7 +93,7 @@
         select `uid`,
                `note_id`,
                `note_title`,
-               `note_content`,
+               `note_abstract`,
                `publish_time`,
                (select count(*)
                 from huadiao_note_star t2
@@ -333,16 +335,16 @@
         select count(*)
         from huadiao_note_comment_like
         where `note_id` = #{noteId}
-          and `author_uid` = #{uid}
-          and `root_comment_id` = #{rootCommentId}
-          <choose>
-              <when test="subCommentId == null">
-                  and `sub_comment_id` = 0
-              </when>
-              <when test="subCommentId != null">
-                  and `sub_comment_id` = #{subCommentId}
-              </when>
-          </choose>
+        and `author_uid` = #{uid}
+        and `root_comment_id` = #{rootCommentId}
+        <choose>
+            <when test="subCommentId == null">
+                and `sub_comment_id` = 0
+            </when>
+            <when test="subCommentId != null">
+                and `sub_comment_id` = #{subCommentId}
+            </when>
+        </choose>
     </select>
 
 

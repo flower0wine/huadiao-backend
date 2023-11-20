@@ -26,7 +26,7 @@
         where `uid` = #{uid};
     </update>
 
-    <resultMap id="homepageInfoResultMap" type="com.huadiao.entity.HomepageInfo">
+    <resultMap id="homepageInfoResultMap" type="com.huadiao.entity.homepage.HomepageInfo">
         <result property="userAvatar" column="user_avatar"/>
         <result property="pageBackground" column="homepage_background"/>
         <result property="visitCount" column="visit_count"/>

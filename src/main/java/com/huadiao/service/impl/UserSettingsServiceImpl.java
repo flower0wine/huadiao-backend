@@ -1,6 +1,6 @@
 package com.huadiao.service.impl;
 
-import com.huadiao.entity.AccountSettings;
+import com.huadiao.entity.account.AccountSettings;
 import com.huadiao.entity.message.setting.MessageSetting;
 import com.huadiao.entity.Result;
 import com.huadiao.mapper.UserSettingsMapper;

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
  * @author flowerwine
  * @date 2023 年 10 月 07 日
  */
-@Controller
 @RestController
 @RequestMapping("/message/system")
 public class SystemMessageControllerImpl implements SystemMessageController {

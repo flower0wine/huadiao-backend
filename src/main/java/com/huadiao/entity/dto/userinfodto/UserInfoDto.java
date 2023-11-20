@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * @author flowerwine
  * @version 1.1
@@ -22,7 +24,7 @@ public class UserInfoDto {
     private String sex;
     private String canvases;
     private String school;
-    private String bornDate;
+    private Date bornDate;
     private String nickname;
     private String userId;
 }

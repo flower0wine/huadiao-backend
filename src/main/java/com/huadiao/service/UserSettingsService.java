@@ -1,9 +1,7 @@
 package com.huadiao.service;
 
-import com.huadiao.entity.AccountSettings;
 import com.huadiao.entity.Result;
 
-import java.util.List;
 import java.util.Set;
 
 /**

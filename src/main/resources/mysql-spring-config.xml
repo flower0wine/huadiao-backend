@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+">
+
+    <!--数据源配置-->
+    <bean id="mysqlDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${mysql.driverClassName}"/>
+        <property name="url" value="${mysql.url}"/>
+        <property name="username" value="${mysql.username}"/>
+        <property name="password" value="${mysql.password}"/>
+    </bean>
+
+    <!--mysql mybatis 配置-->
+    <bean id="mysqlSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--设置数据源-->
+        <property name="dataSource" ref="mysqlDataSource"/>
+        <!--引入 mybatis 配置文件-->
+        <property name="configLocation" value="classpath:mysql-mybatis-config.xml"/>
+        <!--设置 mybatis 映射文件的路径, 接口 mapper 路径与 mapper 映射文件路径不同时指定-->
+        <!--<property name="mapperLocations" value="classpath:com/huadiao/mapper/*.xml"/>-->
+    </bean>
+
+    <!--为 mapper 接口生成代理实现类, 配置了下面标签就不需要配置 mapperLocations, 只有包路径不同才需要配置-->
+    <bean id="mysqlMapperConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.huadiao.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="mysqlSqlSessionFactory"/>
+    </bean>
+
+    <!--事务管理器-->
+    <bean id="mysqlTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="mysqlDataSource"/>
+    </bean>
+
+    <!--使用 spring 事务注解需要开启事务注解驱动-->
+    <tx:annotation-driven transaction-manager="mysqlTransactionManager"/>
+
+</beans>

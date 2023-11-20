@@ -28,6 +28,7 @@ public class StarJedis extends AbstractJedis implements StarJedisUtil {
 
     public StarJedis(JedisPool jedisPool) {
         this.initialIdGenerator(jedisPool, jedisKeyNoteStarGroupId);
+        this.initialIdGenerator(jedisPool, jedisKeyAnimeStarGroupId);
     }
 
     @Override

@@ -17,7 +17,6 @@ import lombok.ToString;
 @ToString
 public class NoteRelationDto {
     /** 我的笔记? */
-    private Boolean me;
     private Boolean myLike;
     private Boolean myUnlike;
     private Boolean myStar;

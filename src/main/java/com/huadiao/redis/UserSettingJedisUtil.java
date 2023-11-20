@@ -1,6 +1,6 @@
 package com.huadiao.redis;
 
-import com.huadiao.entity.AccountSettings;
+import com.huadiao.entity.account.AccountSettings;
 
 import java.util.Set;
 

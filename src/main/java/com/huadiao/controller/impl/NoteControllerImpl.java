@@ -44,12 +44,13 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
 
     @Override
     @PostMapping("/publish")
-    public String publishNote(HttpSession session, @RequestBody Map<String, String> map) {
+    public Result<?> publishNote(HttpSession session, @RequestBody Map<String, String> map) {
         Integer uid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
         String noteTitle = map.get("title");
+        String summary  = map.get("summary");
         String noteContent = map.get("content");
-        return noteService.insertNewNote(uid, userId, noteTitle, noteContent);
+        return noteService.insertNewNote(uid, userId, summary, noteTitle, noteContent);
     }
 
     @Override
@@ -62,12 +63,13 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
 
     @Override
     @PostMapping("/modify")
-    public String modifyNote(HttpSession session, Integer noteId, @RequestBody Map<String, String> map) {
+    public Result<?> modifyNote(HttpSession session, Integer noteId, @RequestBody Map<String, String> map) {
         Integer uid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
         String noteTitle = map.get("title");
+        String noteSummary = map.get("summary");
         String noteContent = map.get("content");
-        return noteService.modifyNote(uid, userId, noteId, noteTitle, noteContent);
+        return noteService.modifyNote(uid, userId, noteId, noteTitle, noteSummary, noteContent);
     }
 
     @Override
@@ -79,7 +81,7 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
     }
 
     @Override
-    @GetMapping("/myNote")
+    @GetMapping("/edit")
     public SelfNoteDto getSingleNote(HttpSession session, Integer noteId) {
         Integer uid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
@@ -96,7 +98,7 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
 
     @Override
     @GetMapping("/comment")
-    public Result<List<NoteCommentDto>> getNoteComment(HttpSession session, Integer uid, Integer noteId, Integer offset, Integer row) {
+    public Result<?> getNoteComment(HttpSession session, Integer uid, Integer noteId, Integer offset, Integer row) {
         Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
         return noteService.getNoteComment(myUid, userId, uid, noteId, offset, row);
@@ -104,7 +106,7 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
 
     @Override
     @PostMapping("/comment/add")
-    public Result<Map<String, Object>> addNoteComment(HttpSession session, Integer uid, Integer noteId, @RequestBody Map<String, String> map) {
+    public Result<Map<String, Object>> addNoteComment(HttpSession session, Integer repliedUid, Integer uid, Integer noteId, @RequestBody Map<String, String> map) {
         Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
         String rootCommentId = map.get("rootCommentId");
@@ -113,6 +115,6 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
         if(rootCommentId != null) {
             commentId = Long.parseLong(rootCommentId);
         }
-        return noteOperateService.addNoteComment(myUid, userId, noteId, uid, commentId, commentContent);
+        return noteOperateService.addNoteComment(myUid, userId, noteId, repliedUid, uid, commentId, commentContent);
     }
 }

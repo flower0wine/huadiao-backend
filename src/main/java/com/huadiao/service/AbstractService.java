@@ -1,5 +1,8 @@
 package com.huadiao.service;
 
+import com.huadiao.elasticsearch.repository.NoteHistoryRepository;
+import com.huadiao.elasticsearch.repository.NoteRepository;
+import com.huadiao.elasticsearch.repository.UserRepository;
 import com.huadiao.entity.Result;
 import com.huadiao.redis.*;
 import lombok.extern.slf4j.Slf4j;
@@ -22,14 +25,9 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public abstract class AbstractService implements Service {
-    @Autowired
-    protected HttpServletRequest request;
 
     @Autowired
-    protected HttpServletResponse response;
-
-    @Autowired
-    protected HttpSession session;
+    protected UserBaseJedisUtil userBaseJedisUtil;
 
     @Autowired
     protected UserInfoJedisUtil userInfoJedisUtil;
@@ -51,6 +49,15 @@ public abstract class AbstractService implements Service {
 
     @Autowired
     protected MessageJedisUtil messageJedisUtil;
+
+    @Autowired
+    protected UserRepository userRepository;
+
+    @Autowired
+    protected NoteRepository noteRepository;
+
+    @Autowired
+    protected NoteHistoryRepository noteHistoryRepository;
 
     @Value("${huadiao.defaultRow}")
     protected int defaultRow;

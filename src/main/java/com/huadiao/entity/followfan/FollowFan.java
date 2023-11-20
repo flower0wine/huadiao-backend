@@ -1,40 +1,44 @@
-package com.huadiao.entity;
+package com.huadiao.entity.followfan;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 import java.util.Date;
 
 /**
  * @author flowerwine
- * @date 2023 年 09 月 18 日
+ * @version 1.1
+ * @projectName huadiao-user-back
+ * @description 装载有关注的用户或粉丝的信息
  */
-@Setter
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
-public class AnimeHistory {
+public class FollowFan {
     private Integer uid;
     private String userId;
     private String nickname;
     private String userAvatar;
-    private String animeCover;
-    private String animeTitle;
-    private Date visitTime;
+    private String canvases;
+    private Boolean friend;
+    private Date followTime;
 
     @Override
     public int hashCode() {
-        return this.getUid().hashCode();
+        return uid.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
         if(obj == null) {
             return false;
-        } else if(obj instanceof AnimeHistory) {
-            AnimeHistory animeHistory = (AnimeHistory) obj;
-            return this.getUid().equals(animeHistory.getUid());
+        }
+        if(obj instanceof FollowFan) {
+            FollowFan followFan = (FollowFan) obj;
+            return this.uid.equals(followFan.uid);
         }
         return false;
     }

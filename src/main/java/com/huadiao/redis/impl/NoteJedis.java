@@ -2,7 +2,9 @@ package com.huadiao.redis.impl;
 
 import com.huadiao.redis.AbstractJedis;
 import com.huadiao.redis.NoteJedisUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import redis.clients.jedis.JedisPool;
 
 /**
  * @author flowerwine
@@ -18,6 +20,13 @@ public class NoteJedis extends AbstractJedis implements NoteJedisUtil {
      */
     private String jedisKeyCommentId = "commentId";
 
+    private String jedisKeyNoteId = "noteId";
+
+    public NoteJedis(JedisPool jedisPool) {
+        initialIdGenerator(jedisPool, jedisKeyCommentId);
+        initialIdGenerator(jedisPool, jedisKeyNoteId);
+    }
+
     @Override
     public int generateCommentId() {
         return generateGeneratorId(jedisKeyCommentId);
@@ -26,5 +35,10 @@ public class NoteJedis extends AbstractJedis implements NoteJedisUtil {
     @Override
     public int getCommentId() {
         return getGeneratorId(jedisKeyCommentId);
+    }
+
+    @Override
+    public int generateNoteId() {
+        return generateGeneratorId(jedisKeyNoteId);
     }
 }

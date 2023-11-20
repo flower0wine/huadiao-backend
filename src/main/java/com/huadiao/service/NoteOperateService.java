@@ -75,12 +75,13 @@ public interface NoteOperateService {
      * @param uid 评论者 uid
      * @param userId 用户 id
      * @param noteId 笔记 id
+     * @param repliedUid 被回复者 uid
      * @param authorUid 作者 uid
      * @param rootCommentId 父评论 id
      * @param commentContent 评论内容
      * @return 返回新增过程中的提示
      */
-    Result<Map<String, Object>> addNoteComment(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, String commentContent);
+    Result<Map<String, Object>> addNoteComment(Integer uid, String userId, Integer noteId, Integer repliedUid, Integer authorUid, Long rootCommentId, String commentContent);
 
     /**
      * 删除笔记评论, 非作者只能删除自己的评论, 作者能删除任何人的评论, 如果是父评论将会删除其下的所有子评论

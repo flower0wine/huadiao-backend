@@ -40,7 +40,7 @@
         where uid = #{uid};
     </select>
 
-    <resultMap id="accountSettingsResultMap" type="com.huadiao.entity.AccountSettings">
+    <resultMap id="accountSettingsResultMap" type="com.huadiao.entity.account.AccountSettings">
         <result property="publicHomepageStatus" column="public_homepage_status"/>
         <result property="publicCanvasesStatus" column="public_canvases_status"/>
         <result property="publicFollowStatus" column="public_follow_status"/>

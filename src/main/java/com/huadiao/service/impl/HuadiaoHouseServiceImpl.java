@@ -1,6 +1,10 @@
 package com.huadiao.service.impl;
 
 import com.huadiao.entity.*;
+import com.huadiao.entity.account.AccountSettings;
+import com.huadiao.entity.anime.AnimeInfo;
+import com.huadiao.entity.anime.CardBorderImage;
+import com.huadiao.entity.anime.HuadiaoHouseInfo;
 import com.huadiao.mapper.HuadiaoHouseMapper;
 import com.huadiao.service.AbstractHuadiaoHouseService;
 import lombok.extern.slf4j.Slf4j;

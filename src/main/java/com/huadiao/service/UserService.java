@@ -1,9 +1,7 @@
 package com.huadiao.service;
 
-import com.huadiao.entity.AccountSettings;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.userdto.UserAbstractDto;
-import com.huadiao.entity.dto.userdto.UserShareDto;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -28,12 +26,14 @@ public interface UserService {
     /**
      * 花凋用户登录
      *
+     * @param request  请求
+     * @param response 响应
      * @param username 用户名
      * @param password 密码
      * @return 返回提示信息
      * @throws Exception 可能抛出异常
      */
-    Result<String> huadiaoUserLogin(String username, String password) throws Exception;
+    Result<String> huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, String username, String password) throws Exception;
 
     /**
      * 退出登录
@@ -48,10 +48,12 @@ public interface UserService {
     /**
      * 获取注册账号的验证码
      *
-     * @param session session
+     * @param response   响应
+     * @param session    session
+     * @param jsessionid jsessionid
      * @throws Exception 可能抛出异常
      */
-    void getCheckCode(HttpSession session) throws Exception;
+    void getCheckCode(HttpServletResponse response, HttpSession session, String jsessionid) throws Exception;
 
     /**
      * 注册花凋新用户
@@ -61,18 +63,12 @@ public interface UserService {
      * @param password        密码
      * @param confirmPassword 再次确认密码
      * @param checkCode       验证码
+     * @param jsessionid      jsessionid
      * @return 返回错误或正确标识
      * @throws Exception 可能抛出异常
      */
-    String registerHuadiao(HttpSession session, String username, String password, String confirmPassword, String checkCode) throws Exception;
+    Result<?> registerHuadiao(HttpSession session, String username, String password, String confirmPassword, String checkCode, String jsessionid) throws Exception;
 
-    /**
-     * 获取用户共享信息
-     *
-     * @param uid 用户 uid
-     * @return 返回共享信息
-     */
-    UserShareDto getUserShareInfo(Integer uid);
 
     /**
      * 根据 uid 判断用户是否存在

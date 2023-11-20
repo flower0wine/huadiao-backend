@@ -19,7 +19,7 @@ import java.util.Date;
 public class ShareNoteDto {
     private Integer noteId;
     private String noteTitle;
-    private String noteContent;
+    private String noteAbstract;
     private Date publishTime;
     private Integer viewCount;
     private Integer starCount;

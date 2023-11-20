@@ -24,11 +24,12 @@ public interface NoteService {
      *
      * @param uid         用户 uid
      * @param userId      用户 id
+     * @param noteSummary 笔记摘要
      * @param noteTitle   笔记标题
      * @param noteContent 笔记内容
      * @return 返回发布成功与否提示
      */
-    String insertNewNote(Integer uid, String userId, String noteTitle, String noteContent);
+    Result<?> insertNewNote(Integer uid, String userId, String noteSummary, String noteTitle, String noteContent);
 
     /**
      * 获取指定用户的笔记
@@ -68,10 +69,11 @@ public interface NoteService {
      * @param userId      用户 id
      * @param noteId      笔记 id
      * @param noteTitle   笔记标题
+     * @param noteSummary 笔记摘要
      * @param noteContent 笔记内容
      * @return 返回修改成功提示
      */
-    String modifyNote(Integer uid, String userId, Integer noteId, String noteTitle, String noteContent);
+    Result<?> modifyNote(Integer uid, String userId, Integer noteId, String noteTitle, String noteSummary, String noteContent);
 
     /**
      * 查找作者的所有笔记
@@ -94,6 +96,6 @@ public interface NoteService {
      * @param row       行数
      * @return 返回评论
      */
-    Result<List<NoteCommentDto>> getNoteComment(Integer uid, String userId, Integer authorUid, Integer noteId, Integer offset, Integer row);
+    Result<?> getNoteComment(Integer uid, String userId, Integer authorUid, Integer noteId, Integer offset, Integer row);
 
 }

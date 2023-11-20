@@ -1,6 +1,6 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.AnimeHistory;
+import com.huadiao.entity.history.AnimeHistory;
 import com.huadiao.entity.NoteHistory;
 import org.apache.ibatis.annotations.Param;
 
@@ -27,6 +27,13 @@ public interface HistoryMapper {
      * @return 返回笔记访问记录
      */
     List<NoteHistory> selectNoteHistoryByUid(@Param("uid") Integer uid, @Param("row") Integer row, @Param("offset") Integer offset);
+
+    /**
+     * 根据 用户 uid 查找所有的笔记 id
+     * @param uid 用户 uid
+     * @return 返回所有的笔记 id
+     */
+    List<Integer> selectAllNoteIdHistoryByUid(@Param("uid") Integer uid);
 
     /**
      * 获取番剧馆访问历史记录

@@ -1,7 +1,7 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.FollowFan;
-import com.huadiao.entity.FollowGroup;
+import com.huadiao.entity.followfan.FollowFan;
+import com.huadiao.entity.followfan.FollowGroup;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
