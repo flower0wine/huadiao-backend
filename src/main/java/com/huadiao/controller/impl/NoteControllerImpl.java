@@ -90,10 +90,10 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
 
     @Override
     @GetMapping("/all")
-    public Result<?> getAllNotes(HttpSession session, Integer authorUid) {
-        Integer uid = (Integer) session.getAttribute(uidKey);
+    public Result<?> getAllNotes(HttpSession session, Integer uid) {
+        Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
-        return noteService.getAllNote(uid, userId, authorUid);
+        return noteService.getAllNote(myUid, userId, uid);
     }
 
     @Override

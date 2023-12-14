@@ -137,7 +137,6 @@ public class NoteServiceImpl extends AbstractNoteService {
         map.put("starCount", note.getStarCount());
         map.put("commentCount", note.getCommentCount());
         map.put("publishTime", note.getPublishTime());
-        map.put("authorInfo", authorInfo);
         map.put("authorAndMeRelation", relation);
         map.put("noteAndMeRelation", noteRelationDto);
         return Result.ok(map);
@@ -254,14 +253,9 @@ public class NoteServiceImpl extends AbstractNoteService {
             }
         }
 
-        Map<String, Object> map = new HashMap<>(8);
         List<ShareNoteDto> shareNoteDtoList = noteMapper.selectAllNoteByUid(authorUid);
-        UserAbstractDto authorInfo = userInfoJedisUtil.getUserAbstractDto(authorUid);
-
-        map.put("me", me);
-        map.put("authorInfo", authorInfo);
-        map.put("noteList", shareNoteDtoList);
-        return Result.ok(map);
+        log.debug("uid, userId 分别为 {}, {} 的用户成功获取 uid 为 {} 的用户的所有笔记", uid, userId, authorUid);
+        return Result.ok(shareNoteDtoList);
     }
 
     /**

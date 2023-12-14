@@ -2,6 +2,7 @@ package com.huadiao.service.impl;
 
 import com.huadiao.entity.Result;
 import com.huadiao.entity.SexEnum;
+import com.huadiao.entity.dto.userdto.UserAbstractDto;
 import com.huadiao.entity.dto.userdto.UserShareDto;
 import com.huadiao.entity.dto.userinfodto.UserInfoDto;
 import com.huadiao.entity.elasticsearch.UserEs;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -101,10 +104,20 @@ public class UserInfoServiceIml extends AbstractUserInfoService {
     }
 
     @Override
-    public Result<?> getMineInfo(Integer uid, String userId) {
-        log.debug("uid, userId 分别为 {}, {} 的用户获取了自己的用户信息", uid, userId);
-        UserInfoDto userInfoDto = userInfoMapper.selectUserInfoByUid(uid);
-        return Result.ok(userInfoDto);
+    public Result<?> getUserInfo(Integer myUid, Integer uid, String userId) {
+        log.debug("uid, userId 分别为 {}, {} 的用户尝试获取 uid 为 {} 的用户信息", myUid, userId, uid);
+        Integer tempUid = uid == null ? myUid : uid;
+        UserAbstractDto userAbstractDto = userInfoJedisUtil.getUserAbstractDto(tempUid);
+        log.debug("uid, userId 分别为 {}, {} 的用户成功获取 uid 为 {} 的用户信息", myUid, userId, uid);
+
+        if (uid == null) {
+            return Result.ok(userAbstractDto);
+        } else {
+            Map<String, Object> map = new HashMap<>(4);
+            map.put("userInfo", userAbstractDto);
+            map.put("me", myUid.equals(uid));
+            return Result.ok(map);
+        }
     }
 
 
@@ -116,10 +129,4 @@ public class UserInfoServiceIml extends AbstractUserInfoService {
         return userShareDto;
     }
 
-    @Override
-    public Result<?> getUserInfo(Integer uid, String userId, Integer viewedUid) {
-        log.debug("uid, userId 分别为 {}, {} 的用户尝试获取用户 {} 的用户信息", uid, userId, viewedUid);
-        log.debug("uid, userId 分别为 {}, {} 的用户成功获取用户 {} 的用户信息", uid, userId, viewedUid);
-        return null;
-    }
 }

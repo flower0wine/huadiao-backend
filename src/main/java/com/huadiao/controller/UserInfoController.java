@@ -24,12 +24,13 @@ public interface UserInfoController extends Controller {
     Result<?> insertOrUpdateUserInfo(Map<String, String> map, HttpSession session) throws Exception;
 
     /**
-     * 获取用户信息
+     * 获取用户信息, 如果指定了 uid 则查询该 uid
      *
      * @param session session 对象
+     * @param uid 指定查询的用户 uid
      * @return 返回用户详细信息
      */
-    Result<?> getUserInfo(HttpSession session);
+    Result<?> getUserInfo(HttpSession session, Integer uid);
 
     /**
      * 获取可共享用户信息

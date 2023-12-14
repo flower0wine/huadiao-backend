@@ -63,10 +63,10 @@ public interface NoteController extends Controller {
     /**
      * 获取所有笔记
      * @param session session 对象
-     * @param authorUid 作者 uid
+     * @param uid 作者 uid
      * @return 返回所有笔记
      */
-    Result<?> getAllNotes(HttpSession session, Integer authorUid);
+    Result<?> getAllNotes(HttpSession session, Integer uid);
 
     /**
      * 获取笔记评论

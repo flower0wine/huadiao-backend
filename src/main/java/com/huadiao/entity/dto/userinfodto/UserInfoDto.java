@@ -27,4 +27,5 @@ public class UserInfoDto {
     private Date bornDate;
     private String nickname;
     private String userId;
+    private Integer uid;
 }
