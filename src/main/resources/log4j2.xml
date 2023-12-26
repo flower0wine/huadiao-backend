@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="trace" name="huadiao" packages="">
+<Configuration status="error" name="huadiao" packages="">
     <Appenders>
         <!--当日志文件到达指定大小时, 创建新日志文件-->
         <RollingFile name="rollingFile"
@@ -17,7 +17,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="trace">
+        <Root level="error">
             <AppenderRef ref="rollingFile"/>
             <AppenderRef ref="Console"/>
         </Root>

@@ -115,7 +115,7 @@ public class UserInfoServiceIml extends AbstractUserInfoService {
         } else {
             Map<String, Object> map = new HashMap<>(4);
             map.put("userInfo", userAbstractDto);
-            map.put("me", myUid.equals(uid));
+            map.put("me", myUid != null && myUid.equals(uid));
             return Result.ok(map);
         }
     }

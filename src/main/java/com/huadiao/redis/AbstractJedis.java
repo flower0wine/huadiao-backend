@@ -34,6 +34,8 @@ public abstract class AbstractJedis {
     @Autowired
     protected HuadiaoHouseMapper huadiaoHouseMapper;
     @Autowired
+    protected ForumNoteMapper forumNoteMapper;
+    @Autowired
     protected SystemMessageMapper systemMessageMapper;
 
     @Value("${jedis.defaultRedisInitialId}")

@@ -27,6 +27,8 @@
             <mvc:exclude-mapping path="/note/all"/>
             <mvc:exclude-mapping path="/search/user/**"/>
             <mvc:exclude-mapping path="/search/note/**"/>
+            <mvc:exclude-mapping path="/forum/**"/>
+            <mvc:exclude-mapping path="/userInfo"/>
             <bean class="com.huadiao.interceptor.LoginCheckInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>

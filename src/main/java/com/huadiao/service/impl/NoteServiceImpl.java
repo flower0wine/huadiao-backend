@@ -61,6 +61,8 @@ public class NoteServiceImpl extends AbstractNoteService {
         int noteId = noteJedisUtil.generateNoteId();
         // 笔记内容很大, 不做日志输出
         noteMapper.insertNewNoteByUid(uid, noteId, noteTitle, noteSummary, noteContent);
+        // 保存到首页论坛
+        forumJedisUtil.addNoteId(noteId);
         // 保存笔记信息到 elasticsearch
         NoteEs noteEs = new NoteEs();
         noteEs.setNoteId(noteId);

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huadiao.mapper.ForumNoteMapper">
+
+    <resultMap id="forumRankNoteResultMap" type="com.huadiao.entity.note.ForumRankNote">
+        <result property="uid" column="uid"/>
+        <result property="noteId" column="note_id"/>
+        <result property="title" column="note_title"/>
+    </resultMap>
+    <!--获取论坛笔记排行-->
+    <select id="selectForumRankNote" resultMap="forumRankNoteResultMap">
+        select t1.`uid`,
+               t1.`note_id`,
+               `note_title`,
+               count(distinct t2.`uid`) + count(distinct t3.`uid`) * 2 as `score`
+        from `huadiao_note` t1
+                 left join `huadiao_note_view` t2 on t2.`status` and t1.`note_id` = t2.`note_id`
+                 left join `huadiao_note_like` t3 on t3.`status` and t1.`note_id` = t3.`note_id`
+        where t1.`status`
+        group by t1.`note_id`, t2.`note_id`, t1.`uid`
+        order by `score` desc
+        limit #{noteRankMaxLength};
+    </select>
+
+
+    <resultMap id="forumNoteResultMap" type="com.huadiao.entity.note.ForumNote">
+        <result property="id" column="note_id"/>
+        <result property="title" column="note_title"/>
+        <result property="summary" column="note_abstract"/>
+        <result property="time" column="publish_time"/>
+        <result property="like" column="like_count"/>
+        <result property="view" column="view_count"/>
+        <association property="author" javaType="com.huadiao.entity.dto.userdto.UserShareDto">
+            <result property="uid" column="uid"/>
+            <result property="nickname" column="nickname"/>
+            <result property="userId" column="user_id"/>
+            <result property="userAvatar" column="user_avatar"/>
+        </association>
+    </resultMap>
+    <!--根据指定的笔记 id 来获取论坛笔记-->
+    <select id="selectForumNoteByNoteId" resultMap="forumNoteResultMap">
+        select t1.`note_id`,
+               `note_title`,
+               `note_abstract`,
+               `publish_time`,
+               t1.`uid`,
+               `user_id`,
+               `nickname`,
+               `user_avatar`,
+               count(distinct t2.`uid`) as `like_count`,
+               count(distinct t3.`uid`) as `view_count`
+        from `huadiao_note` t1
+                 left join `huadiao_note_like` t2 on t2.`status` and t1.`note_id` = t2.`note_id`
+                 left join `huadiao_note_view` t3 on t3.`status` and t1.`note_id` = t3.`note_id`
+                 left join `huadiao_user_info` t4 on t1.`uid` = t4.`uid`
+                 left join `huadiao_homepage` t5 on t1.`uid` = t5.`uid`
+                 left join `huadiao_user_base` t6 on t1.`uid` = t6.`uid`
+        where t1.`status`
+          and t1.`note_id` in (
+        <foreach collection="noteIdList" item="noteId" separator=", ">
+            #{noteId}
+        </foreach>
+            )
+        group by t1.`note_id`, t2.`note_id`, t3.`note_id`;
+    </select>
+
+    <!--查询笔记-->
+    <select id="selectForumNote" resultMap="forumNoteResultMap">
+        select t1.`note_id`,
+               `note_title`,
+               `note_abstract`,
+               `publish_time`,
+               t1.`uid`,
+               `user_id`,
+               `nickname`,
+               `user_avatar`,
+               count(distinct t2.`uid`) as `like_count`,
+               count(distinct t3.`uid`) as `view_count`
+        from `huadiao_note` t1
+                 left join `huadiao_note_like` t2 on t2.`status` and t1.`note_id` = t2.`note_id`
+                 left join `huadiao_note_view` t3 on t3.`status` and t1.`note_id` = t3.`note_id`
+                 left join `huadiao_user_info` t4 on t1.`uid` = t4.`uid`
+                 left join `huadiao_homepage` t5 on t1.`uid` = t5.`uid`
+                 left join `huadiao_user_base` t6 on t1.`uid` = t6.`uid`
+        where t1.`status`
+          and t1.`id` >= (select `id` from `huadiao_note` where huadiao_note.`status` order by `id` limit #{offset}, 1)
+        group by t1.`note_id`, t2.`note_id`, t3.`note_id`
+        limit #{row};
+    </select>
+</mapper>

@@ -4,6 +4,7 @@ import com.huadiao.entity.NoteHistory;
 import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.NoteRelationDto;
 import com.huadiao.entity.dto.note.ShareNoteDto;
+import com.huadiao.entity.note.ForumNote;
 import com.huadiao.entity.note.Note;
 import org.apache.ibatis.annotations.Param;
 
@@ -237,5 +238,12 @@ public interface NoteMapper {
      */
     Integer countCommentLikeByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("rootCommentId") Integer rootCommentId,
                                   @Param("subCommentId") Integer subCommentId);
+
+    /**
+     * 获取所有的笔记 id
+     * @return 返回查询到的笔记 id
+     */
+    List<Integer> selectAllNoteId();
+
 
 }

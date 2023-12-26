@@ -59,6 +59,9 @@ public abstract class AbstractService implements Service {
     @Autowired
     protected NoteHistoryRepository noteHistoryRepository;
 
+    @Autowired
+    protected ForumJedisUtil forumJedisUtil;
+
     @Value("${huadiao.defaultRow}")
     protected int defaultRow;
 

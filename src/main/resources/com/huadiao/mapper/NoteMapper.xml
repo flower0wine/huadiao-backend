@@ -347,6 +347,12 @@
         </choose>
     </select>
 
+    <!--查询所有的笔记 id-->
+    <select id="selectAllNoteId" resultType="java.lang.Integer">
+        select `note_id` from `huadiao_note` where `status`;
+    </select>
+
+
 
 </mapper>
 
