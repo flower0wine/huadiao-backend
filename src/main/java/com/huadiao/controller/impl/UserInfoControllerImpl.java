@@ -17,7 +17,7 @@ import java.util.Objects;
  * @date 2023 年 10 月 16 日
  */
 @RestController
-@RequestMapping("/userInfo")
+@RequestMapping("/userinfo")
 public class UserInfoControllerImpl extends AbstractController implements UserInfoController {
     private UserInfoService userInfoService;
 
