@@ -3,6 +3,9 @@ package com.huadiao.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author flowerwine
  * @version 1.1
@@ -40,11 +43,11 @@ public class Result<T> {
     }
 
     public static <T> Result<T> errorParam() {
-        return new Result<>(ResultCodeEnum.ERROR_PARAM,  null);
+        return new Result<>(ResultCodeEnum.ERROR_PARAM, null);
     }
 
     public static <T> Result<T> errorParam(T data) {
-        return new Result<>(ResultCodeEnum.ERROR_PARAM,  data);
+        return new Result<>(ResultCodeEnum.ERROR_PARAM, data);
     }
 
     public static <T> Result<T> blankParam() {

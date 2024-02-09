@@ -88,5 +88,5 @@ public interface NoteController extends Controller {
      * @param map 请求体
      * @return 返回增加过程中的提示
      */
-    Result<Map<String, Object>> addNoteComment(HttpSession session, Integer repliedUid, Integer uid, Integer noteId, Map<String, String> map);
+    Result<?> addNoteComment(HttpSession session, Integer repliedUid, Integer uid, Integer noteId, Map<String, String> map);
 }

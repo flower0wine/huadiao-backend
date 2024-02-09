@@ -68,13 +68,4 @@ public interface UserService {
      * @throws Exception 可能抛出异常
      */
     Result<?> registerHuadiao(HttpSession session, String username, String password, String confirmPassword, String checkCode, String jsessionid) throws Exception;
-
-
-    /**
-     * 根据 uid 判断用户是否存在
-     *
-     * @param uid 用户 uid
-     * @return 存在返回 true, 否则返回 false
-     */
-    boolean userExist(Integer uid);
 }

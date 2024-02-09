@@ -20,7 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author flowerwine
@@ -176,10 +178,5 @@ public class UserServiceImpl extends AbstractUserService {
         // 注册成功删除验证码
         userBaseJedisUtil.deleteCheckCode(jsessionid);
         return Result.ok(succeedRegister);
-    }
-
-    @Override
-    public boolean userExist(Integer uid) {
-        return userMapper.selectUserIdByUid(uid) != null;
     }
 }

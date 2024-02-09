@@ -24,16 +24,10 @@ import java.util.*;
 @RestController
 public class UserControllerImpl extends AbstractController implements UserController {
     private UserService userService;
-    private PoemService poemService;
-    private UserInfoService userInfoService;
-    private UserSettingsService userSettingsService;
 
     @Autowired
-    public UserControllerImpl(UserService userService, PoemService poemService, UserInfoService userInfoService, UserSettingsService userSettingsService) {
+    public UserControllerImpl(UserService userService) {
         this.userService = userService;
-        this.poemService = poemService;
-        this.userInfoService = userInfoService;
-        this.userSettingsService = userSettingsService;
     }
 
     @Override
@@ -44,12 +38,6 @@ public class UserControllerImpl extends AbstractController implements UserContro
     }
 
     @Override
-    @PostMapping("/common/login")
-    public Result<String> huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, String> map) throws Exception {
-        return userService.huadiaoUserLogin(request, response, map.get("username"), map.get("password"));
-    }
-
-    @Override
     @GetMapping("/logoutHuadiao")
     public void logoutHuadiao(@CookieValue("User_ID") Cookie cookie, HttpSession session) {
         Integer uid = (Integer) session.getAttribute(uidKey);
@@ -57,29 +45,6 @@ public class UserControllerImpl extends AbstractController implements UserContro
         String nickname = (String) session.getAttribute(nicknameKey);
         userService.logoutHuadiao(cookie, uid, userId, nickname);
         session.invalidate();
-    }
-
-    @Override
-    @GetMapping("/common/registerCode")
-    public void getCheckCode(HttpServletResponse response,
-                             HttpSession session,
-                             @CookieValue("JSESSIONID") String jsessionid) throws Exception {
-        userService.getCheckCode(response, session, jsessionid);
-    }
-
-    @Override
-    @PostMapping("/common/register")
-    public Result<?> registerHuadiao(@RequestBody Map<String, String> map,
-                                     HttpSession session,
-                                     @CookieValue("JSESSIONID") String jsessionid) throws Exception {
-        return userService.registerHuadiao(
-                session,
-                map.get("username"),
-                map.get("password"),
-                map.get("confirmPassword"),
-                map.get("checkCode"),
-                jsessionid
-        );
     }
 
 }

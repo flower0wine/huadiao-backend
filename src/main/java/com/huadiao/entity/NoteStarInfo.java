@@ -1,5 +1,6 @@
 package com.huadiao.entity;
 
+import com.huadiao.entity.followfan.FollowFan;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,11 +23,9 @@ public class NoteStarInfo {
     private String userId;
     private String nickname;
     private String userAvatar;
-<<<<<<<< HEAD:src/main/java/com/huadiao/entity/NoteStarInfo.java
     private String noteTitle;
     private String noteContent;
     private Date starTime;
-========
     private String canvases;
     private Boolean friend;
     private Date followTime;
@@ -43,9 +42,8 @@ public class NoteStarInfo {
         }
         if(obj instanceof FollowFan) {
             FollowFan followFan = (FollowFan) obj;
-            return this.uid.equals(followFan.uid);
+            return this.uid.equals(followFan.getUid());
         }
         return false;
     }
->>>>>>>> 0e6634b (花凋后端修改时间: 2023-10-06):src/main/java/com/huadiao/entity/FollowFan.java
 }

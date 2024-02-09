@@ -26,43 +26,11 @@ public interface UserController extends Controller {
     UserAbstractDto getHuadiaoHeaderUserInfo(HttpSession session);
 
     /**
-     * 或吊用户进行登录
-     *
-     * @param request 请求
-     * @param response 响应
-     * @param map 请求体参数集合
-     * @return 返回提示信息
-     * @throws Exception 可能抛出异常
-     */
-    Result<String> huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, Map<String, String> map) throws Exception;
-
-    /**
      * 退出登录
      *
      * @param cookie  对应的 User_ID cookie
      * @param session session 对象
      */
     void logoutHuadiao(Cookie cookie, HttpSession session);
-
-    /**
-     * 获取注册账号的验证码
-     *
-     * @param response 响应
-     * @param session session
-     * @param jsessionid jsessionid
-     * @throws Exception 可能抛出异常
-     */
-    void getCheckCode(HttpServletResponse response, HttpSession session, String jsessionid) throws Exception;
-
-    /**
-     * 注册花凋账号
-     *
-     * @param map     账号, 密码, 验证码的集合
-     * @param session session 对象
-     * @param jsessionid jsessionid
-     * @return 返回错误或正确标识
-     * @throws Exception 可能抛出异常
-     */
-    Result<?> registerHuadiao(Map<String, String> map, HttpSession session, String jsessionid) throws Exception;
 
 }

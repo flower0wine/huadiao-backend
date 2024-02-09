@@ -106,7 +106,7 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
 
     @Override
     @PostMapping("/comment/add")
-    public Result<Map<String, Object>> addNoteComment(HttpSession session, Integer repliedUid, Integer uid, Integer noteId, @RequestBody Map<String, String> map) {
+    public Result<?> addNoteComment(HttpSession session, Integer repliedUid, Integer uid, Integer noteId, @RequestBody Map<String, String> map) {
         Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
         String rootCommentId = map.get("rootCommentId");
