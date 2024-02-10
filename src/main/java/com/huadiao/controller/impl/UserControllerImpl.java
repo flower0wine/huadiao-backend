@@ -31,13 +31,6 @@ public class UserControllerImpl extends AbstractController implements UserContro
     }
 
     @Override
-    @GetMapping("/header")
-    public UserAbstractDto getHuadiaoHeaderUserInfo(HttpSession session) {
-        Integer uid = (Integer) session.getAttribute(uidKey);
-        return userService.getHuadiaoHeaderUserInfo(uid);
-    }
-
-    @Override
     @GetMapping("/logoutHuadiao")
     public void logoutHuadiao(@CookieValue("User_ID") Cookie cookie, HttpSession session) {
         Integer uid = (Integer) session.getAttribute(uidKey);
@@ -45,6 +38,13 @@ public class UserControllerImpl extends AbstractController implements UserContro
         String nickname = (String) session.getAttribute(nicknameKey);
         userService.logoutHuadiao(cookie, uid, userId, nickname);
         session.invalidate();
+    }
+
+    @Override
+    @GetMapping("/header")
+    public UserAbstractDto getHuadiaoHeaderUserInfo(HttpSession session) {
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        return userService.getHuadiaoHeaderUserInfo(uid);
     }
 
 }

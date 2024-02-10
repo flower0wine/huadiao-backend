@@ -31,6 +31,26 @@ public class CommonControllerImpl extends AbstractController implements CommonCo
     }
 
     @Override
+    @GetMapping("/register/github")
+    public Result<?> githubRegister(String code) {
+        String clientId = "cdbdc26e987d1cf6c058";
+        String clientSecret = "8f928bdd4c8cef961aa3b8387ee50d950be4cde3";
+
+        Map<String, Object> map = new HashMap<>(8);
+        map.put("client_id", clientId);
+        map.put("client_secret", clientSecret);
+        map.put("code", code);
+
+        String result = HttpRequest.post("https://github.com/login/oauth/access_token")
+                .header(Header.ACCEPT, "application/json")
+                .form(map)
+                .execute()
+                .body();
+        System.out.println(result);
+        return null;
+    }
+
+    @Override
     @PostMapping("/login")
     public Result<String> huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, String> map) throws Exception {
         return userService.huadiaoUserLogin(request, response, map.get("username"), map.get("password"));
@@ -58,25 +78,4 @@ public class CommonControllerImpl extends AbstractController implements CommonCo
                 jsessionid
         );
     }
-
-    @Override
-    @GetMapping("/register/github")
-    public Result<?> githubRegister(String code) {
-        String clientId = "cdbdc26e987d1cf6c058";
-        String clientSecret = "8f928bdd4c8cef961aa3b8387ee50d950be4cde3";
-
-        Map<String, Object> map = new HashMap<>(8);
-        map.put("client_id", clientId);
-        map.put("client_secret", clientSecret);
-        map.put("code", code);
-
-        String result = HttpRequest.post("https://github.com/login/oauth/access_token")
-                .header(Header.ACCEPT, "application/json")
-                .form(map)
-                .execute()
-                .body();
-        System.out.println(result);
-        return null;
-    }
-
 }
