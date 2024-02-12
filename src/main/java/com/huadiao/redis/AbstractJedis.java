@@ -11,8 +11,6 @@ import redis.clients.jedis.JedisPool;
 /**
  * @author flowerwine
  * @version 1.1
- * @projectName huadiao-user-back
- * @description
  */
 public abstract class AbstractJedis {
     @Autowired

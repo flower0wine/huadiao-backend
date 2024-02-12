@@ -1,12 +1,8 @@
 package com.huadiao.service;
 
-import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.userdto.UserAbstractDto;
+import com.huadiao.entity.dto.user.UserAbstractDto;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * 业务层: 与账号相关的操作的接口
@@ -24,18 +20,6 @@ public interface UserService {
     UserAbstractDto getHuadiaoHeaderUserInfo(Integer uid);
 
     /**
-     * 花凋用户登录
-     *
-     * @param request  请求
-     * @param response 响应
-     * @param username 用户名
-     * @param password 密码
-     * @return 返回提示信息
-     * @throws Exception 可能抛出异常
-     */
-    Result<String> huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, String username, String password) throws Exception;
-
-    /**
      * 退出登录
      *
      * @param cookie   退出登录, 要删除的 cookie -> User_ID
@@ -44,28 +28,4 @@ public interface UserService {
      * @param nickname 用户昵称
      */
     void logoutHuadiao(Cookie cookie, Integer uid, String userId, String nickname);
-
-    /**
-     * 获取注册账号的验证码
-     *
-     * @param response   响应
-     * @param session    session
-     * @param jsessionid jsessionid
-     * @throws Exception 可能抛出异常
-     */
-    void getCheckCode(HttpServletResponse response, HttpSession session, String jsessionid) throws Exception;
-
-    /**
-     * 注册花凋新用户
-     *
-     * @param session         session 对象
-     * @param username        用户名
-     * @param password        密码
-     * @param confirmPassword 再次确认密码
-     * @param checkCode       验证码
-     * @param jsessionid      jsessionid
-     * @return 返回错误或正确标识
-     * @throws Exception 可能抛出异常
-     */
-    Result<?> registerHuadiao(HttpSession session, String username, String password, String confirmPassword, String checkCode, String jsessionid) throws Exception;
 }

@@ -1,81 +1,84 @@
 package com.huadiao.controller.impl;
 
-import cn.hutool.http.Header;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpUtil;
 import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.CommonController;
 import com.huadiao.entity.Result;
-import com.huadiao.service.UserService;
+import com.huadiao.service.CommonService;
+import com.huadiao.service.design.template.login.HuadiaoLoginInspector;
+import com.huadiao.service.design.template.register.GithubRegisterInspector;
+import com.huadiao.service.design.template.register.HuadiaoRegisterInspector;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author flowerwine
  * @date 2024 年 02 月 09 日
  */
-@RestController
+@Controller
 @RequestMapping("/common")
 public class CommonControllerImpl extends AbstractController implements CommonController {
-    private UserService userService;
+    private CommonService commonService;
+    private HuadiaoLoginInspector huadiaoLoginInspector;
+    private HuadiaoRegisterInspector registerInspector;
+    private GithubRegisterInspector githubRegisterInspector;
 
     @Autowired
-    public CommonControllerImpl(UserService userService) {
-        this.userService = userService;
+    public CommonControllerImpl(CommonService commonService, HuadiaoLoginInspector huadiaoLoginInspector, HuadiaoRegisterInspector registerInspector, GithubRegisterInspector githubRegisterInspector) {
+        this.commonService = commonService;
+        this.huadiaoLoginInspector = huadiaoLoginInspector;
+        this.registerInspector = registerInspector;
+        this.githubRegisterInspector = githubRegisterInspector;
     }
 
     @Override
     @GetMapping("/register/github")
-    public Result<?> githubRegister(String code) {
-        String clientId = "cdbdc26e987d1cf6c058";
-        String clientSecret = "8f928bdd4c8cef961aa3b8387ee50d950be4cde3";
+    public String githubRegister(HttpServletRequest request,
+                                 HttpServletResponse response,
+                                 String code) throws Exception {
+        githubRegisterInspector.flushThreadLocal();
 
-        Map<String, Object> map = new HashMap<>(8);
-        map.put("client_id", clientId);
-        map.put("client_secret", clientSecret);
-        map.put("code", code);
-
-        String result = HttpRequest.post("https://github.com/login/oauth/access_token")
-                .header(Header.ACCEPT, "application/json")
-                .form(map)
-                .execute()
-                .body();
-        System.out.println(result);
-        return null;
+        githubRegisterInspector.getCodeThreadLocal().set(code);
+        commonService.registerHuadiao(request, response, githubRegisterInspector);
+        return "redirect:" + HUADIAO_URI;
     }
 
     @Override
+    @ResponseBody
     @PostMapping("/login")
-    public Result<String> huadiaoUserLogin(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, String> map) throws Exception {
-        return userService.huadiaoUserLogin(request, response, map.get("username"), map.get("password"));
+    public Result<?> huadiaoUserLogin(HttpServletRequest request,
+                                      HttpServletResponse response,
+                                      @RequestBody Map<String, String> map,
+                                      HttpSession session) throws Exception {
+        huadiaoLoginInspector.flushThreadLocal();
+        huadiaoLoginInspector.getRequestBodyThreadLocal().set(map);
+        return commonService.huadiaoUserLogin(request, response, huadiaoLoginInspector);
     }
 
     @Override
+    @ResponseBody
     @GetMapping("/registerCode")
     public void getCheckCode(HttpServletResponse response,
                              HttpSession session,
                              @CookieValue("JSESSIONID") String jsessionid) throws Exception {
-        userService.getCheckCode(response, session, jsessionid);
+        commonService.getCheckCode(response, session, jsessionid);
     }
 
     @Override
+    @ResponseBody
     @PostMapping("/register")
-    public Result<?> registerHuadiao(@RequestBody Map<String, String> map,
-                                     HttpSession session,
+    public Result<?> registerHuadiao(HttpServletRequest request,
+                                     HttpServletResponse response,
+                                     @RequestBody Map<String, String> map,
                                      @CookieValue("JSESSIONID") String jsessionid) throws Exception {
-        return userService.registerHuadiao(
-                session,
-                map.get("username"),
-                map.get("password"),
-                map.get("confirmPassword"),
-                map.get("checkCode"),
-                jsessionid
-        );
+        map.put("jsessionid", jsessionid);
+
+        registerInspector.flushThreadLocal();
+        registerInspector.getThreadLocal().set(map);
+        return commonService.registerHuadiao(request, response, registerInspector);
     }
 }

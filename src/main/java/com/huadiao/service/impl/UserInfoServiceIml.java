@@ -1,10 +1,9 @@
 package com.huadiao.service.impl;
 
 import com.huadiao.entity.Result;
-import com.huadiao.entity.SexEnum;
-import com.huadiao.entity.dto.userdto.UserAbstractDto;
-import com.huadiao.entity.dto.userdto.UserShareDto;
-import com.huadiao.entity.dto.userinfodto.UserInfoDto;
+import com.huadiao.enumeration.SexEnum;
+import com.huadiao.entity.dto.user.UserAbstractDto;
+import com.huadiao.entity.dto.user.UserShareDto;
 import com.huadiao.entity.elasticsearch.UserEs;
 import com.huadiao.mapper.FollowFanMapper;
 import com.huadiao.mapper.UserInfoMapper;
@@ -12,13 +11,7 @@ import com.huadiao.mapper.UserMapper;
 import com.huadiao.service.AbstractUserInfoService;
 import com.huadiao.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.action.update.UpdateRequest;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.IndexQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.UpdateQuery;
-import org.springframework.data.repository.config.CustomRepositoryImplementationDetector;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

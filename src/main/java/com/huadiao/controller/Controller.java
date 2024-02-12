@@ -8,7 +8,7 @@ public interface Controller {
     /**
      * 主机地址
      */
-    String HOST = "http://localhost:8081";
+    String HOST = "http://localhost:8081/";
 
-
+    String HUADIAO_URI = HOST + "huadiao/";
 }

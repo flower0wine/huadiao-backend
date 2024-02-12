@@ -1,7 +1,7 @@
 package com.huadiao.controller;
 
 import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.userdto.UserShareDto;
+import com.huadiao.entity.dto.user.UserShareDto;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;

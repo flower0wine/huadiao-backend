@@ -1,7 +1,7 @@
 package com.huadiao.entity.note;
 
 import com.huadiao.entity.Label;
-import com.huadiao.entity.dto.userdto.UserShareDto;
+import com.huadiao.entity.dto.user.UserShareDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

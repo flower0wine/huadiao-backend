@@ -10,6 +10,12 @@
                                 `status`     = 1;
     </insert>
 
+    <!--新增个人主页-->
+    <insert id="insertUserHomepageByUid">
+        insert into huadiao_homepage(`uid`, `user_avatar`)
+        values (#{uid}, #{avatar});
+    </insert>
+
     <!--修改用户头像-->
     <update id="updateUserAvatarByUid">
         update huadiao_homepage

@@ -1,7 +1,6 @@
 package com.huadiao.service.impl;
 
 import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.userdto.UserShareDto;
 import com.huadiao.entity.message.whisper.LatestUser;
 import com.huadiao.entity.message.whisper.MessageType;
 import com.huadiao.entity.message.whisper.WhisperMessage;

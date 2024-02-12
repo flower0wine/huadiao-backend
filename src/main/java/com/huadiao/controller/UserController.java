@@ -1,14 +1,9 @@
 package com.huadiao.controller;
 
-import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.userdto.UserAbstractDto;
-import com.huadiao.entity.dto.userdto.UserShareDto;
+import com.huadiao.entity.dto.user.UserAbstractDto;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Map;
 
 /**
  * 用户信息控制器接口

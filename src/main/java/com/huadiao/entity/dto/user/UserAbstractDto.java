@@ -1,4 +1,4 @@
-package com.huadiao.entity.dto.userdto;
+package com.huadiao.entity.dto.user;
 
 import com.huadiao.service.FollowFanService;
 import lombok.Getter;

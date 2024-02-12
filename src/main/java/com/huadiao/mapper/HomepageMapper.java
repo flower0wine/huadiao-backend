@@ -17,6 +17,13 @@ public interface HomepageMapper {
     void insertVisitRecordByUid(@Param("uid") Integer uid, @Param("viewedUid") Integer viewedUid);
 
     /**
+     * 新增个人主页
+     * @param uid 用户 uid
+     * @param avatar 头像
+     */
+    void insertUserHomepageByUid(@Param("uid") Integer uid, @Param("avatar") String avatar);
+
+    /**
      * 根据 uid 获取个人主页部分信息
      * @param uid 用户 uid
      * @return 返回个人主页部分信息

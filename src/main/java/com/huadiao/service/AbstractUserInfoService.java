@@ -1,14 +1,6 @@
 package com.huadiao.service;
 
-import com.huadiao.entity.dto.userdto.UserAbstractDto;
-import com.huadiao.entity.dto.userdto.UserShareDto;
-import com.huadiao.mapper.FollowFanMapper;
-import com.huadiao.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Value;
-import redis.clients.jedis.JedisPool;
-
-import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author flowerwine

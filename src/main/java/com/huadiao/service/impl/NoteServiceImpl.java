@@ -7,7 +7,7 @@ import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.NoteRelationDto;
 import com.huadiao.entity.dto.note.SelfNoteDto;
 import com.huadiao.entity.dto.note.ShareNoteDto;
-import com.huadiao.entity.dto.userdto.UserAbstractDto;
+import com.huadiao.entity.dto.user.UserAbstractDto;
 import com.huadiao.entity.elasticsearch.NoteEs;
 import com.huadiao.entity.elasticsearch.NoteHistoryEs;
 import com.huadiao.entity.note.Note;

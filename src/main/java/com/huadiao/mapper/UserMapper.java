@@ -1,7 +1,8 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.dto.userdto.UserBaseDto;
-import com.huadiao.entity.dto.userdto.UserShareDto;
+import com.huadiao.entity.dto.UserOAuthDto;
+import com.huadiao.entity.dto.user.UserBaseDto;
+import com.huadiao.entity.dto.user.UserShareDto;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -9,6 +10,12 @@ import org.apache.ibatis.annotations.Param;
  * @author flowerwine
  */
 public interface UserMapper {
+
+    /**
+     * 新增第三方用户
+     * @param userOAuthDto 用户数据
+     */
+    void insertOauthUser(@Param("user") UserOAuthDto userOAuthDto);
 
     /**
      * 计数所有的用户数量
@@ -45,6 +52,14 @@ public interface UserMapper {
      * @return 返回用户 uid
      */
     Integer selectUidByUserId(@Param("userId") String userId);
+
+    /**
+     * 根据 oauthId 和 oauthType 查找用户是否存在
+     * @param oauthId 第三方用户 id
+     * @param oauthType 第三方用户类型
+     * @return 查找不到返回 null
+     */
+    UserShareDto selectOAuthUserExist(@Param("oauthId") Integer oauthId, @Param("oauthType") Integer oauthType);
 
     /**
      * 根据用户 uid 查找 userId

@@ -13,16 +13,8 @@ public interface HuadiaoHouseMapper {
     /**
      * 新增番剧信息
      * @param uid 用户 uid
-     * @param titleColor 标题颜色
-     * @param titleBackground 标题背景
-     * @param pageBackground 页面背景
-     * @param pageForeground 页面前景
-     * @param cardBorder 番剧封面边框
-     * @param cardBackground 卡片背景
      */
-    void insertHuadiaoHouseInfoByUid(@Param("uid") Integer uid, @Param("titleColor") String titleColor, @Param("titleBackground") String titleBackground,
-                                     @Param("pageBackground") String pageBackground, @Param("pageForeground") String pageForeground,
-                                     @Param("cardBorder") Integer cardBorder, @Param("cardBackground") String cardBackground);
+    void insertHuadiaoHouseInfoByUid(@Param("uid") Integer uid);
 
     /**
      * 新增封面边框

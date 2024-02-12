@@ -1,10 +1,8 @@
 package com.huadiao.entity;
 
+import com.huadiao.enumeration.ResultCodeEnum;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author flowerwine

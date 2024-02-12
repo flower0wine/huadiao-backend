@@ -1,4 +1,4 @@
-package com.huadiao.entity.dto.userdto;
+package com.huadiao.entity.dto.user;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,15 +9,14 @@ import lombok.ToString;
  * @author flowerwine
  * @version 1.1
  * @projectName huadiao-user-back
- * @description 可共享至其他平台的用户信息
+ * @description 用户基本信息
  */
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
-public class UserShareDto {
+public class UserBaseDto {
     private Integer uid;
     private String userId;
-    private String nickname;
-    private String userAvatar;
+    private String username;
 }

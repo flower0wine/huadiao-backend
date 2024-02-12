@@ -4,10 +4,8 @@
 
     <!--新增番剧页面信息-->
     <insert id="insertHuadiaoHouseInfoByUid">
-        insert into huadiao_house_info(`uid`, `title_color`, `title_background`, `page_background`, `page_foreground`,
-                                       `card_border`, `card_background`)
-        values (#{uid}, #{titleColor}, #{titleBackground}, #{pageBackground}, #{pageForeground}, #{cardBorder},
-                #{cardBackground});
+        insert into huadiao_house_info(`uid`)
+        values (#{uid});
     </insert>
 
     <!--新增封面边框-->

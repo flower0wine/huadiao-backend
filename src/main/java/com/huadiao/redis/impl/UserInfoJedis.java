@@ -2,8 +2,8 @@ package com.huadiao.redis.impl;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.huadiao.entity.dto.userdto.UserAbstractDto;
-import com.huadiao.entity.dto.userdto.UserShareDto;
+import com.huadiao.entity.dto.user.UserAbstractDto;
+import com.huadiao.entity.dto.user.UserShareDto;
 import com.huadiao.redis.AbstractJedis;
 import com.huadiao.redis.UserInfoJedisUtil;
 import lombok.extern.slf4j.Slf4j;

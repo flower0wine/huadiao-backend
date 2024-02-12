@@ -14,13 +14,8 @@
                                 `update_time` = now()
     </insert>
 
-    <!--新增个人主页-->
-    <insert id="insertUserHomepageByUid">
-        insert into huadiao_homepage(`uid`)
-        values (#{uid});
-    </insert>
 
-    <resultMap id="userDetailDtoResultMap" type="com.huadiao.entity.dto.userinfodto.UserInfoDto">
+    <resultMap id="userDetailDtoResultMap" type="com.huadiao.entity.dto.userinfo.UserInfoDto">
         <result property="canvases" column="canvases"/>
         <result property="bornDate" column="born_date"/>
         <result property="school" column="school"/>

@@ -15,8 +15,6 @@ import redis.clients.jedis.JedisPool;
 @Component
 public class FollowFanJedis extends AbstractJedis implements FollowFanJedisUtil {
 
-
-
     private String jedisKeyFollowGroupId = "followGroupId";
 
     public FollowFanJedis(JedisPool jedisPool) {

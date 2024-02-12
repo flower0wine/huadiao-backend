@@ -1,8 +1,7 @@
 package com.huadiao.service.impl;
 
-import cn.hutool.core.codec.Rot;
 import com.huadiao.entity.Result;
-import com.huadiao.entity.ResultCodeEnum;
+import com.huadiao.enumeration.ResultCodeEnum;
 import com.huadiao.mapper.NoteMapper;
 import com.huadiao.mapper.NoteOperateMapper;
 import com.huadiao.service.AbstractNoteOperateService;

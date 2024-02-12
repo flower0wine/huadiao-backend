@@ -1,6 +1,6 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.dto.userinfodto.UserInfoDto;
+import com.huadiao.entity.dto.userinfo.UserInfoDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -26,12 +26,6 @@ public interface UserInfoMapper {
     void insertOrUpdateUserInfoByUid(@Param("uid") Integer uid, @Param("nickname") String nickname,
                                      @Param("canvases") String canvases, @Param("sex") String sex,
                                      @Param("bornDate") Date bornDate, @Param("school") String school);
-
-    /**
-     * 新增个人主页
-     * @param uid 用户 uid
-     */
-    void insertUserHomepageByUid(@Param("uid") Integer uid);
 
     /**
      * 根据用户 uid 获取用户信息

@@ -30,7 +30,7 @@
         <result property="time" column="publish_time"/>
         <result property="like" column="like_count"/>
         <result property="view" column="view_count"/>
-        <association property="author" javaType="com.huadiao.entity.dto.userdto.UserShareDto">
+        <association property="author" javaType="com.huadiao.entity.dto.user.UserShareDto">
             <result property="uid" column="uid"/>
             <result property="nickname" column="nickname"/>
             <result property="userId" column="user_id"/>

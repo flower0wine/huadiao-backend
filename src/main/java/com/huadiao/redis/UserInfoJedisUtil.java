@@ -1,6 +1,6 @@
 package com.huadiao.redis;
 
-import com.huadiao.entity.dto.userdto.UserAbstractDto;
+import com.huadiao.entity.dto.user.UserAbstractDto;
 
 import java.util.Date;
 

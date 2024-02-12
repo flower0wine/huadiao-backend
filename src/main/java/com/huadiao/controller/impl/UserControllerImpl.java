@@ -2,18 +2,13 @@ package com.huadiao.controller.impl;
 
 import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.UserController;
-import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.userdto.UserAbstractDto;
-import com.huadiao.entity.dto.userdto.UserShareDto;
+import com.huadiao.entity.dto.user.UserAbstractDto;
 import com.huadiao.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.*;
 
 /**
  * @author flowerwine

@@ -3,14 +3,12 @@ package com.huadiao.controller.impl;
 import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.UserInfoController;
 import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.userdto.UserShareDto;
+import com.huadiao.entity.dto.user.UserShareDto;
 import com.huadiao.service.UserInfoService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.Date;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author flowerwine

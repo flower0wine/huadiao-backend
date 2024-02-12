@@ -1,4 +1,4 @@
-package com.huadiao.entity;
+package com.huadiao.enumeration;
 
 /**
  * 结果状态码, enum

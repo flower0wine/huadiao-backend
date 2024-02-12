@@ -11,7 +11,7 @@
         where `uid` = #{uid};
     </update>
 
-    <resultMap id="userBaseInfoDtoResultMap" type="com.huadiao.entity.dto.userdto.UserBaseDto">
+    <resultMap id="userBaseInfoDtoResultMap" type="com.huadiao.entity.dto.user.UserBaseDto">
         <result property="uid" column="uid"/>
         <result property="userId" column="user_id"/>
         <result property="username" column="username"/>
@@ -31,27 +31,33 @@
         values (#{uid}, #{userId}, #{username}, MD5(#{password}));
     </insert>
 
+    <!-- 新增第三方用户 -->
+    <insert id="insertOauthUser">
+        insert into huadiao_user_base(`uid`, `user_id`, `oauth_id`, `login_type`, `access_token`, `account_type`)
+        values (#{user.uid}, #{user.userId}, #{user.oauthId}, #{user.loginType}, #{user.accessToken}, #{user.accountType});
+    </insert>
+
     <select id="selectUidByUserId" resultType="java.lang.Integer">
-        select uid
+        select `uid`
         from huadiao_user_base
-        where user_id = #{userId};
+        where `user_id` = #{userId};
     </select>
 
     <!--根据用户 uid 获取 userId-->
     <select id="selectUserIdByUid" resultType="java.lang.String">
         select `user_id`
         from huadiao_user_base
-        where uid = #{uid};
+        where `uid` = #{uid};
     </select>
 
     <!--通过用户名查找用户-->
     <select id="selectUserByUsername" resultMap="userBaseInfoDtoResultMap">
         select `uid`, `user_id`, `username`
         from huadiao_user_base
-        where username = #{username};
+        where `username` = #{username};
     </select>
 
-    <resultMap id="userShareDtoResultMap" type="com.huadiao.entity.dto.userdto.UserShareDto">
+    <resultMap id="userShareDtoResultMap" type="com.huadiao.entity.dto.user.UserShareDto">
         <result property="uid" column="uid"/>
         <result property="userId" column="user_id"/>
         <result property="nickname" column="nickname"/>
@@ -69,6 +75,15 @@
     <!--获取用户数量-->
     <select id="countAllUser" resultType="java.lang.Integer">
         select count(*) from huadiao_user_base;
+    </select>
+
+    <resultMap id="selectOAuthUserExistResultMap" type="com.huadiao.entity.dto.user.UserShareDto">
+        <result property="uid" column="uid"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+    <!-- 查找第三方用户是否存在 -->
+    <select id="selectOAuthUserExist" resultMap="selectOAuthUserExistResultMap">
+        select `uid`, `user_id` from huadiao_user_base where `oauth_id` = #{oauthId} and `login_type` = #{oauthType};
     </select>
 
 
