@@ -111,7 +111,7 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
     }
 
     @Override
-    public Result<Map<String, Object>> addNoteComment(Integer uid, String userId, Integer noteId, Integer repliedUid, Integer authorUid, Long rootCommentId, String commentContent) {
+    public Result<?> addNoteComment(Integer uid, String userId, Integer noteId, Integer repliedUid, Integer authorUid, Long rootCommentId, String commentContent) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试对 uid 为 {} 的用户的 noteId 为 {} 的笔记发布评论, repliedUid: {}, rootCommentId: {}, commentContent: {}", uid, userId, authorUid, noteId, repliedUid, rootCommentId, commentContent);
         Integer noteExist = noteMapper.selectExistByNoteIdAndUid(authorUid, noteId);
         if(noteExist == null) {

@@ -6,13 +6,17 @@ import com.huadiao.entity.Result;
 import com.huadiao.service.CommonService;
 import com.huadiao.service.design.template.login.HuadiaoLoginInspector;
 import com.huadiao.service.design.template.register.GithubRegisterInspector;
+import com.huadiao.service.design.template.register.GoogleRegisterInspector;
 import com.huadiao.service.design.template.register.HuadiaoRegisterInspector;
+import com.huadiao.service.design.template.register.RegisterInspector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
@@ -26,13 +30,15 @@ public class CommonControllerImpl extends AbstractController implements CommonCo
     private HuadiaoLoginInspector huadiaoLoginInspector;
     private HuadiaoRegisterInspector registerInspector;
     private GithubRegisterInspector githubRegisterInspector;
+    private GoogleRegisterInspector googleRegisterInspector;
 
     @Autowired
-    public CommonControllerImpl(CommonService commonService, HuadiaoLoginInspector huadiaoLoginInspector, HuadiaoRegisterInspector registerInspector, GithubRegisterInspector githubRegisterInspector) {
+    public CommonControllerImpl(CommonService commonService, HuadiaoLoginInspector huadiaoLoginInspector, HuadiaoRegisterInspector registerInspector, GithubRegisterInspector githubRegisterInspector, GoogleRegisterInspector googleRegisterInspector) {
         this.commonService = commonService;
         this.huadiaoLoginInspector = huadiaoLoginInspector;
         this.registerInspector = registerInspector;
         this.githubRegisterInspector = githubRegisterInspector;
+        this.googleRegisterInspector = googleRegisterInspector;
     }
 
     @Override
@@ -40,10 +46,32 @@ public class CommonControllerImpl extends AbstractController implements CommonCo
     public String githubRegister(HttpServletRequest request,
                                  HttpServletResponse response,
                                  String code) throws Exception {
-        githubRegisterInspector.flushThreadLocal();
+        return this.oauthRegister(request, response, code, githubRegisterInspector);
+    }
 
-        githubRegisterInspector.getCodeThreadLocal().set(code);
-        commonService.registerHuadiao(request, response, githubRegisterInspector);
+    @Override
+    @GetMapping("/register/google")
+    public String googleRegister(HttpServletRequest request,
+                                 HttpServletResponse response,
+                                 String code) throws Exception {
+        return this.oauthRegister(request, response, code, googleRegisterInspector);
+    }
+
+    private String oauthRegister(HttpServletRequest request, HttpServletResponse response, String code, RegisterInspector registerInspector) throws Exception {
+        String proxyHost = System.getProperty("https.proxyHost");
+        String proxyPort = System.getProperty("https.proxyPort");
+
+        if (proxyHost != null && proxyPort != null) {
+            System.out.println("代理地址：" + proxyHost);
+            System.out.println("代理端口：" + proxyPort);
+        } else {
+            System.out.println("未检测到代理设置。");
+        }
+        registerInspector.flushThreadLocal();
+
+        code = URLDecoder.decode(code, StandardCharsets.UTF_8.name());
+        registerInspector.getCodeThreadLocal().set(code);
+        commonService.registerHuadiao(request, response, registerInspector);
         return "redirect:" + HUADIAO_URI;
     }
 

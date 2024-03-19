@@ -1,6 +1,7 @@
 package com.huadiao.controller;
 
 import com.huadiao.entity.Result;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -15,10 +16,10 @@ public interface CommonController extends Controller {
     /**
      * 或吊用户进行登录
      *
-     * @param request               请求
-     * @param response              响应
-     * @param map                   请求体参数集合
-     * @param session               session 对象
+     * @param request  请求
+     * @param response 响应
+     * @param map      请求体参数集合
+     * @param session  session 对象
      * @return 返回提示信息
      * @throws Exception 可能抛出异常
      */
@@ -49,11 +50,22 @@ public interface CommonController extends Controller {
     /**
      * 使用 github 注册
      *
-     * @param request                 请求
-     * @param response                响应
-     * @param code                    授权码
-     * @return 响应结果
+     * @param request  请求
+     * @param response 响应
+     * @param code     授权码
+     * @return 重定向标识符
      * @throws Exception 可能抛出异常
      */
     String githubRegister(HttpServletRequest request, HttpServletResponse response, String code) throws Exception;
+
+    /**
+     * 使用 google 注册
+     *
+     * @param request  请求
+     * @param response 响应
+     * @param code     授权码
+     * @return 重定向标识符
+     * @throws Exception 可能抛出异常
+     */
+    String googleRegister(HttpServletRequest request, HttpServletResponse response, String code) throws Exception;
 }

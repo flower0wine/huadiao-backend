@@ -35,4 +35,12 @@ public interface RegisterInspector {
      * 调用 ThreadLocal 的 remove 方法
      */
     void flushThreadLocal();
+
+    /**
+     * 获取授权码 ThreadLocal 对象
+     * @return 返回授权码 ThreadLocal 对象
+     */
+    default ThreadLocal<String> getCodeThreadLocal() {
+        return null;
+    }
 }

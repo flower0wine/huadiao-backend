@@ -12,7 +12,11 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @ImportResource("classpath:spring-ioc.xml")
-@PropertySource({"classpath:properties/oauth/github.properties", "classpath:properties/huadiao.properties"})
+@PropertySource({
+        "classpath:properties/oauth/github.properties",
+        "classpath:properties/oauth/google.properties",
+        "classpath:properties/huadiao.properties",
+})
 public class SpringConfig {
 
 }

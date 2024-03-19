@@ -1,20 +1,14 @@
 package com.huadiao.controller.impl;
 
-import cn.hutool.http.server.HttpServerRequest;
 import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.NoteController;
 import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.SelfNoteDto;
 import com.huadiao.service.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,17 +21,11 @@ import java.util.Map;
 @RequestMapping("/note")
 public class NoteControllerImpl extends AbstractController implements NoteController {
 
-    private UserService userService;
-    private FollowFanService followFanService;
-    private UserSettingsService userSettingsService;
     private NoteService noteService;
     private NoteOperateService noteOperateService;
 
     @Autowired
-    public NoteControllerImpl(UserService userService, FollowFanService followFanService, UserSettingsService userSettingsService, NoteService noteService, NoteOperateService noteOperateService) {
-        this.userService = userService;
-        this.followFanService = followFanService;
-        this.userSettingsService = userSettingsService;
+    public NoteControllerImpl(NoteService noteService, NoteOperateService noteOperateService) {
         this.noteService = noteService;
         this.noteOperateService = noteOperateService;
     }
@@ -118,25 +106,4 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
         return noteOperateService.addNoteComment(myUid, userId, noteId, repliedUid, uid, commentId, commentContent);
     }
 
-    @Override
-    @GetMapping("/comment")
-    public Result<List<NoteCommentDto>> getNoteComment(HttpSession session, Integer uid, Integer noteId, Integer offset, Integer row) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
-        return noteService.getNoteComment(myUid, userId, uid, noteId, offset, row);
-    }
-
-    @Override
-    @PostMapping("/comment/add")
-    public Result<Map<String, Object>> addNoteComment(HttpSession session, Integer uid, Integer noteId, @RequestBody Map<String, String> map) {
-        Integer myUid = (Integer) session.getAttribute("uid");
-        String userId = (String) session.getAttribute("userId");
-        String rootCommentId = map.get("rootCommentId");
-        String commentContent = map.get("commentContent");
-        Long commentId = null;
-        if(rootCommentId != null) {
-            commentId = Long.parseLong(rootCommentId);
-        }
-        return noteOperateService.addNoteComment(myUid, userId, noteId, uid, commentId, commentContent);
-    }
 }

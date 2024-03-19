@@ -27,6 +27,10 @@ public enum LoginTypeEnum {
      * gitee 账号
      */
     GITEE(4),
+    /**
+     * 谷歌账号
+     */
+    GOOGLE(5),
     ;
 
     private final int type;
