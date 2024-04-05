@@ -72,7 +72,7 @@ public class CommonControllerImpl extends AbstractController implements CommonCo
         code = URLDecoder.decode(code, StandardCharsets.UTF_8.name());
         registerInspector.getCodeThreadLocal().set(code);
         commonService.registerHuadiao(request, response, registerInspector);
-        return "redirect:" + HUADIAO_URI;
+        return "redirect:" + FRONTEND_INDEX_HOST;
     }
 
     @Override

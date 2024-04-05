@@ -61,7 +61,7 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
     }
 
     @Override
-    @GetMapping("/search")
+    @GetMapping("/get")
     public Result<?> getSingleNote(HttpSession session, Integer uid, Integer noteId) {
         Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
@@ -101,7 +101,15 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
         String commentContent = map.get("commentContent");
         Long commentId = null;
         if(rootCommentId != null) {
-            commentId = Long.parseLong(rootCommentId);
+            try {
+                commentId = Long.parseLong(rootCommentId);
+            } catch (Exception e) {
+                return Result.errorParam();
+            }
+        }
+        // 如果被回复的人的 uid 为 null, 则将被回复者视为作者
+        if(repliedUid == null) {
+            repliedUid = uid;
         }
         return noteOperateService.addNoteComment(myUid, userId, noteId, repliedUid, uid, commentId, commentContent);
     }

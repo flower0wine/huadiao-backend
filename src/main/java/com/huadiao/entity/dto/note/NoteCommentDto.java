@@ -27,6 +27,6 @@ public class NoteCommentDto {
     private String commentContent;
     private Boolean myLike;
     private Boolean myUnlike;
-    private Integer likeNumber;
+    private Integer likeCount;
     private List<NoteCommentDto> commentList;
 }

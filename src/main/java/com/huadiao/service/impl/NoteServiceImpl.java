@@ -160,7 +160,7 @@ public class NoteServiceImpl extends AbstractNoteService {
                     commentDto.setCommentContent(noteComment.getCommentContent());
                     commentDto.setMyLike(noteComment.getMyLike());
                     commentDto.setMyUnlike(noteComment.getMyUnlike());
-                    commentDto.setLikeNumber(noteComment.getLikeNumber());
+                    commentDto.setLikeCount(noteComment.getLikeCount());
                     commentDto.setNickname(noteComment.getNickname());
                     commentDto.setUid(noteComment.getUid());
                     commentDto.setUserId(noteComment.getUserId());

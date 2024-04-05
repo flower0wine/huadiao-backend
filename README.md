@@ -14,6 +14,15 @@
 - 使用原生的 JavaScript 和 spring 的 MultipartFile 实现用户的头像上传功能。
 - 使用 WebSocket 和 spring 的 HttpSessionHandshakeInterceptor 和 WebSocketHandler
 实现用户之间的私信。目前仅支持相互关注的用户之间进行通信。
-- 实现第三方用户登录。
+- 实现第三方用户登录（Github、Google 登录方式）。
+
+## 1.3. 项目技术栈
+
+- Spring
+- Mybatis 
+- Elasticsearch
+- Redis 
+- Mysql 
+- Slf4j
 
 

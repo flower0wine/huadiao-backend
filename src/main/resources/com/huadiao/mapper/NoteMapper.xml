@@ -214,7 +214,7 @@
         <id property="commentId" column="root_comment_id"/>
         <result property="uid" column="uid"/>
         <result property="userId" column="user_id"/>
-        <result property="likeNumber" column="like_number"/>
+        <result property="likeCount" column="like_number"/>
         <result property="myLike" column="my_like"/>
         <result property="myUnlike" column="my_unlike"/>
         <result property="commentContent" column="comment_content"/>
@@ -225,7 +225,7 @@
             <result property="commentId" column="sub_comment_id"/>
             <result property="uid" column="uid"/>
             <result property="userId" column="user_id"/>
-            <result property="likeNumber" column="like_number"/>
+            <result property="likeCount" column="like_number"/>
             <result property="myLike" column="my_like"/>
             <result property="myUnlike" column="my_unlike"/>
             <result property="commentContent" column="comment_content"/>

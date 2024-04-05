@@ -28,6 +28,7 @@ public class UserAbstractDto {
     private String userId;
     private String nickname;
     private String userAvatar;
+    private Integer sex;
     /**
      * 关注和粉丝数量
      */
@@ -48,6 +49,7 @@ public class UserAbstractDto {
         userAbstractDto.userId = userShareDto.getUserId();
         userAbstractDto.nickname = userShareDto.getNickname();
         userAbstractDto.userAvatar = userShareDto.getUserAvatar();
+        userAbstractDto.sex = userShareDto.getSex();
         return userAbstractDto;
     }
 }

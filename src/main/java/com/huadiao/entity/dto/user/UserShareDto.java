@@ -20,4 +20,5 @@ public class UserShareDto {
     private String userId;
     private String nickname;
     private String userAvatar;
+    private Integer sex;
 }
