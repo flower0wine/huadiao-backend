@@ -20,15 +20,27 @@ public abstract class AbstractFollowFanService extends AbstractService implement
     @Value("${followFan.followGroupMaxCount}")
     protected int followGroupMaxCount;
 
+    /**
+     * 关注分组名称最长长度
+     */
     @Value("${followFan.followGroupNameMaxLength}")
     protected int followGroupNameMaxLength;
 
+    /**
+     * 关注分组最小长度
+     */
     @Value("${followFan.followGroupNameMinLength}")
     protected int followGroupNameMinLength;
 
+    /**
+     * 全部关注的分组 ID
+     */
     @Value("${followFan.defaultAllGroupId}")
     protected int defaultAllGroupId;
 
+    /**
+     * 默认分组的分组 ID
+     */
     @Value("${followFan.defaultFollowGroupId}")
     protected int defaultFollowGroupId;
 

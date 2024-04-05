@@ -6,9 +6,8 @@ package com.huadiao.controller;
  */
 public interface Controller {
     /**
-     * 主机地址
+     * 前端主机首页地址
      */
-    String HOST = "http://localhost:8081/";
+    String FRONTEND_INDEX_HOST = "http://localhost:8081/";
 
-    String HUADIAO_URI = HOST + "huadiao/";
 }

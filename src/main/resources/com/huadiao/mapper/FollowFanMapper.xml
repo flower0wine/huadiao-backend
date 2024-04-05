@@ -106,29 +106,36 @@
     </resultMap>
     <!--根据分组 id, 获取用户关注-->
     <select id="selectUserFollowByUid" resultMap="followFanResultMap">
-        select t1.`uid`,
-        if(t2.`uid` is null, 0, 1) as `friend`,
-        t3.`user_avatar`,
-        t4.`user_id`,
-        t5.`nickname`,
-        t5.`canvases`,
-        t1.`latest_follow_date`
+        select distinct t1.uid,
+               if(t2.uid is null, 0, 1) as `friend`,
+               `user_avatar`,
+               `canvases`,
+               `user_id`,
+               `nickname`,
+               t1.`latest_follow_date`
         from huadiao_relation t1
-        left join huadiao_relation t2 on t1.`uid` = t2.`fan_uid` and t2.`status`
-        left join huadiao_homepage t3 on t3.uid = t1.uid
-        left join huadiao_user_base t4 on t4.uid = t1.uid
-        left join huadiao_user_info t5 on t5.uid = t1.uid
-        where t1.fan_uid = #{uid}
-        and t1.`status`
-        and t1.`id` >= (select `id` from huadiao_relation where `fan_uid` = #{uid} and `status`
+                 left join huadiao_relation t2 on t1.`uid` = t2.`fan_uid`
+                                                      and t2.`uid` = #{uid}
+                                                      and t2.`status`
+                 left join huadiao_homepage t3 on t3.uid = t1.uid
+                 left join huadiao_user_base t4 on t4.uid = t1.uid
+                 left join huadiao_user_info t5 on t5.uid = t1.uid
+        where t1.`id` in (
+            select `id`
+            from (
+                     select `id`
+                     from huadiao_relation
+                     where `fan_uid` = #{uid}
+                       and `status`
+                        <if test="groupId != null">
+                            and `group_id` = #{groupId}
+                        </if>
+                     limit #{offset}, #{row}
+                 ) as subquary
+        )
         <if test="groupId != null">
-            and `group_id` = #{groupId}
+            and t1.`group_id` = #{groupId};
         </if>
-        limit #{offset}, 1)
-        <if test="groupId != null">
-            and t1.`group_id` = #{groupId}
-        </if>
-        limit #{row};
     </select>
 
     <!--获取用户粉丝-->

@@ -37,7 +37,7 @@ public class NoteOperateControllerImpl extends AbstractController implements Not
     }
 
     @Override
-    @GetMapping("/star/new")
+    @GetMapping("/star/add")
     public String addNewNoteStar(HttpSession session, Integer uid, Integer noteId, Integer groupId) {
         Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
@@ -53,7 +53,7 @@ public class NoteOperateControllerImpl extends AbstractController implements Not
     }
 
     @Override
-    @GetMapping("/unlike/new")
+    @GetMapping("/unlike/add")
     public String addNoteUnlike(HttpSession session, Integer uid, Integer noteId) {
         Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
@@ -69,7 +69,7 @@ public class NoteOperateControllerImpl extends AbstractController implements Not
     }
 
     @Override
-    @GetMapping("/like/new")
+    @GetMapping("/like/add")
     public String addNoteLike(HttpSession session, Integer uid, Integer noteId) {
         Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);

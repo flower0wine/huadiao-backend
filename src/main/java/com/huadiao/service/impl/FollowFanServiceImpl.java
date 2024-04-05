@@ -114,11 +114,10 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
                 return result;
             }
             boolean me = uid.equals(viewedUid);
-            // 不是本人只能查看全部关注
+            // 不是本人只能查看全部关注, 或者提供的 group 为 null
             if(!me) {
                 groupId = null;
             } else {
-                // 是本人, 如果查看全部关注, 也要设置为 null
                 groupId = Integer.valueOf(defaultAllGroupId).equals(groupId) ? null : groupId;
             }
             return afterGetFollowFanInfo(uid, userId, viewedUid, groupId, offset, row);
@@ -132,22 +131,14 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
     private class GetFollowInfo extends AbstractGetFollowFanInfo {
         @Override
         protected Result<?> afterGetFollowFanInfo(Integer uid, String userId, Integer viewedUid, Integer groupId, Integer offset, Integer row) {
-            Map<String, Object> map = new HashMap<>(4);
             // 获取用户关注信息
             List<FollowFan> followFan = followFanMapper.selectUserFollowByUid(viewedUid, groupId, offset, row);
-            map.put("offset", followFan.size());
             if(followFan.size() == 0) {
                 return Result.notExist();
-            } else {
-                Set<FollowFan> set = new HashSet<>(followFan);
-                followFan = new ArrayList<>(set);
-                followFan.forEach((item) -> {
-                    if(item.getCanvases() == null) {
-                        item.setCanvases(defaultCanvases);
-                    }
-                });
             }
+            Map<String, Object> map = new HashMap<>(4);
 
+            map.put("offset", followFan.size());
             map.put("follow", followFan);
             return Result.ok(map);
         }
@@ -199,7 +190,7 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
         List<Integer> list = followFanMapper.countFollowAndFansByUid(viewedUid);
         if (list.size() != 0) {
             followFanBaseInfoDto.setFollowCount(list.get(FOLLOW_INDEX));
-            followFanBaseInfoDto.setFanCount(FAN_INDEX);
+            followFanBaseInfoDto.setFanCount(list.get(FAN_INDEX));
             followFanBaseInfoDto.setUid(viewedUid);
         }
         log.debug("uid, userId 分别为 {}, {} 的用户成功获取 uid 为 {} 的用户的关注和粉丝数量, followFanBaseInfoDto: {}", uid, userId, viewedUid, followFanBaseInfoDto);

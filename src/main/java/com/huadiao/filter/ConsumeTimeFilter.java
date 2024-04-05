@@ -2,7 +2,6 @@ package com.huadiao.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import javax.servlet.*;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -24,7 +23,6 @@ public class ConsumeTimeFilter implements Filter {
 
         HttpServletResponse res = (HttpServletResponse) response;
         res.setHeader("Access-Control-Allow-Origin", "http://localhost:8081");
-        //res.setHeader("Access-Control-Allow-Origin", "http://1.94.55.79");
         res.setHeader("Access-Control-Allow-Credentials", "true");
         res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
