@@ -81,17 +81,16 @@ public class CommonServiceImpl extends AbstractCommonService {
     public Result<?> registerHuadiao(HttpServletRequest request, HttpServletResponse response, RegisterInspector registerInspector) {
         Result<?> result = registerInspector.check();
 
-        if (result.getData() != null) {
-            // 非本站账号注册即登录
-            if (!(registerInspector instanceof HuadiaoRegisterInspector)) {
-                UserShareDto userShareDto = (UserShareDto) result.getData();
-                Integer uid = userShareDto.getUid();
-                String userId = userShareDto.getUserId();
-                this.login(uid, userId, request, response);
-            }
-            return Result.ok(succeedRegister);
-        } else if (!result.succeed()) {
+        if(!result.succeed()) {
             return result;
+        }
+        // 非本站账号注册即登录
+        if (result.getData() != null && !(registerInspector instanceof HuadiaoRegisterInspector)) {
+            UserShareDto userShareDto = (UserShareDto) result.getData();
+            Integer uid = userShareDto.getUid();
+            String userId = userShareDto.getUserId();
+            this.login(uid, userId, request, response);
+            return Result.ok(succeedRegister);
         }
         log.debug("用户通过所有的注册检查! 下面开始注册新花凋用户");
 

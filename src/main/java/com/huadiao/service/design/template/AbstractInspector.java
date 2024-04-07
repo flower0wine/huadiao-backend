@@ -2,6 +2,7 @@ package com.huadiao.service.design.template;
 
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.huadiao.elasticsearch.repository.UserRepository;
@@ -60,7 +61,7 @@ public abstract class AbstractInspector {
     @Autowired
     protected HuadiaoHouseMapper huadiaoHouseMapper;
 
-    @Autowired
+    @Autowired(required = false)
     protected UserRepository userRepository;
 
     @Autowired
@@ -77,12 +78,11 @@ public abstract class AbstractInspector {
     protected JSONObject getUserInfo(String accessToken, String apiUser) {
         log.debug("向第三方请求数据中...");
         // 通过访问令牌获取用户信息
-        String result = HttpRequest.get(apiUser)
+        HttpRequest httpRequest = HttpRequest.get(apiUser)
                 .header(Header.ACCEPT, "application/json")
-                .header(Header.AUTHORIZATION, accessToken)
-                .setHttpProxy("127.0.0.1", 17890)
-                .execute()
-                .body();
+                .header(Header.AUTHORIZATION, accessToken);
+
+        String result = httpRequest.execute().body();
 
         log.debug("向第三方请求数据完成");
 
@@ -132,15 +132,20 @@ public abstract class AbstractInspector {
 
     private JSONObject getData(Map<String, Object> map, String accessTokenUri) {
         log.debug("获取访问令牌中...");
+
         // 获取访问令牌
-        String result = HttpRequest.post(accessTokenUri)
+        HttpRequest httpRequest = HttpRequest.post(accessTokenUri)
                 .header(Header.ACCEPT, "application/json")
                 .header(Header.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                .setHttpProxy("127.0.0.1", 17890)
-                .form(map)
-                .execute()
-                .body();
+                .form(map);
+
+        String result = httpRequest.execute().body();
+
         log.debug("访问令牌获取成功");
         return JSONUtil.parseObj(result);
+    }
+
+    private HttpResponse setProxyAndExecute(HttpRequest request) {
+        return request.setHttpProxy("127.0.0.1", 17890).execute();
     }
 }

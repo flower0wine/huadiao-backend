@@ -2,7 +2,6 @@ package com.huadiao.service.design.template.register;
 
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.user.UserBaseDto;
-import com.huadiao.entity.elasticsearch.UserEs;
 import com.huadiao.enumeration.SexEnum;
 import com.huadiao.service.design.template.AbstractInspector;
 import lombok.Getter;
@@ -184,11 +183,11 @@ public class HuadiaoRegisterInspector extends AbstractInspector implements Regis
         // 注册成功删除验证码
         userBaseJedisUtil.deleteCheckCode(jsessionid);
 
-        UserEs userEs = new UserEs();
+        /*UserEs userEs = new UserEs();
         userEs.setUid(uid);
         userEs.setUserId(userId);
         // 保存至 elasticsearch
-        userRepository.save(userEs);
+        userRepository.save(userEs);*/
     }
 
     /**

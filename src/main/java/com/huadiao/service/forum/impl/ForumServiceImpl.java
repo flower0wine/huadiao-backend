@@ -4,14 +4,19 @@ import com.huadiao.entity.Result;
 import com.huadiao.entity.note.ForumNote;
 import com.huadiao.entity.note.ForumRankNote;
 import com.huadiao.mapper.ForumNoteMapper;
-import com.huadiao.redis.ForumJedisUtil;
 import com.huadiao.service.forum.AbstractForumService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author flowerwine
@@ -68,6 +73,10 @@ public class ForumServiceImpl extends AbstractForumService {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取笔记排行榜", uid, userId);
         List<ForumRankNote> forumRankNoteList = forumJedisUtil.getRangeNoteRank(noteRankMaxLength);
         log.debug("uid, userId 分别为 {}, {} 的用户成功获取笔记排行榜", uid, userId);
+
+        if(forumRankNoteList.size() == 0) {
+            return Result.existed();
+        }
 
         Map<String, Object> map = new HashMap<>(4);
         map.put("noteRank", forumRankNoteList);
