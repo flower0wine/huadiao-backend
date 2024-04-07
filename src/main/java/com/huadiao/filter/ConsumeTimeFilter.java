@@ -20,7 +20,6 @@ public class ConsumeTimeFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
         HttpServletResponse res = (HttpServletResponse) response;
         res.setHeader("Access-Control-Allow-Origin", "http://localhost:8081");
         res.setHeader("Access-Control-Allow-Credentials", "true");

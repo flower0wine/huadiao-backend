@@ -1,9 +1,9 @@
 package com.huadiao.service.impl;
 
-import com.huadiao.entity.elasticsearch.NoteEs;
-import com.huadiao.entity.history.AnimeHistory;
 import com.huadiao.entity.NoteHistory;
 import com.huadiao.entity.Result;
+import com.huadiao.entity.elasticsearch.NoteEs;
+import com.huadiao.entity.history.AnimeHistory;
 import com.huadiao.mapper.HistoryMapper;
 import com.huadiao.service.AbstractHistoryService;
 import lombok.extern.slf4j.Slf4j;

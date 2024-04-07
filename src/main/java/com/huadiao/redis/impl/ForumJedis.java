@@ -6,9 +6,7 @@ import com.huadiao.redis.AbstractJedis;
 import com.huadiao.redis.ForumJedisUtil;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +53,9 @@ public class ForumJedis extends AbstractJedis implements ForumJedisUtil {
             jedis.del(forumNoteRank);
         }
         List<ForumRankNote> forumRankNoteList = forumNoteMapper.selectForumRankNote(noteRankMaxLength);
-        jedis.rpush(forumNoteRank, forumRankNoteList.stream().map(JSONUtil::toJsonStr).toArray(String[]::new));
+        if(forumRankNoteList.size() != 0) {
+            jedis.rpush(forumNoteRank, forumRankNoteList.stream().map(JSONUtil::toJsonStr).toArray(String[]::new));
+        }
         jedis.close();
     }
 

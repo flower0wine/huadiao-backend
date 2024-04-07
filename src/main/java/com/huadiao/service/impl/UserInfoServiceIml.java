@@ -1,10 +1,10 @@
 package com.huadiao.service.impl;
 
 import com.huadiao.entity.Result;
-import com.huadiao.enumeration.SexEnum;
 import com.huadiao.entity.dto.user.UserAbstractDto;
 import com.huadiao.entity.dto.user.UserShareDto;
 import com.huadiao.entity.elasticsearch.UserEs;
+import com.huadiao.enumeration.SexEnum;
 import com.huadiao.mapper.FollowFanMapper;
 import com.huadiao.mapper.UserInfoMapper;
 import com.huadiao.mapper.UserMapper;

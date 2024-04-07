@@ -6,7 +6,6 @@ import cn.hutool.json.JSONUtil;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.UserOAuthDto;
 import com.huadiao.entity.dto.user.UserShareDto;
-import com.huadiao.entity.elasticsearch.UserEs;
 import com.huadiao.enumeration.AccountTypeEnum;
 import com.huadiao.enumeration.LoginTypeEnum;
 import com.huadiao.enumeration.SexEnum;
@@ -16,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -90,13 +90,13 @@ public class GoogleRegisterInspector extends AbstractInspector implements Regist
         homepageMapper.insertUserHomepageByUid(uid, avatar);
         log.debug("新增用户主页信息成功 (uid: {}, userId: {})", uid, userId);
 
-        UserEs userEs = new UserEs();
+        /*UserEs userEs = new UserEs();
         userEs.setUid(uid);
         userEs.setUserId(userId);
         userEs.setAvatar(avatar);
         userEs.setNickname(nickname);
         // 保存至 elasticsearch
-        userRepository.save(userEs);
+        userRepository.save(userEs);*/
     }
 
     @Override

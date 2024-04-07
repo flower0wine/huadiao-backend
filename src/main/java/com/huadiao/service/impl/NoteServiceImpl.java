@@ -1,7 +1,7 @@
 package com.huadiao.service.impl;
 
-import com.huadiao.entity.account.AccountSettings;
 import com.huadiao.entity.Result;
+import com.huadiao.entity.account.AccountSettings;
 import com.huadiao.entity.dto.followfan.BothRelationDto;
 import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.NoteRelationDto;
