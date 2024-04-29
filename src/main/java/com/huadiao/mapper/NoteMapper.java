@@ -1,10 +1,8 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.NoteHistory;
 import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.NoteRelationDto;
 import com.huadiao.entity.dto.note.ShareNoteDto;
-import com.huadiao.entity.note.ForumNote;
 import com.huadiao.entity.note.Note;
 import org.apache.ibatis.annotations.Param;
 
@@ -68,9 +66,11 @@ public interface NoteMapper {
      * 返回指定用户的全部笔记
      *
      * @param uid 用户 uid
+     * @param offset 偏移量
+     * @param row 行数
      * @return 返回指定用户全部笔记
      */
-    List<ShareNoteDto> selectAllNoteByUid(@Param("uid") Integer uid);
+    List<ShareNoteDto> selectAllNoteByUid(@Param("uid") Integer uid, @Param("offset") Integer offset, @Param("row") Integer row);
 
     /**
      * 根据笔记被喜欢次数

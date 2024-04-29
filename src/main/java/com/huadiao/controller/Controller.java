@@ -5,9 +5,5 @@ package com.huadiao.controller;
  * @author flowerwine
  */
 public interface Controller {
-    /**
-     * 前端主机首页地址
-     */
-    String FRONTEND_INDEX_HOST = "http://localhost:8081/";
 
 }

@@ -117,6 +117,8 @@
         from huadiao_note t1
         where `uid` = #{uid}
           and `status`
+        order by `publish_time` desc
+        limit #{offset}, #{row};
     </select>
 
     <!--获取笔记喜欢次数-->

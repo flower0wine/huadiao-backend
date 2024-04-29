@@ -57,7 +57,7 @@ public class ForumServiceImpl extends AbstractForumService {
         Result<?> result = checkOffsetAndRow(offset, row, (o, r) -> {
             List<ForumNote> forumNotes = forumNoteMapper.selectForumNote(o, r);
             if (forumNotes.size() == 0) {
-                return Result.notExist();
+                return Result.emptyData();
             }
             return Result.ok(forumNotes);
         });
@@ -75,7 +75,7 @@ public class ForumServiceImpl extends AbstractForumService {
         log.debug("uid, userId 分别为 {}, {} 的用户成功获取笔记排行榜", uid, userId);
 
         if(forumRankNoteList.size() == 0) {
-            return Result.notExist();
+            return Result.emptyData();
         }
 
         Map<String, Object> map = new HashMap<>(4);

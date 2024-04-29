@@ -1,16 +1,7 @@
 package com.huadiao.service;
 
-import cn.hutool.http.server.HttpServerRequest;
 import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.SelfNoteDto;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 业务层: 处理笔记
@@ -58,9 +49,8 @@ public interface NoteService {
      * @param uid    用户 uid
      * @param userId 用户 id
      * @param noteId 笔记 id
-     * @return 返回删除成功与否提示
      */
-    String deleteNote(Integer uid, String userId, Integer noteId);
+    void deleteNote(Integer uid, String userId, Integer noteId);
 
     /**
      * 修改笔记
@@ -81,9 +71,11 @@ public interface NoteService {
      * @param uid       用户 uid
      * @param userId    用户 id
      * @param authorUid 作者 uid
+     * @param offset 偏移量
+     * @param row     行数
      * @return 返回作者的所有笔记
      */
-    Result<?> getAllNote(Integer uid, String userId, Integer authorUid);
+    Result<?> getAllNote(Integer uid, String userId, Integer authorUid, Integer offset, Integer row);
 
     /**
      * 获取笔记评论

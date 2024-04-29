@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="debug" name="huadiao" packages="">
+<Configuration status="debug">
+    <Properties>
+        <Property name="logPath">O:/IDEA/huadiao-user-back/logs</Property>
+    </Properties>
     <Appenders>
         <!--当日志文件到达指定大小时, 创建新日志文件-->
-        <RollingFile name="rollingFile" filename="huadiao" filePattern="huadiaoLog/huadiao-%d{yyyy-MM-dd-HH-mm}-%i.log">
+        <RollingFile name="RollingFile" filename="${logPath}/huadiao.log" filePattern="${logPath}/huadiao-%d{yyyy-MM-dd-HH-mm}-%i.log">
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} : %msg%n</Pattern>
             </PatternLayout>
@@ -17,7 +20,7 @@
     </Appenders>
     <Loggers>
         <Root level="debug">
-            <AppenderRef ref="rollingFile"/>
+            <AppenderRef ref="RollingFile"/>
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>

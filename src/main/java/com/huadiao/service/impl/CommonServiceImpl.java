@@ -4,15 +4,19 @@ import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.user.UserShareDto;
-import com.huadiao.mapper.*;
+import com.huadiao.mapper.HomepageMapper;
+import com.huadiao.mapper.HuadiaoHouseMapper;
+import com.huadiao.mapper.UserMapper;
+import com.huadiao.mapper.UserSettingsMapper;
 import com.huadiao.service.AbstractCommonService;
 import com.huadiao.service.design.template.login.LoginInspector;
 import com.huadiao.service.design.template.register.HuadiaoRegisterInspector;
 import com.huadiao.service.design.template.register.RegisterInspector;
 import com.huadiao.util.CreateHuadiaoUserId;
-import com.huadiao.util.GeneratorCookie;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +62,8 @@ public class CommonServiceImpl extends AbstractCommonService {
         // 更新登录时间
         userMapper.updateUserLatestLoginTime(uid);
         // 添加 cookie 维持用户登录状态
-        response.addCookie(GeneratorCookie.createIdentityCookie(userId));
+        ResponseCookie cookie = getUserCookie(userId);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         HttpSession session = request.getSession();
         session.setAttribute("uid", uid);
@@ -90,7 +95,7 @@ public class CommonServiceImpl extends AbstractCommonService {
             Integer uid = userShareDto.getUid();
             String userId = userShareDto.getUserId();
             this.login(uid, userId, request, response);
-            return Result.ok(succeedRegister);
+            return Result.ok(SUCCEED_REGISTER);
         }
         log.debug("用户通过所有的注册检查! 下面开始注册新花凋用户");
 
@@ -124,6 +129,6 @@ public class CommonServiceImpl extends AbstractCommonService {
         if (!(registerInspector instanceof HuadiaoRegisterInspector)) {
             this.login(uid, userId, request, response);
         }
-        return Result.ok(succeedRegister);
+        return Result.ok(SUCCEED_REGISTER);
     }
 }

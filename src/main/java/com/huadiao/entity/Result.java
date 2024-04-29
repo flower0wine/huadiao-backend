@@ -52,8 +52,16 @@ public class Result<T> {
         return new Result<>(ResultCodeEnum.BLANK_PARAM, null);
     }
 
+    public static <T> Result<T> pageNotExist() {
+        return new Result<>(ResultCodeEnum.PAGE_NOT_EXIST, null);
+    }
+
     public static <T> Result<T> notExist() {
         return new Result<>(ResultCodeEnum.NOT_EXIST, null);
+    }
+
+    public static <T> Result<T> emptyData() {
+        return new Result<>(ResultCodeEnum.EMPTY_DATA, null);
     }
 
     public static <T> Result<T> existed() {
@@ -70,5 +78,9 @@ public class Result<T> {
 
     public static <T> Result<T> notAuthorize() {
         return new Result<>(ResultCodeEnum.NOT_AUTHORITATIVE, null);
+    }
+
+    public static <T> Result<T> serverError() {
+        return new Result<>(ResultCodeEnum.SERVER_ERROR, null);
     }
 }

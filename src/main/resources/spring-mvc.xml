@@ -8,14 +8,9 @@
     <mvc:default-servlet-handler/>
     <!--开启 mvc 注解-->
     <mvc:annotation-driven/>
-    <!--包扫描-->
-    <context:component-scan base-package="com.huadiao"/>
 
-    <!--允许所有请求跨域-->
-    <mvc:cors>
-        <mvc:mapping path="/**" allow-credentials="true" allowed-methods="GET" allowed-headers="*"
-                     allowed-origin-patterns="http://localhost:8081"/>
-    </mvc:cors>
+    <!--这里的 扫描不能写在配置类上, 不然会有 404-->
+    <context:component-scan base-package="com.huadiao"/>
 
     <!--拦截器-->
     <mvc:interceptors>
@@ -29,7 +24,13 @@
             <mvc:exclude-mapping path="/search/note/**"/>
             <mvc:exclude-mapping path="/forum/**"/>
             <mvc:exclude-mapping path="/userinfo"/>
+            <mvc:exclude-mapping path="/homepage/info"/>
+            <mvc:exclude-mapping path="/huadiaohouse/info"/>
             <bean class="com.huadiao.interceptor.LoginCheckInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.huadiao.interceptor.CsrfCheckInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
 

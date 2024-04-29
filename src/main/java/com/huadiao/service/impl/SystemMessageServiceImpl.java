@@ -59,7 +59,7 @@ public class SystemMessageServiceImpl extends AbstractMessageService implements 
         Result<?> result = checkOffsetAndRow(offset, row, (o, r) -> {
             List<SystemMessage> systemMessage = messageJedisUtil.getSystemMessage(o, r);
             if(systemMessage.isEmpty()) {
-                return Result.notExist();
+                return Result.emptyData();
             }
             return Result.ok(systemMessage);
         });

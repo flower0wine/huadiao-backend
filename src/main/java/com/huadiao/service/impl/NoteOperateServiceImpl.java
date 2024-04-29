@@ -183,7 +183,7 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
         Integer commentExist = noteOperateMapper.selectNoteCommentExist(noteId, authorUid, rootCommentId, subCommentId);
         if(commentExist == null) {
             log.debug("uid, userId 分别为 {}, {} 的用户提供的参数对应的评论不存在, 参数分别为 authorUid: {}, noteId: {}, rootCommentId: {}, subCommentId: {}", uid, userId, authorUid, noteId, rootCommentId, subCommentId);
-            return new Result<>(ResultCodeEnum.NOT_EXIST, null);
+            return new Result<>(ResultCodeEnum.PAGE_NOT_EXIST, null);
         }
         noteOperateMapper.insertNoteCommentLike(uid, noteId, authorUid, rootCommentId, subCommentId);
         log.debug("uid, userId 为 {}, {} 的用户成功对用户 uid 为 {} 的笔记 noteId为 {} 的评论点赞, rootCommentId 为 {}, subCommentId 为 {}", uid, userId, authorUid, noteId, rootCommentId, subCommentId);

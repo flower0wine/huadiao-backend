@@ -1,6 +1,6 @@
 package com.huadiao.service;
 
-import com.huadiao.entity.dto.user.UserAbstractDto;
+import com.huadiao.entity.Result;
 
 import javax.servlet.http.Cookie;
 
@@ -15,9 +15,10 @@ public interface UserService {
      * 获取花凋头部面板用户信息
      *
      * @param uid 用户 uid
+     * @param userId 用户 id
      * @return 返回用户信息
      */
-    UserAbstractDto getHuadiaoHeaderUserInfo(Integer uid);
+    Result<?> getHuadiaoHeaderUserInfo(Integer uid, String userId);
 
     /**
      * 退出登录

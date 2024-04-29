@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.huadiao.mapper.VideoUploadMapper">
+
+    <!-- 新增上传记录, 如果存在记录则进行修改 -->
+    <insert id="insertOrUpdateUploadInfo">
+        insert into `huadiao_anime_video`(`id`, `uid`, `filename`, `size`, `upload_succeed`)
+        values (#{id}, #{uid}, #{filename}, #{size}, #{uploadSucceed})
+        on duplicate key update `upload_succeed` = #{uploadSucceed},
+                                `upload_time`    = now();
+    </insert>
+
+    <!-- 删除上传记录 -->
+    <delete id="deleteUploadInfo">
+        delete
+        from `huadiao_anime_video`
+        where `uid` = #{uid}
+          and `filename` = #{filename};
+    </delete>
+
+    <resultMap id="selectUploadInfoResultMap" type="com.huadiao.entity.upload.video.UploadInfo">
+        <result property="animeId" column="id"/>
+        <result property="uid" column="uid"/>
+        <result property="filename" column="filename"/>
+        <result property="size" column="size"/>
+        <result property="uploadTime" column="upload_time"/>
+        <result property="uploadSucceed" column="upload_succeed"/>
+    </resultMap>
+    <!-- 获取上传信息 -->
+    <select id="selectUploadInfo" resultMap="selectUploadInfoResultMap">
+        select `id`, `uid`, `filename`, `size`, `upload_time`, `upload_succeed`
+        from `huadiao_anime_video`
+        where `uid` = #{uid}
+          and `id` in (select `id` from `huadiao_anime_video` where `uid` = #{uid} order by `id` desc)
+        limit #{offset}, #{row};
+    </select>
+
+
+</mapper>

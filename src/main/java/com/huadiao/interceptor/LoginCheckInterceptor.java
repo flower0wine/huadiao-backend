@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -17,7 +19,6 @@ import javax.servlet.http.HttpSession;
  * @projectName huadiao-user-back
  * @description 检查用户是否登录
  */
-@Order(1)
 @Slf4j
 public class LoginCheckInterceptor implements HandlerInterceptor {
 
@@ -26,18 +27,20 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        boolean login = loginCheck(request);
-        log.debug("用户登录的状态为 {}!", login ? "已登录" : "未登录");
-        if(!login) {
-            log.debug("当前用户未登录!");
-            // 用户未登录, 状态码仍为 200
-            response.setStatus(HttpStatus.HTTP_OK);
-            response.getWriter().write(JSONUtil.toJsonStr(Result.notAuthorize()));
+        boolean isLogin = isLogin(request);
+
+        if(isLogin) {
+            log.debug("用户 IP: {}, 已登录!", request.getRemoteAddr());
+            return true;
         }
-        return login;
+        log.debug("用户 IP: {} 未登录!", request.getRemoteAddr());
+        // 用户未登录, 状态码仍为 200
+        response.setStatus(HttpStatus.HTTP_OK);
+        response.getWriter().write(JSONUtil.toJsonStr(Result.notAuthorize()));
+        return false;
     }
 
-    private boolean loginCheck(HttpServletRequest request) {
+    private boolean isLogin(HttpServletRequest request) {
         HttpSession session = request.getSession();
         Object uid = session.getAttribute(uidKey);
         return uid != null;
