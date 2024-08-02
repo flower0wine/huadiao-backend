@@ -1,18 +1,17 @@
 package com.huadiao.service.impl;
 
 import com.huadiao.entity.Result;
-import com.huadiao.entity.upload.PreloadReturnValue;
-import com.huadiao.entity.upload.video.VideoInfo;
 import com.huadiao.service.AbstractVideoUploadService;
+import com.huadiao.service.upload.fragment.PreloadReturnValue;
 import com.huadiao.service.upload.storage.StorageUtils;
-import com.huadiao.service.upload.storage.video.VideoUploadStorage;
-import com.huadiao.util.FragmentUpload;
+import com.huadiao.service.upload.video.VideoInfo;
+import com.huadiao.service.upload.video.VideoUploadStorage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -25,21 +24,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @Slf4j
 public class VideoUploadServiceImpl extends AbstractVideoUploadService {
-    private final FragmentUpload videoFragmentUploadBean;
-    private final List<VideoUploadStorage> storageList;
+
+    @Resource
+    private List<VideoUploadStorage> storageList;
 
     private final Map<Integer, VideoInfo> map = new ConcurrentHashMap<>();
-
-    @Autowired
-    public VideoUploadServiceImpl(FragmentUpload videoFragmentUploadBean, List<VideoUploadStorage> storageList) {
-        this.videoFragmentUploadBean = videoFragmentUploadBean;
-        this.storageList = storageList;
-    }
-
-    @Override
-    protected FragmentUpload getFragmentUploadBean() {
-        return videoFragmentUploadBean;
-    }
 
     @Override
     protected String getUserUploadingServerFilename(Integer uid) {

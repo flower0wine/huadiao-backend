@@ -1,9 +1,8 @@
-package com.huadiao.service.websocket;
+package com.huadiao.service.whisper;
 
 import com.huadiao.redis.MessageJedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 

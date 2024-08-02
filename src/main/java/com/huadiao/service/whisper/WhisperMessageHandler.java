@@ -1,4 +1,4 @@
-package com.huadiao.service.websocket;
+package com.huadiao.service.whisper;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;

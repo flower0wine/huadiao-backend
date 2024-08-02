@@ -1,142 +1,75 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.huadiao.mapper.LikeMessageMapper">
-
-    <resultMap id="likeNoteMessageItemResultMap" type="com.huadiao.entity.message.like.LikeNoteMessage">
-        <result property="noteId" column="note_id"/>
-        <result property="authorUid" column="author_uid"/>
-        <result property="noteTitle" column="note_title"/>
-    </resultMap>
-    <resultMap id="likeMessageResultMap" type="com.huadiao.entity.message.like.LikeMessage">
-        <id column="note_id"/>
-        <result property="time" column="like_time"/>
-        <association property="likeMessageItem" resultMap="likeNoteMessageItemResultMap"/>
-        <association property="count" select="com.huadiao.mapper.NoteMapper.countNoteLikeByUid"
-                     column="{uid=author_uid, noteId=note_id}"/>
-        <collection property="userEsList" select="com.huadiao.mapper.LikeMessageMapper.selectLikeNoteUserByUid"
-                    column="{noteId=note_id, uid=author_uid, limit=limit}"/>
-    </resultMap>
+    <insert id="insertLatestMessage">
+        insert into huadiao_note_like_latest_message(`uid`, `author_uid`, `reply_uid`, `replied_uid`,
+                                                     `note_id`, `root_comment_id`, `sub_comment_id`)
+        values (#{uid},
+                #{authorUid},
+        <choose>
+            <when test="replyUid != null">#{replyUid},</when>
+            <otherwise>0,</otherwise>
+        </choose>
+        <choose>
+            <when test="repliedUid != null">#{repliedUid},</when>
+            <otherwise>0,</otherwise>
+        </choose>
+        <choose>
+            <when test="rootCommentId != null">#{rootCommentId},</when>
+            <otherwise>0,</otherwise>
+        </choose>
+        <choose>
+            <when test="subCommentId != null">#{subCommentId},</when>
+            <otherwise>0,</otherwise>
+        </choose>
+                #{noteId})
+    </insert>
 
     <!--删除点赞笔记消息-->
     <update id="deleteLikeNoteMessage">
         update huadiao_note_like
         set `message_status` = 0
-        where `note_id` = #{noteId}
-          and `author_uid` = #{uid}
-          and `status`;
+        where `uid` = #{uid}
+        and `note_id` = #{noteId}
+        and `author_uid` = #{authorUid}
+        <choose>
+            <when test="replyUid != null">and `reply_uid` = #{replyUid}</when>
+            <otherwise>and `reply_uid` = 0</otherwise>
+        </choose>
+        <choose>
+            <when test="repliedUid != null">and `replied_uid` = #{repliedUid}</when>
+            <otherwise>and `replied_uid` = 0</otherwise>
+        </choose>
+        <choose>
+            <when test="rootCommentId != null">and `root_comment_id` = #{rootCommentId}</when>
+            <otherwise>and `root_comment_id` = 0</otherwise>
+        </choose>
+        <choose>
+            <when test="subCommentId != null">and `sub_comment_id` = #{subCommentId}</when>
+            <otherwise>and `sub_comment_id` = 0</otherwise>
+        </choose>
+        and `status`
+        and `message_status`;
     </update>
 
     <!--删除点赞笔记评论消息-->
     <update id="deleteLikeCommentMessage">
-        update huadiao_note_comment_like
+        update huadiao_note_like
         set `message_status` = 0
         where `note_id` = #{noteId}
           and `author_uid` = #{uid}
           and `root_comment_id` = #{rootCommentId}
           and `sub_comment_id` = #{subCommentId}
-          and `status`;
+          and `status`
+          and `message_status`;
     </update>
 
-    <!--获取点赞笔记消息-->
-    <select id="selectLikeNoteMessageByUid" resultMap="likeMessageResultMap">
-        select `author_uid`,
-               t1.`note_id`,
-               `like_time`,
-               `note_title`,
-               (select #{limit}) as `limit`
-        from huadiao_note_like t1
-                 left join huadiao_note t4 on `author_uid` = t4.`uid` and t4.`note_id` = t1.`note_id` and t4.`status`
-        where author_uid = #{uid}
-          and t1.`status`
-          and t1.`message_status`
-          and t1.`id` >= (select `id` from huadiao_note_comment_like where `author_uid` = #{uid} limit #{offset}, 1)
-        order by `like_time` desc
-        limit #{row};
-    </select>
-
-    <resultMap id="likeCommentMessageItemResultMap" type="com.huadiao.entity.message.like.LikeCommentMessage">
-        <result property="noteId" column="note_id"/>
-        <result property="authorUid" column="author_uid"/>
-        <result property="rootCommentId" column="root_comment_id"/>
-        <result property="subCommentId" column="sub_comment_id"/>
-        <result property="commentContent" column="comment_content"/>
-    </resultMap>
-    <resultMap id="likeCommentMessageResultMap" type="com.huadiao.entity.message.like.LikeMessage">
-        <id column="author_uid"/>
-        <id column="note_id"/>
-        <id column="root_comment_id"/>
-        <id column="sub_comment_id"/>
-        <result property="time" column="like_time"/>
-        <association property="count" select="com.huadiao.mapper.NoteMapper.countCommentLikeByUid"
-                     column="{uid=author_uid, noteId=note_id, rootCommentId=root_comment_id, subCommentId=sub_comment_id}"/>
-        <association property="likeMessageItem" resultMap="likeCommentMessageItemResultMap"/>
-        <collection property="userEsList" select="com.huadiao.mapper.LikeMessageMapper.selectLikeCommentUserByUid"
-                    column="{rootCommentId=root_comment_id, subCommentId=sub_comment_id, noteId=note_id, uid=author_uid, limit=limit}">
-        </collection>
-    </resultMap>
-    <!--获取点赞评论消息-->
-    <select id="selectCommentLikeMessageByUid" resultMap="likeCommentMessageResultMap">
-        select t1.`author_uid`,
-               t1.`note_id`,
-               t1.`root_comment_id`,
-               t1.`sub_comment_id`,
-               `like_time`,
-               `comment_content`,
-               (select #{limit}) as `limit`
-        from huadiao_note_comment_like t1
-                 left join huadiao_note_comment t4
-                           on t4.`author_uid` = t1.`author_uid` and t4.`root_comment_id` = t1.`root_comment_id` and
-                              t4.`sub_comment_id` = t1.`sub_comment_id` and t4.`status`
-        where t1.author_uid = #{uid}
-          and t1.`status`
-          and t1.`message_status`
-          and t1.`id` >= (select `id`
-                          from huadiao_note_comment_like
-                          where `author_uid` = #{uid}
-                            and `status`
-                            and `message_status`
-                          limit #{offset}, 1)
-        order by `like_time` desc
-        limit #{row};
-    </select>
-
-    <resultMap id="likeMessageUserResultMap" type="com.huadiao.entity.message.like.LikeMessageUser">
-        <result property="uid" column="uid"/>
-        <result property="userId" column="user_id"/>
-        <result property="nickname" column="nickname"/>
-        <result property="avatar" column="user_avatar"/>
-    </resultMap>
-    <!--获取点赞笔记评论的用户的必要信息-->
-    <select id="selectLikeCommentUserByUid" resultMap="likeMessageUserResultMap">
-        select `nickname`, `user_id`, t1.`uid`, `user_avatar`
-        from huadiao_note_comment_like t1
-                 left join huadiao_user_info t2 on t2.`uid` = t1.`uid`
-                 left join huadiao_homepage t3 on t3.`uid` = t1.`uid`
-                 left join huadiao_user_base t4 on t4.`uid` = t1.`uid`
-        where t1.`author_uid` = #{uid}
-          and `root_comment_id` = #{rootCommentId}
-          and `sub_comment_id` = #{subCommentId}
-          and `note_id` = #{noteId}
-          and `status`
-          and `message_status`
-        order by `like_time` desc
-        limit #{limit};
-    </select>
-
-    <!--获取点赞笔记的用户的必要信息-->
-    <select id="selectLikeNoteUserByUid" resultMap="likeMessageUserResultMap">
-        select `nickname`, `user_id`, t1.`uid`, `user_avatar`
-        from huadiao_note_like t1
-                 left join huadiao_user_info t2 on t2.`uid` = t1.`uid`
-                 left join huadiao_homepage t3 on t3.`uid` = t1.`uid`
-                 left join huadiao_user_base t4 on t4.`uid` = t1.`uid`
-        where t1.`author_uid` = #{uid}
-          and `status`
-          and `message_status`
-          and `note_id` = #{noteId}
-        order by `like_time` desc
-        limit #{limit};
-    </select>
+    <delete id="deleteLatestReadMessage">
+        delete
+        from huadiao_note_like_latest_message
+        where (author_uid = #{uid} and reply_uid = 0)
+           or reply_uid = #{uid}
+    </delete>
 
     <resultMap id="likeUserResultMap" type="com.huadiao.entity.message.like.LikeMessageUser">
         <result property="uid" column="uid"/>
@@ -149,7 +82,7 @@
     </resultMap>
     <!--获取点赞笔记用户的信息-->
     <select id="selectLikeNoteUser" resultMap="likeUserResultMap">
-        select distinct t1.`uid`,
+        select t1.`uid`,
                `nickname`,
                `user_id`,
                `user_avatar`,
@@ -165,13 +98,16 @@
         where t1.`author_uid` = #{uid}
           and `note_id` = #{noteId}
           and t1.`status`
-          and `message_status`
+          and t1.`message_status`
+          and `root_comment_id` = 0
+          and `sub_comment_id` = 0
           and t1.`id` >= (select `id`
-                          from huadiao_note_like
+                          from huadiao_note_comment_like
                           where `author_uid` = #{uid}
                             and `note_id` = #{noteId}
+                            and `root_comment_id` = 0
+                            and `sub_comment_id` = 0
                             and `status`
-                            and `message_status`
                           limit #{offset}, 1)
         order by `like_time` desc
         limit #{row};
@@ -186,7 +122,7 @@
                `like_time`,
                if(t5.`uid` = #{uid}, 1, 0)   as `fan`,
                if(t6.`uid` = t1.`uid`, 1, 0) as `follow`
-        from huadiao_note_comment_like t1
+        from huadiao_note_like t1
                  left join huadiao_user_base t2 on t2.`uid` = t1.`uid`
                  left join huadiao_user_info t3 on t3.`uid` = t1.`uid`
                  left join huadiao_homepage t4 on t4.`uid` = t1.`uid`
@@ -205,10 +141,86 @@
                             and `root_comment_id` = #{rootCommentId}
                             and `sub_comment_id` = #{subCommentId}
                             and `status`
-                            and `message_status`
                           limit #{offset}, 1)
         order by `like_time` desc
         limit #{row};
+    </select>
+
+    <resultMap id="likeNoteMessageResultMap" type="com.huadiao.entity.message.like.LikeMessage">
+        <result property="uid" column="uid" />
+        <result property="authorUid" column="author_uid" />
+        <result property="noteId" column="note_id" />
+        <result property="replyUid" column="reply_uid" />
+        <result property="repliedUid" column="replied_uid" />
+        <result property="rootCommentId" column="root_comment_id" />
+        <result property="subCommentId" column="sub_comment_id" />
+        <result property="likeTime" column="like_time" />
+        <result property="noteTitle" column="note_title" />
+        <result property="comment" column="comment_content" />
+        <result property="avatar" column="user_avatar" />
+        <result property="nickname" column="nickname" />
+        <result property="userId" column="user_id" />
+    </resultMap>
+    <!--获取笔记和评论点赞消息-->
+    <select id="selectNoteLikeMessageByUid" resultMap="likeNoteMessageResultMap">
+        select t1.`uid`,
+               t1.`author_uid`,
+               t1.`note_id`,
+               t1.`reply_uid`,
+               t1.`replied_uid`,
+               t1.`root_comment_id`,
+               t1.`sub_comment_id`,
+               `like_time`,
+               `note_title`,
+               `comment_content`,
+               `user_avatar`,
+               `nickname`,
+               `user_id`
+        from huadiao_note_like t1
+                 left join huadiao_note t2 on `author_uid` = t2.`uid`
+            and t2.`note_id` = t1.`note_id`
+            and t2.`status`
+                 left join huadiao_note_comment t3
+                           on t1.`root_comment_id` = t3.`root_comment_id`
+                               and t1.`sub_comment_id` = t3.`sub_comment_id`
+                               and t3.`status`
+                 left join huadiao_user_base t4 on t1.`uid` = t4.`uid`
+                 left join huadiao_homepage t5 on t1.`uid` = t5.`uid`
+                 left join huadiao_user_info t6 on t1.`uid` = t6.`uid`
+        where (t1.reply_uid = #{uid} or (t1.reply_uid = 0 and t1.author_uid = #{uid}))
+          and t1.`status`
+          and t1.`message_status`
+          and t1.`id` >= (
+            select `id`
+            from huadiao_note_like
+            where (reply_uid = #{uid} or (reply_uid = 0 and author_uid = #{uid}))
+              and `status`
+              and `message_status`
+            limit #{offset}, 1)
+        order by `like_time` desc
+        limit #{row};
+    </select>
+
+    <!--获取未读消息数量-->
+    <select id="countUnreadMessage" resultType="java.lang.Integer">
+        select count(*)
+        from huadiao_note_like t1
+                 left join huadiao_note_like_latest_message t2
+                           on t1.`author_uid` = t2.`author_uid`
+        where t1.`status`
+          and (t1.reply_uid = #{uid} or (t1.reply_uid = 0 and t1.author_uid = #{uid}))
+          and (t2.id is null or t1.`id` > (
+            select max(`id`)
+            from huadiao_note_like t3
+            where (t3.reply_uid = #{uid} or (t3.reply_uid = 0 and t3.author_uid = #{uid}))
+              and t3.`uid` = t2.`uid`
+              and t3.`note_id` = t2.`note_id`
+              and t3.`root_comment_id` = t2.`root_comment_id`
+              and t3.`sub_comment_id` = t2.`sub_comment_id`
+              and t3.`replied_uid` = t2.`replied_uid`
+              and t3.`status`
+              and t3.`message_status`
+        ));
     </select>
 
 </mapper>

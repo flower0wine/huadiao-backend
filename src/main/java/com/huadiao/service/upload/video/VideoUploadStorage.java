@@ -1,6 +1,5 @@
-package com.huadiao.service.upload.storage.video;
+package com.huadiao.service.upload.video;
 
-import com.huadiao.entity.upload.video.UploadInfo;
 import com.huadiao.service.upload.storage.UploadStorage;
 
 /**

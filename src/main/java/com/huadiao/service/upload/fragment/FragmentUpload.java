@@ -1,7 +1,5 @@
-package com.huadiao.util;
+package com.huadiao.service.upload.fragment;
 
-import com.huadiao.entity.upload.FileInfo;
-import com.huadiao.entity.upload.PreloadReturnValue;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;

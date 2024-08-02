@@ -1,6 +1,6 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.message.whisper.LatestUser;
+import com.huadiao.entity.message.whisper.LatestMessageUser;
 import com.huadiao.entity.message.whisper.WhisperMessage;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,6 +13,13 @@ import java.util.List;
 public interface WhisperMessageMapper {
 
     /**
+     * 插入已读的最近一条消息
+     * @param whisperMessage 消息
+     * @return 返回新增条数
+     */
+    Integer insertLatestWhisperMessage(WhisperMessage whisperMessage);
+
+    /**
      * 获取最近消息中的已关注用户
      *
      * @param uid 用户 uid
@@ -20,7 +27,7 @@ public interface WhisperMessageMapper {
      * @param row 行数
      * @return 返回最近消息的用户
      */
-    List<LatestUser> selectLatestUserByUid(@Param("uid") Integer uid, @Param("offset") Integer offset, @Param("row") Integer row);
+    List<Integer> selectLatestUserByUid(@Param("uid") Integer uid, @Param("offset") Integer offset, @Param("row") Integer row);
 
     /**
      * 单独获取最近消息中的某个用户
@@ -28,7 +35,7 @@ public interface WhisperMessageMapper {
      * @param latestUid 最近消息中的用户 uid
      * @return 返回最近消息中的某个用户
      */
-    LatestUser selectSingleLatestUserByUid(@Param("uid") Integer uid, @Param("latestUid") Integer latestUid);
+    LatestMessageUser selectSingleLatestUserByUid(@Param("uid") Integer uid, @Param("latestUid") Integer latestUid);
 
     /**
      * 删除最近消息中的用户
@@ -50,6 +57,15 @@ public interface WhisperMessageMapper {
                                               @Param("row") Integer row);
 
     /**
+     * 获取用户 uid 发送 receiveUid 用户的最近一条消息
+     * @param uid 发送者 uid
+     * @param receiveUid 接收者 uid
+     * @return 消息
+     */
+    WhisperMessage selectSingleWhisperMessage(@Param("uid") Integer uid,
+                                              @Param("receiveUid") Integer receiveUid);
+
+    /**
      * 删除私信消息, 只有收信者或者发信者可以删除
      * @param uid 用户 uid
      * @param messageId 消息 id
@@ -68,4 +84,19 @@ public interface WhisperMessageMapper {
      */
     Integer insertWhisperMessage(@Param("uid") Integer uid, @Param("receiveUid") Integer receiveUid, @Param("messageContent") String messageContent,
                                  @Param("messageId") Integer messageId, @Param("messageType") Integer messageType);
+
+    /**
+     * 获取未读私信数量
+     * @param uid 接收者 uid
+     * @return 返回未私信数
+     */
+    Integer countUnreadMessage(@Param("uid") Integer uid);
+
+    /**
+     * 删除已读的最近一条消息
+     * @param uid 发送者 uid
+     * @param receiveUid 接收者 uid
+     * @return 返回删除条数
+     */
+    Integer deleteLatestMessage(@Param("uid") Integer uid, @Param("receiveUid") Integer receiveUid);
 }

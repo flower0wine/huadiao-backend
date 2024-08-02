@@ -1,4 +1,4 @@
-package com.huadiao.service.websocket;
+package com.huadiao.service.whisper;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;

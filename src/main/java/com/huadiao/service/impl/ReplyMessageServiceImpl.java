@@ -1,7 +1,7 @@
 package com.huadiao.service.impl;
 
 import com.huadiao.entity.Result;
-import com.huadiao.entity.message.reply.ReplyMessage;
+import com.huadiao.entity.message.reply.ReplyComment;
 import com.huadiao.mapper.ReplyMessageMapper;
 import com.huadiao.service.AbstractMessageService;
 import com.huadiao.service.ReplyMessageService;
@@ -33,8 +33,15 @@ public class ReplyMessageServiceImpl extends AbstractMessageService implements R
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取回复消息, offset: {}, row: {}", uid, userId, offset, row);
         Map<String, Object> map = new HashMap<>(2);
         Result<?> result = checkOffsetAndRow(offset, row, (o, r) -> {
-            List<ReplyMessage> replyMessageList = replyMessageMapper.selectReplyCommentMessage(uid, o, r);
+            List<ReplyComment> replyMessageList = replyMessageMapper.selectReplyCommentMessage(uid, o, r);
             map.put("replyMessageList", replyMessageList);
+
+            if (o == 0 && !replyMessageList.isEmpty()) {
+                replyMessageMapper.deleteLatestReplyMessage(uid);
+
+                ReplyComment replyComment = replyMessageList.get(0);
+                replyMessageMapper.insertLatestReplyMessage(replyComment);
+            }
             return isEmpty(replyMessageList);
         });
         if(result.succeed()) {
@@ -55,5 +62,10 @@ public class ReplyMessageServiceImpl extends AbstractMessageService implements R
         replyMessageMapper.deleteReplyNoteMessage(replyUid, noteId, uid, rootCommentId, subCommentId);
         log.debug("uid, userId 分别为 {}, {} 的用户成功删除回复消息, noteId: {}, replyUid: {}, rootCommentId: {}, subCommentId: {}", uid, userId, noteId, replyUid, rootCommentId, subCommentId);
         return Result.ok(null);
+    }
+
+    @Override
+    public Result<Integer> countUnreadMessage(Integer uid, String userId) {
+        return Result.ok(replyMessageMapper.countUnreadMessage(uid));
     }
 }

@@ -8,11 +8,24 @@
         values (#{messageId}, #{messageTitle}, #{messageContent}, #{form}, #{adminId});
     </insert>
 
+    <!--新增用户最新的已读消息-->
+    <insert id="insertLatestSystemMessage">
+        insert into huadiao_system_latest_message(`message_id`, `uid`)
+        values (#{messageId}, #{uid});
+    </insert>
+
     <!--删除消息-->
     <delete id="deleteSystemMessage">
         delete
         from huadiao_system_message
         where `message_id` = #{messageId};
+    </delete>
+
+    <!--删除用户已读的最近一条消息-->
+    <delete id="deleteLatestSystemMessage">
+        delete
+        from huadiao_system_latest_message
+        where `uid` = #{uid}
     </delete>
 
     <resultMap id="systemMessageResultMap" type="com.huadiao.entity.message.system.SystemMessage">
@@ -27,6 +40,16 @@
         select `message_id`, `message_content`, `message_title`, `send_time`, `form`
         from huadiao_system_message
         where `id` >= (select `id` from huadiao_system_message limit #{offset}, 1)
+        order by `send_time` desc
         limit #{row};
+    </select>
+
+    <!--获取未读消息数-->
+    <select id="countUnreadMessage" resultType="java.lang.Integer">
+        select count(*)
+        from huadiao_system_message t1
+                 left join huadiao_system_latest_message t2 on `uid` = #{uid}
+        where t2.`message_id` is null
+           or t1.`id` > (select `id` from huadiao_system_message t3 where t3.`message_id` = t2.`message_id`)
     </select>
 </mapper>

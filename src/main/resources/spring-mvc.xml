@@ -30,6 +30,13 @@
         </mvc:interceptor>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/common/**"/>
+            <mvc:exclude-mapping path="/note/get"/>
+            <mvc:exclude-mapping path="/note/all"/>
+            <mvc:exclude-mapping path="/userinfo"/>
+            <mvc:exclude-mapping path="/homepage/info"/>
+            <mvc:exclude-mapping path="/huadiaohouse/info"/>
+            <mvc:exclude-mapping path="/forum/**"/>
             <bean class="com.huadiao.interceptor.CsrfCheckInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>

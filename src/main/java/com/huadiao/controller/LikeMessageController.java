@@ -1,5 +1,6 @@
 package com.huadiao.controller;
 
+import com.huadiao.dto.note.NoteCommentDTO;
 import com.huadiao.entity.Result;
 
 import javax.servlet.http.HttpSession;
@@ -24,10 +25,10 @@ public interface LikeMessageController extends Controller {
      * 删除点赞笔记消息
      *
      * @param session session 对象
-     * @param noteId  笔记 id
+     * @param noteCommentDTO 笔记评论 dto
      * @return 返回删除提示
      */
-    Result<?> deleteLikeNoteMessage(HttpSession session, Integer noteId);
+    Result<?> deleteLikeNoteMessage(HttpSession session, NoteCommentDTO noteCommentDTO);
 
     /**
      * 删除点赞评论笔记消息

@@ -1,8 +1,8 @@
-package com.huadiao.service.upload;
+package com.huadiao.service.upload.video;
 
-import com.huadiao.entity.upload.FileInfo;
-import com.huadiao.entity.upload.PreloadReturnValue;
-import com.huadiao.util.FragmentUpload;
+import com.huadiao.service.upload.fragment.FileInfo;
+import com.huadiao.service.upload.fragment.FragmentUpload;
+import com.huadiao.service.upload.fragment.PreloadReturnValue;
 import lombok.Getter;
 
 import java.util.List;

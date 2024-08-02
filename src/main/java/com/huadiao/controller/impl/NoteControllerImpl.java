@@ -115,10 +115,10 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
         String userId = (String) session.getAttribute(userIdKey);
         String rootCommentId = map.get("rootCommentId");
         String commentContent = map.get("commentContent");
-        Long commentId = null;
+        Integer commentId = null;
         if(rootCommentId != null) {
             try {
-                commentId = Long.parseLong(rootCommentId);
+                commentId = Integer.parseInt(rootCommentId);
             } catch (Exception e) {
                 return Result.errorParam();
             }

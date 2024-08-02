@@ -65,4 +65,12 @@ public interface WhisperMessageService extends Service {
      * @return 成功则返回新增产生的 messageId
      */
     Result<?> addWhisperMessage(Integer uid, String userId, Integer receiveUid, String messageContent);
+
+    /**
+     * 获取私信消息未读数
+     * @param uid 接收者 uid
+     * @param userId 接收者 id
+     * @return 返回未读数
+     */
+    Result<Integer> countUnreadMessage(Integer uid, String userId);
 }

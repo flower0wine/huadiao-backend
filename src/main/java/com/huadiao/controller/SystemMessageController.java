@@ -12,9 +12,10 @@ public interface SystemMessageController extends Controller {
 
     /**
      * 获取系统消息
+     * @param session session
      * @param offset 偏移量
      * @param row 行数
      * @return 返回系统消息
      */
-    Result<?> getSystemMessage(Integer offset, Integer row);
+    Result<?> getSystemMessage(HttpSession session, Integer offset, Integer row);
 }

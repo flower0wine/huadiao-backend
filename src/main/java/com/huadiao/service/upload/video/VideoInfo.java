@@ -1,4 +1,4 @@
-package com.huadiao.entity.upload.video;
+package com.huadiao.service.upload.video;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

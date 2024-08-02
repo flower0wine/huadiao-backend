@@ -28,9 +28,18 @@ public interface SystemMessageService {
 
     /**
      * 获取系统消息
+     * @param uid 用户 uid
      * @param offset 偏移量
      * @param row 行数
      * @return 返回系统消息
      */
-    Result<?> getSystemMessage(Integer offset, Integer row);
+    Result<?> getSystemMessage(Integer uid, Integer offset, Integer row);
+
+    /**
+     * 获取未读消息数量
+     * @param uid 用户 uid
+     * @param userId 用户 id
+     * @return 返回未读消息数量
+     */
+    Result<Integer> countUnreadMessage(Integer uid, String userId);
 }

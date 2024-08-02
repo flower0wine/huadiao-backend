@@ -2,6 +2,7 @@ package com.huadiao.controller.impl;
 
 import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.LikeMessageController;
+import com.huadiao.dto.note.NoteCommentDTO;
 import com.huadiao.entity.Result;
 import com.huadiao.service.LikeMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +37,10 @@ public class LikeMessageControllerImpl extends AbstractController implements Lik
     }
 
     @Override
-    @GetMapping("/note/delete")
-    public Result<?> deleteLikeNoteMessage(HttpSession session, Integer noteId) {
+    @GetMapping("/delete")
+    public Result<?> deleteLikeNoteMessage(HttpSession session, NoteCommentDTO noteCommentDTO) {
         Integer uid = (Integer) session.getAttribute(uidKey);
-        String userId = (String) session.getAttribute(userIdKey);
-        return likeMessageService.deleteLikeNoteMessage(uid, userId, noteId);
+        return likeMessageService.deleteLikeNoteMessage(uid, noteCommentDTO);
     }
 
     @Override

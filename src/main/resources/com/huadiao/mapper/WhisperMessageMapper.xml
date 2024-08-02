@@ -8,6 +8,12 @@
         values (#{uid}, #{receiveUid}, #{messageContent}, #{messageId}, #{messageType});
     </insert>
 
+    <!--新增最近消息-->
+    <insert id="insertLatestWhisperMessage">
+        insert into huadiao_whisper_latest_message(`message_id`, `send_uid`, `receive_uid`, `send_time`)
+        values (#{messageId}, #{sendUid}, #{receiveUid}, #{sendTime});
+    </insert>
+
     <!--删除最近消息中的用户-->
     <update id="deleteLatestUserByUid">
         update huadiao_relation
@@ -24,44 +30,16 @@
           and `message_id` = #{messageId};
     </update>
 
-    <resultMap id="latestUserResultMap" type="com.huadiao.entity.message.whisper.LatestUser">
-        <result property="uid" column="uid"/>
-        <result property="nickname" column="nickname"/>
-        <result property="avatar" column="user_avatar"/>
-        <result property="userId" column="user_id"/>
-        <result property="latestMessage" column="latest_message"/>
-    </resultMap>
-    <!--查询最近消息中的已关注的用户-->
-    <select id="selectLatestUserByUid" resultMap="latestUserResultMap">
-        select t1.`uid`,
-               `user_avatar`,
-               (select `message_content`
-                from huadiao_whisper_message
-                where `status`
-                  and ((`receive_uid` = #{uid} and huadiao_whisper_message.`uid` = t1.`uid`) or
-                       (`receive_uid` = t1.`uid` and huadiao_whisper_message.`uid` = #{uid}))
-                order by `send_time` desc
-                limit 1) as `latest_message`,
-               `user_id`,
-               `nickname`
-        from huadiao_relation t1
-                 left join huadiao_homepage t2 on t2.`uid` = t1.`uid`
-                 left join huadiao_user_info t3 on t3.`uid` = t1.`uid`
-                 left join huadiao_user_base t4 on t4.`uid` = t1.`uid`
-        where `status`
-          and `latest_message_status`
-          and `fan_uid` = #{uid}
-          and t1.`id` >=
-              (select `id`
-               from huadiao_relation
-               where `status`
-                 and `latest_message_status`
-                 and `fan_uid` = #{uid}
-               limit #{offset}, 1)
-        limit #{row};
-    </select>
+    <!--删除已读的最近一条消息-->
+    <delete id="deleteLatestMessage">
+        delete
+        from huadiao_whisper_latest_message
+        where `send_uid` = #{uid}
+          and `receive_uid` = #{receiveUid}
+    </delete>
 
     <resultMap id="whisperMessageResultMap" type="com.huadiao.entity.message.whisper.WhisperMessage">
+        <result property="sendUid" column="uid"/>
         <result property="sendTime" column="send_time"/>
         <result property="messageContent" column="message_content"/>
         <result property="messageType" column="message_type"/>
@@ -70,7 +48,12 @@
     </resultMap>
     <!--获取与某个用户的私信-->
     <select id="selectWhisperMessage" resultMap="whisperMessageResultMap">
-        select `message_content`, `message_type`, `send_time`, `receive_uid`, `message_id`
+        select t1.`uid`,
+               `message_content`,
+               `message_type`,
+               `send_time`,
+               `receive_uid`,
+               `message_id`
         from huadiao_whisper_message t1
                  left join huadiao_user_info t2 on t2.`uid` = t1.`uid`
                  left join huadiao_user_base t3 on t3.`uid` = t1.`uid`
@@ -90,27 +73,114 @@
         limit #{row};
     </select>
 
+    <resultMap id="latestUserResultMap" type="com.huadiao.entity.message.whisper.LatestMessageUser">
+        <result property="uid" column="uid"/>
+        <result property="nickname" column="nickname"/>
+        <result property="avatar" column="user_avatar"/>
+        <result property="userId" column="user_id"/>
+        <result property="latestMessage" column="message_content"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="unreadCount" column="unread_count"/>
+        <result property="messageId" column="message_id"/>
+        <result property="messageType" column="message_type"/>
+    </resultMap>
     <!--单独获取某个最近消息中的用户-->
     <select id="selectSingleLatestUserByUid" resultMap="latestUserResultMap">
-        select t1.`uid`,
-               `user_avatar`,
-               (select `message_content`
-                from huadiao_whisper_message
-                where `status`
-                  and ((`receive_uid` = #{uid} and huadiao_whisper_message.`uid` = t1.`uid`) or
-                       (`receive_uid` = t1.`uid` and huadiao_whisper_message.`uid` = #{uid}))
-                order by `send_time` desc
-                limit 1) as `latest_message`,
+        select t4.`uid`,
+               `message_content`,
+               `send_time`,
                `user_id`,
-               `nickname`
-        from huadiao_relation t1
-                 left join huadiao_homepage t2 on t2.`uid` = t1.`uid`
-                 left join huadiao_user_info t3 on t3.`uid` = t1.`uid`
-                 left join huadiao_user_base t4 on t4.`uid` = t1.`uid`
-        where `status`
-          and `latest_message_status`
-          and `fan_uid` = #{uid}
-          and t1.`uid` = #{latestUid}
-        limit 1;
+               `user_avatar`,
+               `message_id`,
+               `message_type`,
+               `nickname`,
+               (
+                   select count(*)
+                   from huadiao_whisper_message t1
+                            left join huadiao_whisper_latest_message t2
+                                      on t1.receive_uid = t2.receive_uid
+                                          and t1.uid = t2.send_uid
+                   where t1.receive_uid = t7.`receive_uid`
+                     and t1.uid = t4.`uid`
+                     and t1.`status`
+                     and uid in (
+                       select distinct `uid`
+                       from `huadiao_whisper_message`
+                       where receive_uid = t1.`receive_uid`
+                         and `status`)
+                     and (send_uid is null or t1.id > (
+                       select id
+                       from huadiao_whisper_message t3
+                       where t3.uid = send_uid
+                         and t3.receive_uid = t2.receive_uid
+                         and t3.message_id = t2.message_id
+                         and t3.`status`
+                   ))
+               ) as `unread_count`
+        from huadiao_user_base t4
+                 left join huadiao_homepage t5 on t5.`uid` = t4.`uid`
+                 left join huadiao_user_info t6 on t6.`uid` = t4.`uid`
+                 left join huadiao_whisper_message t7
+                           on ((t7.`uid` = t4.`uid` and `receive_uid` = #{uid})
+                               or t7.`uid` = #{uid} and `receive_uid` = t4.`uid`) and
+                              t7.`status`
+        where t4.`uid` = #{latestUid}
+        order by t7.`send_time` desc
+        limit 1
+    </select>
+
+    <!--获取未读私信数量-->
+    <select id="countUnreadMessage" resultType="java.lang.Integer">
+        select count(*)
+        from huadiao_whisper_message t1
+                 left join huadiao_whisper_latest_message t2
+                           on t1.receive_uid = t2.receive_uid
+                                  and t1.uid = t2.send_uid
+        where t1.receive_uid = #{uid}
+          and t1.`status`
+          and uid in (
+            select distinct `uid`
+            from `huadiao_whisper_message`
+            where receive_uid = #{uid}
+              and `status`)
+          and (send_uid is null or t1.id > (
+            select id
+            from huadiao_whisper_message t3
+            where t3.uid = send_uid
+              and t3.receive_uid = t2.receive_uid
+              and t3.message_id = t2.message_id
+              and t3.`status`
+        ))
+    </select>
+
+    <select id="selectLatestUserByUid" resultType="java.lang.Integer">
+        select `uid`
+        from (
+                 SELECT `uid`, max(`send_time`) as `latest_send_time`
+                 FROM (
+                          SELECT `uid`, `send_time`
+                          FROM `huadiao_whisper_message`
+                          WHERE `status`
+                            AND `receive_uid` = #{uid}
+                          UNION ALL
+                          SELECT `receive_uid` AS `uid`, `send_time`
+                          FROM `huadiao_whisper_message`
+                          WHERE `status`
+                            AND `uid` = #{uid}
+                      ) AS subquery
+                 group by `uid`
+                 order by `latest_send_time`
+             ) as subquery
+    </select>
+
+    <!--获取用户 uid 发送 receiveUid 用户的最近一条消息-->
+    <select id="selectSingleWhisperMessage" resultMap="whisperMessageResultMap">
+        select `uid`, `receive_uid`, `send_time`, `message_content`, `message_id`, `message_type`
+        from huadiao_whisper_message t1
+        where t1.`status`
+          and t1.`receive_uid` = #{receiveUid}
+          and t1.`uid` = #{uid}
+        order by t1.`send_time` desc
+        limit 1
     </select>
 </mapper>

@@ -1,8 +1,7 @@
 package com.huadiao.service;
 
+import com.huadiao.dto.note.NoteCommentDTO;
 import com.huadiao.entity.Result;
-
-import java.util.Map;
 
 /**
  * 收藏接口
@@ -62,13 +61,10 @@ public interface NoteOperateService {
 
     /**
      * 阐述笔记点赞
-     * @param uid 点赞用户 uid
-     * @param userId 用户 id
-     * @param authorUid 作者 uid
-     * @param noteId 笔记 id
+     * @param noteCommentDTO 笔记评论 dto
      * @return 返回删除笔记成功提示
      */
-    String deleteNoteLike(Integer uid, String userId, Integer authorUid, Integer noteId);
+    Result<?> deleteNoteLike(NoteCommentDTO noteCommentDTO);
 
     /**
      * 新增笔记评论, 若没有父评论 id, 则为添加父评论, 若有父评论 id, 则为添加子评论
@@ -81,7 +77,7 @@ public interface NoteOperateService {
      * @param commentContent 评论内容
      * @return 返回新增过程中的提示
      */
-    Result<?> addNoteComment(Integer uid, String userId, Integer noteId, Integer repliedUid, Integer authorUid, Long rootCommentId, String commentContent);
+    Result<?> addNoteComment(Integer uid, String userId, Integer noteId, Integer repliedUid, Integer authorUid, Integer rootCommentId, String commentContent);
 
     /**
      * 删除笔记评论, 非作者只能删除自己的评论, 作者能删除任何人的评论, 如果是父评论将会删除其下的所有子评论
@@ -93,19 +89,14 @@ public interface NoteOperateService {
      * @param subCommentId 子评论 id
      * @return 根据删除过程返回相应提示
      */
-    Result<?> deleteNoteComment(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId);
+    Result<?> deleteNoteComment(Integer uid, String userId, Integer noteId, Integer authorUid, Integer rootCommentId, Integer subCommentId);
 
     /**
      * 添加笔记评论喜欢
-     * @param uid 点击喜欢的用户 uid
-     * @param userId 用户 id
-     * @param noteId 笔记 id
-     * @param authorUid 作者 uid
-     * @param rootCommentId 父评论 id
-     * @param subCommentId 子评论 id
+     * @param noteCommentDTO 笔记评论 DTO
      * @return 返回添加过程中的提示
      */
-    Result<?> addNoteCommentLike(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId);
+    Result<?> addNoteCommentLike(NoteCommentDTO noteCommentDTO);
 
     /**
      * 删除笔记评论喜欢
@@ -117,7 +108,7 @@ public interface NoteOperateService {
      * @param subCommentId 子评论 id
      * @return 返回删除过程中的提示
      */
-    Result<?> deleteNoteCommentLike(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId);
+    Result<?> deleteNoteCommentLike(Integer uid, String userId, Integer noteId, Integer authorUid, Integer rootCommentId, Integer subCommentId);
 
     /**
      * 添加笔记评论不喜欢
@@ -129,7 +120,7 @@ public interface NoteOperateService {
      * @param subCommentId 子评论 id
      * @return 返回添加过程中的提示
      */
-    Result<?> addNoteCommentUnlike(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId);
+    Result<?> addNoteCommentUnlike(Integer uid, String userId, Integer noteId, Integer authorUid, Integer rootCommentId, Integer subCommentId);
 
     /**
      * 删除笔记评论不喜欢
@@ -141,7 +132,7 @@ public interface NoteOperateService {
      * @param subCommentId 子评论 id
      * @return 返回删除过程中的提示
      */
-    Result<?> deleteNoteCommentUnlike(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId);
+    Result<?> deleteNoteCommentUnlike(Integer uid, String userId, Integer noteId, Integer authorUid, Integer rootCommentId, Integer subCommentId);
 
     /**
      * 举报评论, 自己的评论不能举报
@@ -154,5 +145,5 @@ public interface NoteOperateService {
      * @param subCommentId 子评论 id
      * @return 返回插入过程中的相应提示
      */
-    Result<?> reportNoteComment(Integer uid, String userId, Integer reportedUid, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId);
+    Result<?> reportNoteComment(Integer uid, String userId, Integer reportedUid, Integer noteId, Integer authorUid, Integer rootCommentId, Integer subCommentId);
 }

@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author flowerwine
@@ -37,20 +38,21 @@ public class VideoUploadControllerImpl extends AbstractVideoUploadController {
         }
 
         // 检查 size 大小是否超出限制
-        if (size > maxSize) {
-            log.debug("uid, userId 分别为 {}, {} 的用户提供的文件大小不符合要求, 文件大小为 {}", uid, userId, size);
+        if (!limitFileSize(maxSize, size)) {
+            log.debug("uid, userId 分别为 {}, {} 的用户提供的视频大小不符合要求, 视频大小为 {}, 限制大小为 {}", uid, userId, size, maxSize);
             return Result.exceedLimit();
         }
 
-        if (!extensionMatch(filename)) {
-            log.debug("uid, userId 分别为 {}, {} 的用户提供的文件类型不符合要求, 后缀名为 {}", uid, userId, filename);
+        if (!extensionMatch(filename, allowExtensions)) {
+            log.debug("uid, userId 分别为 {}, {} 的用户提供的视频类型不符合要求, 后缀名为 {}, 允许的后缀名为 {}",
+                    uid, userId, filename, Arrays.toString(allowExtensions));
             return Result.errorParam();
         }
 
         try {
             return videoUploadService.preload(uid, userId, animeId, filename, size);
         } catch (Exception e) {
-            log.error("uid, userId 分别为 {}, {} 的用户上传文件时发生异常, 错误信息: {}", uid, userId, e.getMessage());
+            log.error("uid, userId 分别为 {}, {} 的用户上传视频时发生异常, 错误信息: {}", uid, userId, e.getMessage());
             return Result.serverError();
         }
     }

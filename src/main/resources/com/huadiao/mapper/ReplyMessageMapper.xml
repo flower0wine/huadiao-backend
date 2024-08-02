@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.huadiao.mapper.ReplyMessageMapper">
+    <insert id="insertLatestReplyMessage">
+        insert into huadiao_note_comment_latest_message(`uid`, `replied_uid`, `author_uid`, `note_id`,
+                                                        `root_comment_id`, `sub_comment_id`)
+        values (#{uid}, #{repliedUid}, #{authorUid}, #{noteId}, #{rootCommentId}, #{subCommentId});
+    </insert>
 
     <!--删除回复我的笔记评论-->
     <update id="deleteReplyNoteMessage">
@@ -13,9 +18,19 @@
           and `sub_comment_id` = #{subCommentId};
     </update>
 
+    <!--删除已读的最近的回复我的消息-->
+    <delete id="deleteLatestReplyMessage">
+        delete
+        from huadiao_note_comment_latest_message
+        where (`replied_uid` = #{uid}
+            or (`replied_uid` = 0 and `author_uid` = 0))
+          and `uid` != #{uid};
+    </delete>
+
     <resultMap id="replyMessageResultMap" type="com.huadiao.entity.message.reply.ReplyComment">
         <result property="uid" column="uid"/>
         <result property="userId" column="user_id"/>
+        <result property="repliedUid" column="replied_uid"/>
         <result property="nickname" column="nickname"/>
         <result property="noteId" column="note_id"/>
         <result property="noteTitle" column="note_title"/>
@@ -30,6 +45,7 @@
     <select id="selectReplyCommentMessage" resultMap="replyMessageResultMap">
         select t1.`uid`,
                `user_id`,
+               `replied_uid`,
                `user_avatar`,
                `nickname`,
                `root_comment_id`,
@@ -55,5 +71,27 @@
                limit #{offset}, 1)
         order by `comment_time` desc
         limit #{row};
+    </select>
+
+    <!--获取未读消息数量-->
+    <select id="countUnreadMessage" resultType="java.lang.Integer">
+        select count(*)
+        from huadiao_note_comment t1
+                 left join huadiao_note_comment_latest_message t2
+                           on t1.`replied_uid` = t2.`replied_uid`
+                               and t2.`status`
+        where t1.`replied_uid` = #{uid}
+          and t1.`status`
+          and (t2.`id` is null or t1.`id` > (
+            select max(t3.`id`)
+            from huadiao_note_comment t3
+            where t3.`replied_uid` = #{uid}
+              and t3.`status`
+              and t3.`note_id` = t2.`note_id`
+              and t3.`uid` = t2.`uid`
+              and t3.`author_uid` = t2.`author_uid`
+              and t3.`root_comment_id` = t2.`root_comment_id`
+              and t3.`sub_comment_id` = t2.`sub_comment_id`
+        ));
     </select>
 </mapper>

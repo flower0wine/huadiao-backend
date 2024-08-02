@@ -1,5 +1,6 @@
 package com.huadiao.mapper;
 
+import com.huadiao.dto.note.NoteCommentDTO;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -16,7 +17,7 @@ public interface NoteOperateMapper {
      * @param subCommentId 子评论 id, 如果为父评论时传入 0L 即可
      */
     void deleteNoteCommentByUid(@Param("deleteUid") Integer deleteUid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
-                                @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId);
+                                @Param("rootCommentId") Integer rootCommentId, @Param("subCommentId") Integer subCommentId);
 
     /**
      * 新增笔记收藏或者再次收藏笔记
@@ -79,8 +80,14 @@ public interface NoteOperateMapper {
      * @param uid 点赞者 uid
      * @param noteId 笔记 id
      * @param authorUid 作者 uid
+     * @param rootCommentId 父评论 id
+     * @param subCommentId 子评论 id
      */
-    void deleteNoteLikeByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid);
+    void deleteNoteLikeByUid(@Param("uid") Integer uid,
+                             @Param("noteId") Integer noteId,
+                             @Param("authorUid") Integer authorUid,
+                             @Param("rootCommentId") Integer rootCommentId,
+                             @Param("subCommentId") Integer subCommentId);
 
     /**
      * 获取笔记浏览量
@@ -98,19 +105,28 @@ public interface NoteOperateMapper {
      * @param subCommentId 子评论 id
      * @return 存在返回 数字, 不存在返回 null
      */
-    Integer selectNoteCommentExist(@Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
-                                   @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId);
+    NoteCommentDTO selectNoteCommentExist(@Param("noteId") Integer noteId,
+                                          @Param("authorUid") Integer authorUid,
+                                          @Param("rootCommentId") Integer rootCommentId,
+                                          @Param("subCommentId") Integer subCommentId);
 
     /**
      * 新增笔记评论喜欢
      * @param uid 点击喜欢的用户
+     * @param replyUid 评论者 uid
+     * @param repliedUid 被评论者 uid
      * @param noteId 笔记 id
      * @param authorUid 作者 uid
      * @param rootCommentId 父评论 id
      * @param subCommentId 子评论 id
      */
-    void insertNoteCommentLike(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
-                           @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId);
+    void insertNoteCommentLike(@Param("uid") Integer uid,
+                               @Param("replyUid") Integer replyUid,
+                               @Param("repliedUid") Integer repliedUid,
+                               @Param("noteId") Integer noteId,
+                               @Param("authorUid") Integer authorUid,
+                               @Param("rootCommentId") Integer rootCommentId,
+                               @Param("subCommentId") Integer subCommentId);
 
     /**
      * 删除笔记评论喜欢
@@ -121,7 +137,7 @@ public interface NoteOperateMapper {
      * @param subCommentId 子评论 id
      */
     void deleteNoteCommentLike(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
-                               @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId);
+                               @Param("rootCommentId") Integer rootCommentId, @Param("subCommentId") Integer subCommentId);
 
     /**
      * 新增笔记评论不喜欢
@@ -132,7 +148,7 @@ public interface NoteOperateMapper {
      * @param subCommentId 子评论 id
      */
     void insertNoteCommentUnlike(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
-                               @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId);
+                               @Param("rootCommentId") Integer rootCommentId, @Param("subCommentId") Integer subCommentId);
 
     /**
      * 删除笔记评论不喜欢
@@ -143,7 +159,7 @@ public interface NoteOperateMapper {
      * @param subCommentId 子评论 id
      */
     void deleteNoteCommentUnlike(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
-                               @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId);
+                               @Param("rootCommentId") Integer rootCommentId, @Param("subCommentId") Integer subCommentId);
 
     /**
      * 举报评论, 自己的评论不能举报
@@ -155,8 +171,8 @@ public interface NoteOperateMapper {
      * @param subCommentId 子评论 id
      */
     void insertNoteCommentReport(@Param("uid") Integer uid, @Param("reportedUid") Integer reportedUid, @Param("noteId") Integer noteId,
-                                 @Param("authorUid") Integer authorUid, @Param("rootCommentId") Long rootCommentId,
-                                 @Param("subCommentId") Long subCommentId);
+                                 @Param("authorUid") Integer authorUid, @Param("rootCommentId") Integer rootCommentId,
+                                 @Param("subCommentId") Integer subCommentId);
 
     /**
      * 删除指定的用户笔记访问记录

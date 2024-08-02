@@ -1,9 +1,10 @@
-package com.huadiao.entity.upload;
+package com.huadiao.service.upload.fragment;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 import java.util.List;
 
 /**

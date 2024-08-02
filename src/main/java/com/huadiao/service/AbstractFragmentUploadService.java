@@ -1,10 +1,11 @@
 package com.huadiao.service;
 
-import com.huadiao.entity.upload.PreloadReturnValue;
-import com.huadiao.util.FragmentUpload;
+import com.huadiao.service.upload.fragment.PreloadReturnValue;
+import com.huadiao.service.upload.fragment.FragmentUpload;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -15,6 +16,9 @@ import java.util.UUID;
 @Slf4j
 public abstract class AbstractFragmentUploadService extends AbstractService {
 
+    @Resource
+    protected FragmentUpload videoFragmentUploadBean;
+
     /**
      * 通用预上传函数
      * @param uid 用户 uid
@@ -23,7 +27,7 @@ public abstract class AbstractFragmentUploadService extends AbstractService {
      * @return 返回 {@link PreloadReturnValue} 对象
      */
     protected PreloadReturnValue commonPreload(Integer uid, String clientFilename, Long size) {
-        FragmentUpload fragmentUploadBean = getFragmentUploadBean();
+        FragmentUpload fragmentUploadBean = videoFragmentUploadBean;
         String serverFilename = getUserUploadingServerFilename(uid);
 
         // 用户还未上传过文件, 生成随机名称
@@ -59,7 +63,7 @@ public abstract class AbstractFragmentUploadService extends AbstractService {
             return false;
         }
 
-        FragmentUpload fragmentUploadBean = getFragmentUploadBean();
+        FragmentUpload fragmentUploadBean = videoFragmentUploadBean;
         try {
             return fragmentUploadBean.upload(file, index, serverFilename);
         } catch (IOException e) {
@@ -75,7 +79,7 @@ public abstract class AbstractFragmentUploadService extends AbstractService {
      * @throws IOException 可能会抛出异常
      */
     protected boolean commonUploaded(Integer uid) throws IOException {
-        FragmentUpload fragmentUploadBean = getFragmentUploadBean();
+        FragmentUpload fragmentUploadBean = videoFragmentUploadBean;
         String serverFilename = getUserUploadingServerFilename(uid);
 
         // 如果未经过预上传, 不允许进行后续操作
@@ -103,16 +107,10 @@ public abstract class AbstractFragmentUploadService extends AbstractService {
         if(serverFilename == null) {
             return false;
         }
-        FragmentUpload fragmentUploadBean = getFragmentUploadBean();
+        FragmentUpload fragmentUploadBean = videoFragmentUploadBean;
 
         return fragmentUploadBean.cancel(serverFilename);
     }
-
-    /**
-     * 获取分片上传对象
-     * @return 返回分片上传对象
-     */
-    protected abstract FragmentUpload getFragmentUploadBean();
 
     /**
      * 获取用户正在上传的服务端文件名

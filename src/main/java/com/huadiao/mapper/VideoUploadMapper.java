@@ -1,6 +1,6 @@
 package com.huadiao.mapper;
 
-import com.huadiao.entity.upload.video.UploadInfo;
+import com.huadiao.service.upload.video.UploadInfo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

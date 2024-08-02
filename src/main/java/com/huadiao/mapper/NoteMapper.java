@@ -158,8 +158,8 @@ public interface NoteMapper {
      * @param subCommentId  子评论 id
      * @return 找到返回 1, 没有找到返回 null
      */
-    Integer judgeNoteCommentExist(@Param("uid") Integer uid, @Param("authorUid") Integer authorUid, @Param("noteId") Integer noteId, @Param("rootCommentId") Long rootCommentId,
-                                  @Param("subCommentId") Long subCommentId);
+    Integer judgeNoteCommentExist(@Param("uid") Integer uid, @Param("authorUid") Integer authorUid, @Param("noteId") Integer noteId, @Param("rootCommentId") Integer rootCommentId,
+                                  @Param("subCommentId") Integer subCommentId);
 
     /**
      * 获取指定用户的指定笔记的评论
@@ -196,8 +196,8 @@ public interface NoteMapper {
      * @param commentContent 评论内容
      */
     void insertNoteCommentByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("replyUid") Integer replyUid,
-                                @Param("authorUid") Integer authorUid, @Param("rootCommentId") Long rootCommentId,
-                                @Param("subCommentId") Long subCommentId, @Param("commentContent") String commentContent);
+                                @Param("authorUid") Integer authorUid, @Param("rootCommentId") Integer rootCommentId,
+                                @Param("subCommentId") Integer subCommentId, @Param("commentContent") String commentContent);
 
     /**
      * 删除笔记评论
@@ -209,7 +209,7 @@ public interface NoteMapper {
      * @param subCommentId  子评论 id
      */
     void deleteNoteCommentByUid(@Param("uid") Integer uid, @Param("noteId") Integer noteId, @Param("authorUid") Integer authorUid,
-                                @Param("rootCommentId") Long rootCommentId, @Param("subCommentId") Long subCommentId);
+                                @Param("rootCommentId") Integer rootCommentId, @Param("subCommentId") Integer subCommentId);
 
     /**
      * 获取用户的所有笔记收藏数量

@@ -18,7 +18,7 @@
           and `filename` = #{filename};
     </delete>
 
-    <resultMap id="selectUploadInfoResultMap" type="com.huadiao.entity.upload.video.UploadInfo">
+    <resultMap id="selectUploadInfoResultMap" type="com.huadiao.service.upload.video.UploadInfo">
         <result property="animeId" column="id"/>
         <result property="uid" column="uid"/>
         <result property="filename" column="filename"/>
