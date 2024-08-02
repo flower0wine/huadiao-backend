@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author flowerwine
@@ -128,7 +127,7 @@ public class StarServiceImpl extends AbstractStarService {
         }
         List<NoteStarInfo> noteStarInfoList = starMapper.selectNoteStarByGroupId(viewedUid, groupId, offset, row);
         if (noteStarInfoList.size() == 0) {
-            return Result.notExist();
+            return Result.emptyData();
         }
         log.debug("uid, userId 分别为 {}, {} 的用户成功获取用户 uid 为 {} 的笔记收藏分组 groupId: {} 的笔记, offset: {}, row: {}", uid, userId, viewedUid, groupId, offset, row);
         return Result.ok(noteStarInfoList);

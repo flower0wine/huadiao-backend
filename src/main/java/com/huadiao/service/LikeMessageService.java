@@ -1,5 +1,6 @@
 package com.huadiao.service;
 
+import com.huadiao.dto.note.NoteCommentDTO;
 import com.huadiao.entity.Result;
 
 /**
@@ -22,12 +23,11 @@ public interface LikeMessageService {
     /**
      * 删除点赞笔记消息, 作者删除消息为批量删除
      *
-     * @param uid    作者 uid
-     * @param userId 用户 id
-     * @param noteId 笔记 id
+     * @param uid 被点赞的用户 uid
+     * @param noteCommentDTO 笔记评论 dto
      * @return 返回删除提示
      */
-    Result<?> deleteLikeNoteMessage(Integer uid, String userId, Integer noteId);
+    Result<?> deleteLikeNoteMessage(Integer uid, NoteCommentDTO noteCommentDTO);
 
     /**
      * 删除点赞评论笔记消息, 作者删除消息为批量删除
@@ -66,4 +66,12 @@ public interface LikeMessageService {
      * @return 返回点赞笔记评论的用户
      */
     Result<?> getLikeCommentUser(Integer uid, String userId, Integer noteId, Integer rootCommentId, Integer subCommentId, Integer offset, Integer row);
+
+    /**
+     * 获取未读消息数量
+     * @param uid 作者 uid
+     * @param userId 用户 id
+     * @return 返回未读消息数量
+     */
+    Result<Integer> countUnreadMessage(Integer uid, String userId);
 }

@@ -22,4 +22,9 @@ public abstract class AbstractMessageService extends AbstractService {
 
     @Value("${message.whisperMessageMaxLength}")
     protected int whisperMessageMaxLength;
+
+    /**
+     * 未分配的评论 id, 当一个评论为父评论时, 则 sub_comment_id 为 0, 仅限在笔记评论喜欢表和不喜欢表中是 null, 在笔记评论表中则是 null
+     */
+    public Integer UNDISTRIBUTED_COMMENT_ID = 0;
 }

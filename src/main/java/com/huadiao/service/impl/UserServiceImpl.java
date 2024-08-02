@@ -1,5 +1,6 @@
 package com.huadiao.service.impl;
 
+import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.user.*;
 import com.huadiao.mapper.*;
 import com.huadiao.service.AbstractUserService;
@@ -27,14 +28,14 @@ public class UserServiceImpl extends AbstractUserService {
     }
 
     @Override
-    public UserAbstractDto getHuadiaoHeaderUserInfo(Integer uid) {
+    public Result<?> getHuadiaoHeaderUserInfo(Integer uid, String userId) {
         UserShareDto userShareDto = userMapper.selectUserShareDtoByUid(uid);
         List<Integer> followFans = followFanMapper.countFollowAndFansByUid(uid);
         UserAbstractDto userAbstractDto = UserAbstractDto.loadUserAbstractInfo(userShareDto, followFans);
         // 用户已登录
-        userAbstractDto.setLogin(USER_LOGIN_STATUS);
-        log.debug("uid 为 {} 的用户已登录, 并获取了导航栏信息", uid);
-        return userAbstractDto;
+        userAbstractDto.setLogin(true);
+        log.debug("uid, userId 为 {}, {} 的用户已登录, 并获取了导航栏信息", uid, userId);
+        return Result.ok(userAbstractDto);
     }
 
 

@@ -58,6 +58,9 @@ public abstract class AbstractService implements Service {
     @Autowired
     protected ForumJedisUtil forumJedisUtil;
 
+    @Autowired
+    protected AnimeJedisUtil animeJedisUtil;
+
     @Value("${huadiao.defaultRow}")
     protected int defaultRow;
 
@@ -115,7 +118,7 @@ public abstract class AbstractService implements Service {
             notExist &= list.isEmpty();
         }
         if(notExist) {
-            return Result.notExist();
+            return Result.emptyData();
         }
         if(ll.length == 1) {
             return Result.ok(ll[0]);

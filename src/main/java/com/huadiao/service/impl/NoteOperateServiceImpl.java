@@ -1,5 +1,6 @@
 package com.huadiao.service.impl;
 
+import com.huadiao.dto.note.NoteCommentDTO;
 import com.huadiao.entity.Result;
 import com.huadiao.enumeration.ResultCodeEnum;
 import com.huadiao.mapper.NoteMapper;
@@ -103,15 +104,22 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String deleteNoteLike(Integer uid, String userId, Integer authorUid, Integer noteId) {
-        log.debug("uid, userId 分别为 {}, {} 的用户尝试删除对 uid 为 {} 的用户的 noteId 为 {} 的笔记的点赞", uid, userId, authorUid, noteId);
-        noteOperateMapper.deleteNoteLikeByUid(uid, noteId, authorUid);
-        log.debug("uid, userId 分别为 {}, {} 的用户成功删除对 uid 为 {} 的用户的 noteId 为 {} 的笔记的点赞", uid, userId, authorUid, noteId);
-        return DELETE_NOTE_LIKE_SUCCEED;
+    public Result<?> deleteNoteLike(NoteCommentDTO noteCommentDTO) {
+        Integer rootCommentId = noteCommentDTO.getRootCommentId() == null ? noteCommentDTO.getRootCommentId() : UNDISTRIBUTED_COMMENT_ID;
+        Integer subCommentId = noteCommentDTO.getSubCommentId() == null ? noteCommentDTO.getSubCommentId() : UNDISTRIBUTED_COMMENT_ID;
+
+        noteOperateMapper.deleteNoteLikeByUid(
+                noteCommentDTO.getUid(),
+                noteCommentDTO.getNoteId(),
+                noteCommentDTO.getAuthorUid(),
+                rootCommentId,
+                subCommentId);
+
+        return Result.ok(null);
     }
 
     @Override
-    public Result<?> addNoteComment(Integer uid, String userId, Integer noteId, Integer repliedUid, Integer authorUid, Long rootCommentId, String commentContent) {
+    public Result<?> addNoteComment(Integer uid, String userId, Integer noteId, Integer repliedUid, Integer authorUid, Integer rootCommentId, String commentContent) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试对 uid 为 {} 的用户的 noteId 为 {} 的笔记发布评论, repliedUid: {}, rootCommentId: {}, commentContent: {}", uid, userId, authorUid, noteId, repliedUid, rootCommentId, commentContent);
         Integer noteExist = noteMapper.selectExistByNoteIdAndUid(authorUid, noteId);
         if(noteExist == null) {
@@ -122,7 +130,7 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
         if(rootCommentId == null) {
             log.debug("uid, userId 分别为 {}, {} 的用户尝试在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加父评论", uid, userId, authorUid, noteId);
             // 生成笔记评论唯一 id
-            long commentId = noteJedisUtil.generateCommentId();
+            int commentId = noteJedisUtil.generateCommentId();
             noteMapper.insertNoteCommentByUid(uid, noteId, authorUid, authorUid, commentId, UNDISTRIBUTED_COMMENT_ID, commentContent);
             log.debug("uid, userId 分别为 {}, {} 的用户成功在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加父评论, rotCommentId: {}", uid, userId, authorUid, noteId, commentId);
 
@@ -137,13 +145,13 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
                 return Result.errorParam();
             }
             // 查询对应的笔记父评论是否存在
-            Integer commentExist = noteOperateMapper.selectNoteCommentExist(noteId, authorUid, rootCommentId, UNDISTRIBUTED_COMMENT_ID);
-            if(commentExist == null) {
+            NoteCommentDTO noteCommentDTO = noteOperateMapper.selectNoteCommentExist(noteId, authorUid, rootCommentId, UNDISTRIBUTED_COMMENT_ID);
+            if(noteCommentDTO == null) {
                 log.debug("uid, userId 分别为 {}, {} 的用户提供的参数对应的评论不存在, authorUid: {}, noteId: {}, rootCommentId: {}", uid, userId, authorUid, noteId, rootCommentId);
                 return Result.notExist();
             }
             // 生成子评论 id
-            long commentId = noteJedisUtil.generateCommentId();
+            int commentId = noteJedisUtil.generateCommentId();
             noteMapper.insertNoteCommentByUid(uid, noteId, repliedUid, authorUid, rootCommentId, commentId, commentContent);
             log.debug("uid, userId 分别为 {}, {} 的用户成功在 uid 为 {} 的用户的 noteId 为 {} 的笔记中添加子评论, repliedUid: {}, rootCommentId: {}, subCommentId: {}", uid, userId, authorUid, noteId, repliedUid, rootCommentId, commentId);
 
@@ -156,10 +164,10 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<String> deleteNoteComment(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId) {
+    public Result<String> deleteNoteComment(Integer uid, String userId, Integer noteId, Integer authorUid, Integer rootCommentId, Integer subCommentId) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试删除用户 uid 为 {} 的笔记 id 为 {} 的评论, rootCommentId: {}, subCommentId: {}", uid, userId, authorUid, noteId, rootCommentId, subCommentId);
         if(subCommentId == null) {
-            subCommentId = 0L;
+            subCommentId = UNDISTRIBUTED_COMMENT_ID;
         }
         boolean checkSubCommentId = subCommentId == 0L || checkCommentId(subCommentId);
         if(!(checkCommentId(rootCommentId) && checkSubCommentId)) {
@@ -173,26 +181,30 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<String> addNoteCommentLike(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId) {
-        log.debug("uid, userId 为 {}, {} 的用户尝试对用户 uid 为 {} 的笔记 noteId为 {} 的评论点赞, rootCommentId 为 {}, subCommentId 为 {}", uid, userId, authorUid, noteId, rootCommentId, subCommentId);
+    public Result<String> addNoteCommentLike(NoteCommentDTO noteCommentDTO) {
+        Integer noteId = noteCommentDTO.getNoteId();
+        Integer authorUid = noteCommentDTO.getAuthorUid();
+        Integer uid = noteCommentDTO.getUid();
+        Integer rootCommentId = noteCommentDTO.getRootCommentId();
+        Integer subCommentId = noteCommentDTO.getSubCommentId();
         // 为父评论时, 设置为 0L
-        if(subCommentId == null) {
+        if(noteCommentDTO.getSubCommentId() == null) {
             subCommentId = UNDISTRIBUTED_COMMENT_ID;
         }
         // 查询对应的笔记评论是否存在
-        Integer commentExist = noteOperateMapper.selectNoteCommentExist(noteId, authorUid, rootCommentId, subCommentId);
-        if(commentExist == null) {
-            log.debug("uid, userId 分别为 {}, {} 的用户提供的参数对应的评论不存在, 参数分别为 authorUid: {}, noteId: {}, rootCommentId: {}, subCommentId: {}", uid, userId, authorUid, noteId, rootCommentId, subCommentId);
+        NoteCommentDTO noteComment = noteOperateMapper.selectNoteCommentExist(noteId, authorUid, rootCommentId, subCommentId);
+        if(noteComment == null) {
+            log.debug("uid 为 {} 的用户提供的参数对应的评论不存在, 参数分别为 authorUid: {}, noteId: {}, rootCommentId: {}, subCommentId: {}",
+                    uid, authorUid, noteId, rootCommentId, subCommentId);
             return new Result<>(ResultCodeEnum.NOT_EXIST, null);
         }
-        noteOperateMapper.insertNoteCommentLike(uid, noteId, authorUid, rootCommentId, subCommentId);
-        log.debug("uid, userId 为 {}, {} 的用户成功对用户 uid 为 {} 的笔记 noteId为 {} 的评论点赞, rootCommentId 为 {}, subCommentId 为 {}", uid, userId, authorUid, noteId, rootCommentId, subCommentId);
+        noteOperateMapper.insertNoteCommentLike(uid, noteComment.getReplyUid(), noteComment.getRepliedUid(), noteId, authorUid, rootCommentId, subCommentId);
         return Result.ok(ADD_NOTE_COMMENT_LIKE_SUCCEED);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<String> deleteNoteCommentLike(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId) {
+    public Result<String> deleteNoteCommentLike(Integer uid, String userId, Integer noteId, Integer authorUid, Integer rootCommentId, Integer subCommentId) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试删除对用户 uid 为 {} 的笔记 noteId为 {} 的评论点赞, rootCommentId 为 {}, subCommentId 为 {}", uid, userId, authorUid, noteId, rootCommentId, subCommentId);
         if(subCommentId == null) {
             subCommentId = UNDISTRIBUTED_COMMENT_ID;
@@ -204,15 +216,15 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<String> addNoteCommentUnlike(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId) {
+    public Result<String> addNoteCommentUnlike(Integer uid, String userId, Integer noteId, Integer authorUid, Integer rootCommentId, Integer subCommentId) {
         log.debug("uid, userId 为 {}, {} 的用户尝试对用户 uid 为 {} 的笔记 noteId为 {} 的评论设置为不喜欢, rootCommentId 为 {}, subCommentId 为 {}", uid, userId, authorUid, noteId, rootCommentId, subCommentId);
         // 为父评论时, 设置为 0L
         if(subCommentId == null) {
             subCommentId = UNDISTRIBUTED_COMMENT_ID;
         }
         // 查询对应的笔记评论是否存在
-        Integer commentExist = noteOperateMapper.selectNoteCommentExist(noteId, authorUid, rootCommentId, subCommentId);
-        if(commentExist == null) {
+        NoteCommentDTO noteCommentDTO = noteOperateMapper.selectNoteCommentExist(noteId, authorUid, rootCommentId, subCommentId);
+        if(noteCommentDTO == null) {
             log.debug("uid, userId 分别为 {}, {} 的用户提供的参数对应的评论不存在, 参数分别为 authorUid: {}, noteId: {}, rootCommentId: {}, subCommentId: {}", uid, userId, authorUid, noteId, rootCommentId, subCommentId);
             return Result.notExist();
         }
@@ -223,7 +235,7 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<String> deleteNoteCommentUnlike(Integer uid, String userId, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId) {
+    public Result<String> deleteNoteCommentUnlike(Integer uid, String userId, Integer noteId, Integer authorUid, Integer rootCommentId, Integer subCommentId) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试删除对用户 uid 为 {} 的笔记 noteId为 {} 的评论不喜欢, rootCommentId 为 {}, subCommentId 为 {}", uid, userId, authorUid, noteId, rootCommentId, subCommentId);
         if(subCommentId == null) {
             subCommentId = UNDISTRIBUTED_COMMENT_ID;
@@ -235,10 +247,10 @@ public class NoteOperateServiceImpl extends AbstractNoteOperateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<?> reportNoteComment(Integer uid, String userId, Integer reportedUid, Integer noteId, Integer authorUid, Long rootCommentId, Long subCommentId) {
+    public Result<?> reportNoteComment(Integer uid, String userId, Integer reportedUid, Integer noteId, Integer authorUid, Integer rootCommentId, Integer subCommentId) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试举报用户 uid 为 {} 的笔记 noteId为 {} 的一个评论, 被举报者 uid: {}, rootCommentId: {}, subCommentId: {}", uid, userId, authorUid, noteId, reportedUid, rootCommentId, subCommentId);
         if(subCommentId == null) {
-            subCommentId = 0L;
+            subCommentId = UNDISTRIBUTED_COMMENT_ID;
         }
         Integer judgeNoteCommentExist = noteMapper.judgeNoteCommentExist(reportedUid, authorUid, noteId, rootCommentId, subCommentId);
         if(judgeNoteCommentExist == null) {

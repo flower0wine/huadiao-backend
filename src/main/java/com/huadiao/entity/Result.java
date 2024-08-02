@@ -1,8 +1,7 @@
 package com.huadiao.entity;
 
 import com.huadiao.enumeration.ResultCodeEnum;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * @author flowerwine
@@ -10,8 +9,7 @@ import lombok.Setter;
  * @projectName huadiao-user-back
  * @description
  */
-@Setter
-@Getter
+@Data
 public class Result<T> {
     private Integer code;
     private String message;
@@ -26,8 +24,8 @@ public class Result<T> {
         this.data = data;
     }
 
-    public Result(Integer code, String message, T data) {
-        this.code = code;
+    public Result(ResultCodeEnum code, String message, T data) {
+        this.code = code.getCode();
         this.message = message;
         this.data = data;
     }
@@ -36,8 +34,16 @@ public class Result<T> {
         return ResultCodeEnum.SUCCEED.getCode() == this.getCode();
     }
 
+    public static <T> Result<T> ok() {
+        return new Result<>(ResultCodeEnum.SUCCEED, null);
+    }
+
     public static <T> Result<T> ok(T data) {
         return new Result<>(ResultCodeEnum.SUCCEED, data);
+    }
+
+    public static <T> Result<T> ok(String message) {
+        return new Result<>(ResultCodeEnum.SUCCEED, message,  null);
     }
 
     public static <T> Result<T> errorParam() {
@@ -48,12 +54,24 @@ public class Result<T> {
         return new Result<>(ResultCodeEnum.ERROR_PARAM, data);
     }
 
+    public static <T> Result<T> errorParam(String message) {
+        return new Result<>(ResultCodeEnum.ERROR_PARAM, message, null);
+    }
+
     public static <T> Result<T> blankParam() {
         return new Result<>(ResultCodeEnum.BLANK_PARAM, null);
     }
 
+    public static <T> Result<T> pageNotExist() {
+        return new Result<>(ResultCodeEnum.PAGE_NOT_EXIST, null);
+    }
+
     public static <T> Result<T> notExist() {
         return new Result<>(ResultCodeEnum.NOT_EXIST, null);
+    }
+
+    public static <T> Result<T> emptyData() {
+        return new Result<>(ResultCodeEnum.EMPTY_DATA, null);
     }
 
     public static <T> Result<T> existed() {
@@ -70,5 +88,13 @@ public class Result<T> {
 
     public static <T> Result<T> notAuthorize() {
         return new Result<>(ResultCodeEnum.NOT_AUTHORITATIVE, null);
+    }
+
+    public static <T> Result<T> serverError() {
+        return new Result<>(ResultCodeEnum.SERVER_ERROR, null);
+    }
+
+    public static <T> Result<T> serverError(String message) {
+        return new Result<>(ResultCodeEnum.SERVER_ERROR, message, null);
     }
 }

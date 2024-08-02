@@ -2,7 +2,6 @@ package com.huadiao.configuration;
 
 import com.huadiao.filter.ConsumeTimeFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.filter.CompositeFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.Filter;
@@ -17,7 +16,10 @@ public class WebInit extends AbstractAnnotationConfigDispatcherServletInitialize
     @Override
     protected Class<?>[] getRootConfigClasses() {
         // spring 配置类
-        return new Class[]{SpringConfig.class};
+        return new Class[]{
+                DevConfig.class,
+                CommonConfig.class
+        };
     }
 
     @Override

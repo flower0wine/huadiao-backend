@@ -1,13 +1,15 @@
 package com.huadiao.controller.impl;
 
+import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.SystemMessageController;
 import com.huadiao.entity.Result;
 import com.huadiao.service.SystemMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpSession;
 
 /**
  * @author flowerwine
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/message/system")
-public class SystemMessageControllerImpl implements SystemMessageController {
+public class SystemMessageControllerImpl extends AbstractController implements SystemMessageController {
     private SystemMessageService systemMessageService;
 
     @Autowired
@@ -25,7 +27,8 @@ public class SystemMessageControllerImpl implements SystemMessageController {
 
     @Override
     @GetMapping("/get")
-    public Result<?> getSystemMessage(Integer offset, Integer row) {
-        return systemMessageService.getSystemMessage(offset, row);
+    public Result<?> getSystemMessage(HttpSession session, Integer offset, Integer row) {
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        return systemMessageService.getSystemMessage(uid, offset, row);
     }
 }

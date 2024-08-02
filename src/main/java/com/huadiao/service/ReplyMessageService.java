@@ -31,4 +31,12 @@ public interface ReplyMessageService extends Service {
      * @return 返回删除提示
      */
     Result<?> deleteReplyMessage(Integer uid, String userId, Integer noteId, Integer replyUid, Integer rootCommentId, Integer subCommentId);
+
+    /**
+     * 获取未读消息数量
+     * @param uid 用户 uid
+     * @param userId 用户 id
+     * @return 未读消息数量
+     */
+    Result<Integer> countUnreadMessage(Integer uid, String userId);
 }

@@ -54,18 +54,19 @@ public class SystemMessageServiceImpl extends AbstractMessageService implements 
     }
 
     @Override
-    public Result<?> getSystemMessage(Integer offset, Integer row) {
-        log.debug("尝试获取系统消息, offset: {}, row: {}", offset, row);
-        Result<?> result = checkOffsetAndRow(offset, row, (o, r) -> {
-            List<SystemMessage> systemMessage = messageJedisUtil.getSystemMessage(o, r);
-            if(systemMessage.isEmpty()) {
-                return Result.notExist();
+    public Result<?> getSystemMessage(Integer uid, Integer offset, Integer row) {
+        return checkOffsetAndRow(offset, row, (o, r) -> {
+            List<SystemMessage> systemMessageList = systemMessageMapper.selectSystemMessage(o, r);
+            if (o == 0 && !systemMessageList.isEmpty()) {
+                systemMessageMapper.deleteLatestSystemMessage(uid);
+                systemMessageMapper.insertLatestSystemMessage(systemMessageList.get(0).getMessageId(), uid);
             }
-            return Result.ok(systemMessage);
+            return Result.ok(systemMessageList);
         });
-        if(result.succeed()) {
-            log.debug("成功获取系统消息, offset: {}, row: {}", offset, row);
-        }
-        return result;
+    }
+
+    @Override
+    public Result<Integer> countUnreadMessage(Integer uid, String userId) {
+        return Result.ok(systemMessageMapper.countUnreadMessage(uid));
     }
 }

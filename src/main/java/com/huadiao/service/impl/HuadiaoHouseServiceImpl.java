@@ -45,7 +45,7 @@ public class HuadiaoHouseServiceImpl extends AbstractHuadiaoHouseService {
         HuadiaoHouseInfo huadiaoHouseInfo = huadiaoHouseMapper.selectHuadiaoHouseInfoByUid(viewedUid);
         if(huadiaoHouseInfo == null) {
             log.debug("uid, userId 分别为 {}, {} 的用户提供的 viewedUid: {} 不存在", uid, userId, viewedUid);
-            return Result.notExist();
+            return Result.pageNotExist();
         }
         List<AnimeInfo> animeList = huadiaoHouseMapper.selectAnimeInfoByUid(viewedUid);
         huadiaoHouseInfo.setAnimeList(animeList);

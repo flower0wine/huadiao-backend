@@ -28,8 +28,8 @@
 
     <!--新增笔记评论喜欢-->
     <insert id="insertNoteCommentLike">
-        insert into huadiao_note_comment_like(`uid`, `note_id`, `author_uid`, `root_comment_id`, `sub_comment_id`)
-        values (#{uid}, #{noteId}, #{authorUid}, #{rootCommentId}, #{subCommentId})
+        insert into huadiao_note_like(`uid`, `reply_uid`, `replied_uid`, `note_id`, `author_uid`, `root_comment_id`, `sub_comment_id`)
+        values (#{uid}, #{replyUid}, #{repliedUid}, #{noteId}, #{authorUid}, #{rootCommentId}, #{subCommentId})
         on duplicate key update `status`    = 1,
                                 `like_time` = now();
     </insert>
@@ -82,12 +82,14 @@
         set `status` = 0
         where `uid` = #{uid}
           and `note_id` = #{noteId}
-          and `author_uid` = #{authorUid};
+          and `author_uid` = #{authorUid}
+          and `root_comment_id` = #{rootCommentId}
+          and `sub_comment_id` = #{subCommentId};
     </update>
 
     <!--删除笔记评论喜欢-->
     <update id="deleteNoteCommentLike">
-        update huadiao_note_comment_like
+        update huadiao_note_like
         set `status` = 0
         where `note_id` = #{noteId}
           and `uid` = #{uid}
@@ -110,14 +112,15 @@
     <!--删除笔记评论, 如果是父评论将会删除其下的所有子评论-->
     <update id="deleteNoteCommentByUid">
         update huadiao_note_comment
-        set `status` = 0,
-        `delete_uid` = #{deleteUid},
-        `delete_time` = now()
-        where (`uid` = #{deleteUid} or `author_uid` = #{deleteUid})
-        and `root_comment_id` = #{rootCommentId}
-        <if test="subCommentId != 0L">
-            and `sub_comment_id` = #{subCommentId}
-        </if>;
+        set `status`      = 0,
+            `delete_uid`  = #{deleteUid},
+            `delete_time` = now()
+        where `note_id` = #{noteId}
+          and `author_uid` = #{authorUid}
+          and `root_comment_id` = #{rootCommentId}
+          and `sub_comment_id` = #{subCommentId}
+          and (`uid` = #{deleteUid} or `author_uid` = #{deleteUid})
+          and `status`;
     </update>
 
     <!--删除用户的所有笔记访问记录-->
@@ -152,14 +155,22 @@
           and `note_id` = #{noteId};
     </select>
 
+    <resultMap id="noteCommentExistResultMap" type="com.huadiao.dto.note.NoteCommentDTO">
+        <result column="uid" property="replyUid"/>
+        <result column="replied_uid" property="repliedUid"/>
+        <result column="root_comment_id" property="rootCommentId"/>
+        <result column="sub_comment_id" property="subCommentId"/>
+        <result column="author_uid" property="authorUid"/>
+        <result column="note_id" property="noteId"/>
+    </resultMap>
     <!--查询笔记评论是否存在-->
-    <select id="selectNoteCommentExist" resultType="java.lang.Integer">
-        select 1
+    <select id="selectNoteCommentExist" resultMap="noteCommentExistResultMap">
+        select `uid`, `replied_uid`, `root_comment_id`, `sub_comment_id`, `author_uid`, `note_id`
         from huadiao_note_comment
         where `note_id` = #{noteId}
           and `author_uid` = #{authorUid}
           and `root_comment_id` = #{rootCommentId}
-          and (`sub_comment_id` = #{subCommentId} or (`sub_comment_id` = 0 and #{subCommentId} = 0))
+          and `sub_comment_id` = #{subCommentId}
           and `status`;
     </select>
 </mapper>

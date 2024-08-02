@@ -1,6 +1,6 @@
 package com.huadiao.controller;
 
-import com.huadiao.entity.dto.user.UserAbstractDto;
+import com.huadiao.entity.Result;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
@@ -18,7 +18,7 @@ public interface UserController extends Controller {
      * @param session session 对象
      * @return 返回用户信息
      */
-    UserAbstractDto getHuadiaoHeaderUserInfo(HttpSession session);
+    Result<?> getHuadiaoHeaderUserInfo(HttpSession session);
 
     /**
      * 退出登录

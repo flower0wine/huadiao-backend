@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="debug">
+    <Properties>
+        <Property name="logPath">O:/IDEA/huadiao-user-back/logs</Property>
+    </Properties>
+    <Appenders>
+        <!--当日志文件到达指定大小时, 创建新日志文件-->
+        <RollingFile name="RollingFile" filename="${logPath}/huadiao.log" filePattern="${logPath}/huadiao-%d{yyyy-MM-dd-HH-mm}-%i.log">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} : %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10M" />
+            </Policies>
+        </RollingFile>
+        <!--输出到控制台-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%d [%t] %-5level %logger{36} : %msg%n%throwable}" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

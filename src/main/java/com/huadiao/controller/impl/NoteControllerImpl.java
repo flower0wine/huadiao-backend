@@ -5,6 +5,7 @@ import com.huadiao.controller.NoteController;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.note.SelfNoteDto;
 import com.huadiao.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ import java.util.Map;
  * @projectName huadiao-user-back
  * @description 用户笔记控制器实现类
  */
+@Slf4j
 @RestController
 @RequestMapping("/note")
 public class NoteControllerImpl extends AbstractController implements NoteController {
@@ -43,10 +45,24 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
 
     @Override
     @GetMapping("/delete")
-    public String deleteNote(HttpSession session, Integer noteId) {
+    public Result<?> deleteNote(HttpSession session, Integer noteId) {
         Integer uid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
-        return noteService.deleteNote(uid, userId, noteId);
+
+        log.debug("uid, userId 分别为 {}, {} 的用户尝试删除自己的 noteId 为 {} 笔记", uid, userId, noteId);
+
+        if(noteId == null || noteId <= 0) {
+            return Result.errorParam();
+        }
+
+        try {
+            noteService.deleteNote(uid, userId, noteId);
+            log.debug("uid, userId 分别为 {}, {} 的用户成功删除自己的 noteId 为 {} 笔记", uid, userId, noteId);
+            return Result.ok(null);
+        } catch (Exception e) {
+            log.debug("uid, userid 分别为 {}, {} 的用户删除笔记失败：{}", uid, userId, e.getMessage());
+            return Result.errorParam();
+        }
     }
 
     @Override
@@ -78,10 +94,10 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
 
     @Override
     @GetMapping("/all")
-    public Result<?> getAllNotes(HttpSession session, Integer uid) {
+    public Result<?> getAllNote(HttpSession session, Integer uid, Integer offset, Integer row) {
         Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
-        return noteService.getAllNote(myUid, userId, uid);
+        return noteService.getAllNote(myUid, userId, uid, offset, row);
     }
 
     @Override
@@ -99,10 +115,10 @@ public class NoteControllerImpl extends AbstractController implements NoteContro
         String userId = (String) session.getAttribute(userIdKey);
         String rootCommentId = map.get("rootCommentId");
         String commentContent = map.get("commentContent");
-        Long commentId = null;
+        Integer commentId = null;
         if(rootCommentId != null) {
             try {
-                commentId = Long.parseLong(rootCommentId);
+                commentId = Integer.parseInt(rootCommentId);
             } catch (Exception e) {
                 return Result.errorParam();
             }

@@ -49,16 +49,25 @@ public class HomepageServiceImpl extends AbstractHomepageService {
         this.huadiaoHouseMapper = huadiaoHouseMapper;
     }
 
+    private void viewedUidNotExist(Integer uid, String userId, Integer viewedUid) {
+        log.debug("uid, userId 分别为 {}, {} 提供的 uid 为 {} 的个人主页不存在", uid, userId, viewedUid);
+    }
+
     @Override
     public Result<?> getHomepageInfo(Integer uid, String userId, Integer viewedUid) {
+        if(viewedUid == null) {
+            viewedUidNotExist(uid, userId, viewedUid);
+            return Result.pageNotExist();
+        }
+
         // 判断被访问者是否存在
         String viewerUserId = userMapper.selectUserIdByUid(viewedUid);
         if (viewerUserId == null) {
-            log.debug("uid, userId 分别为 {}, {} 提供的 uid 为 {} 的个人主页不存在", uid, userId, viewedUid);
-            return Result.notExist();
+            viewedUidNotExist(uid, userId, viewedUid);
+            return Result.pageNotExist();
         }
 
-        boolean me = uid.equals(viewedUid);
+        boolean me = uid != null && uid.equals(viewedUid);
         UserInfoDto userInfoDto = userInfoMapper.selectUserInfoByUid(viewedUid);
         // 如果不是本人
         if (!me) {
@@ -119,7 +128,7 @@ public class HomepageServiceImpl extends AbstractHomepageService {
         map.put("me", me);
 
         // 不是本人添加访问记录
-        if (!me) {
+        if (uid != null && !me) {
             insertVisitRecord(uid, userId, viewedUid);
         }
         return Result.ok(map);

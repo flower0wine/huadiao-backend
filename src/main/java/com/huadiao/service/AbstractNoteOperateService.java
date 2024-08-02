@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Value;
  * @projectName huadiao-user-back
  * @description
  */
-public abstract class AbstractNoteOperateService extends AbstractService implements NoteOperateService {
+public abstract class AbstractNoteOperateService extends AbstractMessageService implements NoteOperateService {
     /**
      * 检查评论 id 是否符合要求, 要求评论 id 大于 0 并且评论 id 小于等于 redis 中保存的评论 id
      * @param commentId 评论 id
      * @return 返回检查结果
      */
-    protected boolean checkCommentId(Long commentId) {
+    protected boolean checkCommentId(Integer commentId) {
         long jedisCommentId = noteJedisUtil.getCommentId();
         return commentId > 0 && commentId <= jedisCommentId;
     }
@@ -36,11 +36,6 @@ public abstract class AbstractNoteOperateService extends AbstractService impleme
      * 笔记不存在, 可能是用户不存在, 也可能是用户笔记不存在
      */
     public String NOTE_NOT_EXIST = "noteNotExist";
-
-    /**
-     * 未分配的评论 id, 当一个评论为父评论时, 则 sub_comment_id 为 0, 仅限在笔记评论喜欢表和不喜欢表中是 null, 在笔记评论表中则是 null
-     */
-    public Long UNDISTRIBUTED_COMMENT_ID = 0L;
 
     /**
      * 新增笔记收藏成功

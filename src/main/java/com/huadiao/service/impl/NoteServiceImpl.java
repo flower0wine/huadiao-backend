@@ -85,7 +85,7 @@ public class NoteServiceImpl extends AbstractNoteService {
         Integer queryAuthorUid = noteMapper.judgeNoteExist(authorUid, noteId);
         if (queryAuthorUid == null) {
             log.debug("uid, userId 分别为 {}, {} 的用户提供的 authorUid: {} 并不存在 noteId: {} 的笔记", uid, userId, authorUid, noteId);
-            return Result.notExist();
+            return Result.pageNotExist();
         }
 
         // 判断是否是本人
@@ -173,7 +173,7 @@ public class NoteServiceImpl extends AbstractNoteService {
         });
         log.debug("uid, userId 分别为 {}, {} 的用户成功获取用户 uid 为 {} 的笔记 noteId 为 {} 的评论, 获取页码为 {}, 指定获取行数为 {}, 实际获取行数为 {}", uid, userId, authorUid, noteId, offset, row, noteCommentDtoList.size());
         if (noteCommentDtoList.size() == 0) {
-            return Result.notExist();
+            return Result.emptyData();
         }
         return Result.ok(noteCommentDtoList);
     }
@@ -200,12 +200,9 @@ public class NoteServiceImpl extends AbstractNoteService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String deleteNote(Integer uid, String userId, Integer noteId) {
-        log.debug("uid, userId 分别为 {}, {} 的用户尝试删除自己的 noteId 为 {} 笔记", uid, userId, noteId);
+    public void deleteNote(Integer uid, String userId, Integer noteId) {
         noteMapper.deleteNoteByUidAndNoteId(uid, noteId);
         noteRepository.deleteById(noteId);
-        log.debug("uid, userId 分别为 {}, {} 的用户成功删除自己的 noteId 为 {} 笔记", uid, userId, noteId);
-        return DELETE_NOTE_SUCCEED;
     }
 
     @Override
@@ -232,17 +229,18 @@ public class NoteServiceImpl extends AbstractNoteService {
     }
 
     @Override
-    public Result<?> getAllNote(Integer uid, String userId, Integer authorUid) {
+    public Result<?> getAllNote(Integer uid, String userId, Integer authorUid, Integer offset, Integer row) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取 uid 为 {} 的用户的所有笔记", uid, userId, authorUid);
-        String authorUserId = userMapper.selectUserIdByUid(authorUid);
-        if (authorUserId == null) {
-            log.debug("uid, userId 分别为 {}, {} 的用户提供的 authorUid: {} 不存在", uid, userId, authorUid);
-            return Result.notExist();
-        }
 
         if (authorUid == null) {
             log.debug("uid 为 {} 提供的 authorUid: {} 不存在", uid, authorUid);
-            return Result.notExist();
+            return Result.pageNotExist();
+        }
+
+        String authorUserId = userMapper.selectUserIdByUid(authorUid);
+        if (authorUserId == null) {
+            log.debug("uid, userId 分别为 {}, {} 的用户提供的 authorUid: {} 不存在", uid, userId, authorUid);
+            return Result.pageNotExist();
         }
 
         boolean me = authorUid.equals(uid);
@@ -255,9 +253,17 @@ public class NoteServiceImpl extends AbstractNoteService {
             }
         }
 
-        List<ShareNoteDto> shareNoteDtoList = noteMapper.selectAllNoteByUid(authorUid);
+        Result<?> result = checkOffsetAndRow(offset, row, (o, r) -> {
+            List<ShareNoteDto> shareNoteDtoList = noteMapper.selectAllNoteByUid(authorUid, o, r);
+            return Result.ok(shareNoteDtoList);
+        });
+
+        if(!result.succeed()) {
+            return result;
+        }
+
         log.debug("uid, userId 分别为 {}, {} 的用户成功获取 uid 为 {} 的用户的所有笔记", uid, userId, authorUid);
-        return Result.ok(shareNoteDtoList);
+        return result;
     }
 
     /**

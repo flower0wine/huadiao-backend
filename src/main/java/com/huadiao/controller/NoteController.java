@@ -1,16 +1,9 @@
 package com.huadiao.controller;
 
-import cn.hutool.http.server.HttpServerRequest;
 import com.huadiao.entity.Result;
-import com.huadiao.entity.dto.note.NoteCommentDto;
 import com.huadiao.entity.dto.note.SelfNoteDto;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,7 +27,7 @@ public interface NoteController extends Controller {
      * @param noteId 笔记唯一标识
      * @return 返回删除成功与否提示
      */
-    String deleteNote(HttpSession session, Integer noteId);
+    Result<?> deleteNote(HttpSession session, Integer noteId);
 
     /**
      * 修改笔记
@@ -66,9 +59,11 @@ public interface NoteController extends Controller {
      * 获取所有笔记
      * @param session session 对象
      * @param uid 作者 uid
+     * @param offset 偏移量
+     * @param row 行数
      * @return 返回所有笔记
      */
-    Result<?> getAllNotes(HttpSession session, Integer uid);
+    Result<?> getAllNote(HttpSession session, Integer uid, Integer offset, Integer row);
 
     /**
      * 获取笔记评论

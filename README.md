@@ -25,4 +25,8 @@
 - Mysql 
 - Slf4j
 
+## 1.4. 架构
+
+![架构图](images/architecture.png)
+
 

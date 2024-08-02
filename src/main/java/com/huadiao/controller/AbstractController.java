@@ -16,4 +16,7 @@ public abstract class AbstractController implements Controller {
 
     @Value("${huadiao.nicknameKey}")
     protected String nicknameKey;
+
+    @Value("${huadiao.frontendHost}")
+    protected String frontendHost;
 }

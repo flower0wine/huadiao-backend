@@ -36,7 +36,7 @@ public class HistoryServiceImpl extends AbstractHistoryService {
             List<NoteHistory> noteHistoryList = historyMapper.selectNoteHistoryByUid(uid, r, o);
             if (noteHistoryList.size() == 0) {
                 log.debug("笔记访问历史记录获取数据条数为 0");
-                return Result.notExist();
+                return Result.emptyData();
             }
             return Result.ok(noteHistoryList);
         });
@@ -54,7 +54,7 @@ public class HistoryServiceImpl extends AbstractHistoryService {
             animeHistoryList = animeHistoryList.stream().distinct().collect(Collectors.toList());
             if (animeHistoryList.size() == 0) {
                 log.debug("番剧馆访问历史记录获取数据条数为 0");
-                return Result.notExist();
+                return Result.emptyData();
             }
             return Result.ok(animeHistoryList);
         });

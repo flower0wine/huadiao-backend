@@ -101,7 +101,7 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
             // uid 最小为 1, 新增用户则增大
             if (viewedUid == null || viewedUid < 1) {
                 log.debug("uid, userId 分别为 {}, {} 的用户访问 viewedUid 为 {} 的用户不存在", uid, userId, viewedUid);
-                return Result.notExist();
+                return Result.pageNotExist();
             }
             if (offset == null || row == null || offset < 0 || row < 0) {
                 return Result.errorParam();
@@ -134,7 +134,7 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
             // 获取用户关注信息
             List<FollowFan> followFan = followFanMapper.selectUserFollowByUid(viewedUid, groupId, offset, row);
             if(followFan.size() == 0) {
-                return Result.notExist();
+                return Result.emptyData();
             }
             Map<String, Object> map = new HashMap<>(4);
 
@@ -150,7 +150,7 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
             // 获取用户粉丝信息
             List<FollowFan> followFan = followFanMapper.selectUserFanByUid(viewedUid, offset, row);
             if(followFan.size() == 0) {
-                return Result.notExist();
+                return Result.emptyData();
             }
 
             return Result.ok(followFan);

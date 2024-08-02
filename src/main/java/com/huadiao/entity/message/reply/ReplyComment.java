@@ -18,6 +18,7 @@ import java.util.Date;
 public class ReplyComment implements ReplyMessage {
     private Integer uid;
     private String userId;
+    private Integer repliedUid;
     private String nickname;
     private String avatar;
     private Integer noteId;

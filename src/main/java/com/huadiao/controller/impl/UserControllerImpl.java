@@ -2,10 +2,12 @@ package com.huadiao.controller.impl;
 
 import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.UserController;
-import com.huadiao.entity.dto.user.UserAbstractDto;
-import com.huadiao.service.*;
+import com.huadiao.entity.Result;
+import com.huadiao.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
@@ -37,9 +39,10 @@ public class UserControllerImpl extends AbstractController implements UserContro
 
     @Override
     @GetMapping("/header")
-    public UserAbstractDto getHuadiaoHeaderUserInfo(HttpSession session) {
+    public Result<?> getHuadiaoHeaderUserInfo(HttpSession session) {
         Integer uid = (Integer) session.getAttribute(uidKey);
-        return userService.getHuadiaoHeaderUserInfo(uid);
+        String userId = (String) session.getAttribute(userIdKey);
+        return userService.getHuadiaoHeaderUserInfo(uid, userId);
     }
 
 }

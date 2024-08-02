@@ -25,11 +25,27 @@ public interface SystemMessageMapper {
                                 @Param("form") Integer form);
 
     /**
+     * 新增用户最新的已读消息
+     * @param messageId 消息 id
+     * @param uid 用户 uid
+     * @return 返回新增条数
+     */
+    Integer insertLatestSystemMessage(@Param("messageId") Integer messageId,
+                                      @Param("uid") Integer uid);
+
+    /**
      * 删除系统消息
      * @param messageId 消息 id
      * @return 返回修改条数
      */
     Integer deleteSystemMessage(@Param("messageId") Integer messageId);
+
+    /**
+     * 删除用户已读的最近一条消息
+     * @param uid 用户 uid
+     * @return 返回删除条数
+     */
+    Integer deleteLatestSystemMessage(@Param("uid") Integer uid);
 
     /**
      * 获取系统消息
@@ -38,4 +54,11 @@ public interface SystemMessageMapper {
      * @return 返回系统消息
      */
     List<SystemMessage> selectSystemMessage(@Param("offset") Integer offset, @Param("row")  Integer row);
+
+    /**
+     * 获取未读消息数量
+     * @param uid 用户 uid
+     * @return 返回未读消息数量
+     */
+    Integer countUnreadMessage(Integer uid);
 }
