@@ -30,3 +30,9 @@
 
 所以最终的问题就是我在部署时，忘记将 dev 改成 prod 了，还有一些 properties
 属性忘记定义了，导致 spring 没有加载这些属性。
+
+### 1.2. Handshake failed due to invalid Upgrade header: null
+
+这个问题导致我在测试时，websocket 一直连不上后端服务器。
+
+我通过谷歌解决，具体的网址是 [Handshake failed due to invalid Upgrade header: null 解决方案](https://www.cnblogs.com/lcngu/p/8865914.html)
