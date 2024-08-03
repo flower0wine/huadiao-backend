@@ -46,13 +46,13 @@ public abstract class AbstractService implements Service {
     @Autowired
     protected MessageJedisUtil messageJedisUtil;
 
-    @Autowired
+    @Autowired(required = false)
     protected UserRepository userRepository;
 
-    @Autowired
+    @Autowired(required = false)
     protected NoteRepository noteRepository;
 
-    @Autowired
+    @Autowired(required = false)
     protected NoteHistoryRepository noteHistoryRepository;
 
     @Autowired

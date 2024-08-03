@@ -8,19 +8,18 @@ import com.huadiao.entity.dto.note.NoteRelationDto;
 import com.huadiao.entity.dto.note.SelfNoteDto;
 import com.huadiao.entity.dto.note.ShareNoteDto;
 import com.huadiao.entity.dto.user.UserAbstractDto;
-import com.huadiao.entity.elasticsearch.NoteEs;
-import com.huadiao.entity.elasticsearch.NoteHistoryEs;
 import com.huadiao.entity.note.Note;
 import com.huadiao.mapper.*;
 import com.huadiao.service.AbstractFollowFanService;
 import com.huadiao.service.AbstractNoteService;
-import com.huadiao.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -64,13 +63,13 @@ public class NoteServiceImpl extends AbstractNoteService {
         // 保存到首页论坛
         forumJedisUtil.addNoteId(noteId);
         // 保存笔记信息到 elasticsearch
-        NoteEs noteEs = new NoteEs();
+        /*NoteEs noteEs = new NoteEs();
         noteEs.setNoteId(noteId);
         noteEs.setSummary(noteSummary);
         noteEs.setTitle(noteTitle);
         noteEs.setAuthorUid(uid);
         noteEs.setTime(new Date());
-        noteRepository.save(noteEs);
+        noteRepository.save(noteEs);*/
         log.debug("uid, userId 分别为 {}, {} 的用户新增笔记成功, noteSummary: {}", uid, userId, noteSummary);
         return Result.ok(null);
     }
@@ -118,14 +117,14 @@ public class NoteServiceImpl extends AbstractNoteService {
             if (!uid.equals(authorUid)) {
                 addNewNoteView(uid, userId, noteId, authorUid);
                 // 保存笔记历史到 es
-                NoteHistoryEs noteHistoryEs = new NoteHistoryEs();
+                /*NoteHistoryEs noteHistoryEs = new NoteHistoryEs();
                 noteHistoryEs.setAuthorUid(authorUid);
                 noteHistoryEs.setNoteId(noteId);
                 noteHistoryEs.setNoteTitle(note.getNoteTitle());
                 noteHistoryEs.setUid(uid);
                 noteHistoryEs.setCompositionId(uid,  noteId);
                 noteHistoryEs.setTime(new Date());
-                noteHistoryRepository.save(noteHistoryEs);
+                noteHistoryRepository.save(noteHistoryEs);*/
             }
         }
 
@@ -202,7 +201,7 @@ public class NoteServiceImpl extends AbstractNoteService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteNote(Integer uid, String userId, Integer noteId) {
         noteMapper.deleteNoteByUidAndNoteId(uid, noteId);
-        noteRepository.deleteById(noteId);
+        //noteRepository.deleteById(noteId);
     }
 
     @Override
@@ -214,7 +213,7 @@ public class NoteServiceImpl extends AbstractNoteService {
         }
         noteMapper.insertNewNoteByUid(uid, noteId, noteTitle, noteSummary, noteContent);
         // 修改 elasticsearch 中的笔记信息
-        NoteEs sourceNoteEs;
+        /*NoteEs sourceNoteEs;
         Optional<NoteEs> noteEsOptional = noteRepository.findById(noteId);
         NoteEs noteEs = new NoteEs();
         noteEs.setNoteId(noteId);
@@ -224,7 +223,7 @@ public class NoteServiceImpl extends AbstractNoteService {
             sourceNoteEs = noteEsOptional.get();
             BeanUtil.moveProperties(noteEs, sourceNoteEs);
         }
-        noteRepository.save(noteEs);
+        noteRepository.save(noteEs);*/
         return Result.ok(null);
     }
 

@@ -3,13 +3,11 @@ package com.huadiao.service.impl;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.account.AccountSettings;
 import com.huadiao.entity.dto.userinfo.UserInfoDto;
-import com.huadiao.entity.elasticsearch.UserEs;
 import com.huadiao.entity.homepage.HomepageInfo;
 import com.huadiao.mapper.*;
 import com.huadiao.service.AbstractFollowFanService;
 import com.huadiao.service.AbstractHomepageService;
 import com.huadiao.service.FollowFanService;
-import com.huadiao.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author flowerwine
@@ -165,7 +166,7 @@ public class HomepageServiceImpl extends AbstractHomepageService {
         userAvatar.transferTo(new File(userAvatarRealPath + File.separator + filename));
         userInfoJedisUtil.modifyUserAvatarByUid(uid, filename);
         // 修改 es 的用户头像
-        UserEs sourceUserEs;
+        /*UserEs sourceUserEs;
         Optional<UserEs> optionalUserEs = userRepository.findById(uid);
         UserEs userEs = new UserEs();
         userEs.setUid(uid);
@@ -174,7 +175,7 @@ public class HomepageServiceImpl extends AbstractHomepageService {
             sourceUserEs = optionalUserEs.get();
             BeanUtil.moveProperties(userEs, sourceUserEs);
         }
-        userRepository.save(userEs);
+        userRepository.save(userEs);*/
         log.debug("uid, userId 分别为 {}, {} 的用户成功修改自己的头像", uid, userId);
         return Result.ok(null);
     }

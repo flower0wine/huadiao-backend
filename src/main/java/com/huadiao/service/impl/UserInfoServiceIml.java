@@ -3,13 +3,11 @@ package com.huadiao.service.impl;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.user.UserAbstractDto;
 import com.huadiao.entity.dto.user.UserShareDto;
-import com.huadiao.entity.elasticsearch.UserEs;
 import com.huadiao.enumeration.SexEnum;
 import com.huadiao.mapper.FollowFanMapper;
 import com.huadiao.mapper.UserInfoMapper;
 import com.huadiao.mapper.UserMapper;
 import com.huadiao.service.AbstractUserInfoService;
-import com.huadiao.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author flowerwine
@@ -81,7 +78,7 @@ public class UserInfoServiceIml extends AbstractUserInfoService {
         }
         userInfoJedisUtil.modifyUserInfoByUid(uid, nickname, canvases, sex, date, school);
         // 修改 elasticsearch 中的用户信息
-        Optional<UserEs> optionalUserEs = userRepository.findById(uid);
+        /*Optional<UserEs> optionalUserEs = userRepository.findById(uid);
         UserEs sourceUserEs;
         UserEs userEs = new UserEs();
         userEs.setUid(uid);
@@ -91,7 +88,7 @@ public class UserInfoServiceIml extends AbstractUserInfoService {
             sourceUserEs = optionalUserEs.get();
             BeanUtil.moveProperties(userEs, sourceUserEs);
         }
-        userRepository.save(userEs);
+        userRepository.save(userEs);*/
         log.debug("uid, userId 分别为 {}, {} 的用户新增或修改自己的用户信息成功, nickname: {}, canvases: {}, sex: {}, bornDate: {}, school： {}", uid, userId, nickname, canvases, sex, bornDate, school);
         return Result.ok(null);
     }
