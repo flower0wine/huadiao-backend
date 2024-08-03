@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -23,12 +22,6 @@ public class ConsumeTimeFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
-        HttpServletResponse res = (HttpServletResponse) response;
-        res.setHeader("Access-Control-Allow-Origin", "http://114.55.41.107");
-        res.setHeader("Access-Control-Allow-Credentials", "true");
-        res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
 
         long start = System.currentTimeMillis();
         chain.doFilter(request, response);

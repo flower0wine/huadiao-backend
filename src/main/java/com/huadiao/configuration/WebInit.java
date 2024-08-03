@@ -17,7 +17,7 @@ public class WebInit extends AbstractAnnotationConfigDispatcherServletInitialize
     protected Class<?>[] getRootConfigClasses() {
         // spring 配置类
         return new Class[]{
-                DevConfig.class,
+                ProdConfig.class,
                 CommonConfig.class
         };
     }
