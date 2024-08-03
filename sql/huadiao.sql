@@ -475,3 +475,15 @@ CREATE TABLE IF NOT EXISTS
     PRIMARY KEY (`id`),
     UNIQUE (`uid`, `note_id`, `replied_uid`, `author_uid`, `root_comment_id`, `sub_comment_id`)
 ) ENGINE = 'Innodb' DEFAULT CHARSET = 'utf8mb4' COMMENT = '评论最新消息表';
+
+CREATE TABLE IF NOT EXISTS
+`huadiao_emote`(
+    `id` INT NOT NULL AUTO_INCREMENT COMMENT '唯一标识',
+    `name` VARCHAR(256) NOT NULL COMMENT '表情名称',
+    `type` TINYINT NOT NULL COMMENT '表情类型',
+    `filename` VARCHAR(256) NOT NULL COMMENT '表情文件名称',
+    `gid` INT NOT NULL COMMENT '表情组ID',
+    `add_time` DATETIME NOT NULL DEFAULT NOW() COMMENT '添加时间',
+    PRIMARY KEY (`id`),
+    UNIQUE (`gid`, `name`, `filename`)
+) ENGINE = 'Innodb' DEFAULT CHARSET = 'utf8mb4' COMMENT = '表情数据';
