@@ -36,3 +36,18 @@
 这个问题导致我在测试时，websocket 一直连不上后端服务器。
 
 我通过谷歌解决，具体的网址是 [Handshake failed due to invalid Upgrade header: null 解决方案](https://www.cnblogs.com/lcngu/p/8865914.html)
+
+
+### 1.3. spring 如何实现多环境配置
+
+首先你得在 `pom.xml` 文件下进行一些环境的配置，需要使用 `<profile>` 标签进行配置。
+具体的配置可以参考本项目的 `pom.xml` 文件。在这里你就可以选择加载哪些配置文件。
+
+如果你是使用 IDE 来运行项目，则需要在 VM 选项中添加 `-Dspring.profiles.active=dev` 参数，
+来激活开发环境。
+
+如果你是使用 `mvn` 命令来运行项目，则需要在命令中添加 `-Dspring.profiles.active=dev` 参数，
+来激活开发环境。
+
+然后你可以使用 `org.springframework.core.env.Environment` 这个接口来获取当前程序
+的运行环境，这时程序会根据环境来加载不同的配置。

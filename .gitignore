@@ -28,5 +28,3 @@ hs_err_pid*
 
 # maven
 target/
-
-service-boot.cmd

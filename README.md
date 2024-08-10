@@ -88,3 +88,15 @@ skip-grant-tables
 <!-- 项目路径 -->
 <Context path="/huadiao" docBase="A:\Apache Tomcat\apache-tomcat-9.0.65\webapps\huadiao-backend-1.0.0\" reloadable="true" crossContext="true" />
 ```
+
+### 1.5.5. 多环境配置
+
+项目在启动时会从命令行读取 `spring.profiles.active` 参数，该参数用来指定运行环境，
+当前项目支持的环境有 `dev`，`prod` 两个环境，分别对应开发环境和生产环境。
+
+根据环境的不同，程序在运行时会读取不同的配置文件，如果没有指定环境，则默认使用 `dev`，
+如果你使用的是 IDE 来运行，那你需要在 VM 选项中添加下面的参数：
+
+```
+-Dspring.profiles.active=dev
+```

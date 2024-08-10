@@ -5,7 +5,7 @@
     </Properties>
     <Appenders>
         <!--当日志文件到达指定大小时, 创建新日志文件-->
-        <RollingFile name="RollingFile" filename="${logPath}/huadiao.log" filePattern="${logPath}/huadiao-%d{yyyy-MM-dd-HH-mm}-%i.log">
+        <RollingFile name="RollingFile" filePattern="${logPath}/huadiao-%d{yyyy-MM-dd-HH-mm}-%i.log">
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} : %msg%n</Pattern>
             </PatternLayout>
