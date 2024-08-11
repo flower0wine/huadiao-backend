@@ -22,29 +22,43 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: Upload WAR to server
+      - name: Set up SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Stop Tomcat
         env:
           DEPLOY_SERVER: ${{ secrets.SERVER_IP }}
           DEPLOY_USER: ${{ secrets.SERVER_USERNAME }}
-          DEPLOY_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+          DEPLOY_PATH: ${{ secrets.SERVER_PATH }}
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER << EOF
+          # Stop Tomcat
+          ${DEPLOY_PATH}/bin/shutdown.sh
+          EOF
+
+      - name: Upload WAR file
+        env:
+          DEPLOY_SERVER: ${{ secrets.SERVER_IP }}
+          DEPLOY_USER: ${{ secrets.SERVER_USERNAME }}
           DEPLOY_PATH: ${{ secrets.SERVER_PATH }}
         run: |
           scp -o StrictHostKeyChecking=no target/*.war $DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/webapps/
 
-      - name: Restart Tomcat
+      - name: Start Tomcat
         env:
           DEPLOY_SERVER: ${{ secrets.SERVER_IP }}
           DEPLOY_USER: ${{ secrets.SERVER_USERNAME }}
-          DEPLOY_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
           DEPLOY_PATH: ${{ secrets.SERVER_PATH }}
         run: |
-          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER << 'EOF'
-          # Stop Tomcat
-          sudo $DEPLOY_PATH/bin/shutdown.sh
-          
-          # Wait for Tomcat to stop
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER << EOF
+          # Wait for a few seconds before starting Tomcat
           sleep 10
           
           # Start Tomcat
-          sudo $DEPLOY_PATH/bin/startup.sh
+          ${DEPLOY_PATH}/bin/startup.sh
           EOF
