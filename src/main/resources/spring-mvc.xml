@@ -10,7 +10,9 @@
     <mvc:annotation-driven/>
 
     <!--这里的 扫描不能写在配置类上, 不然会有 404-->
-    <context:component-scan base-package="com.huadiao"/>
+    <context:component-scan base-package="com.huadiao">
+        <context:exclude-filter type="regex" expression=".*elasticsearch.*"/>
+    </context:component-scan>
 
     <!--拦截器-->
     <mvc:interceptors>

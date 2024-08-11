@@ -45,12 +45,11 @@ public class LoggingAspect {
                 argsTypes,
                 argsValues);
         Object result = joinPoint.proceed();
-        log.debug("Exit: {}.{}({}) with {} result = {}",
+        log.debug("Exit: {}.{}({}) with {}",
                 joinPoint.getSignature().getDeclaringTypeName(),
                 joinPoint.getSignature().getName(),
                 argsTypes,
-                result.getClass().getTypeName(),
-                result);
+                result.getClass().getTypeName());
         return result;
     }
 }
