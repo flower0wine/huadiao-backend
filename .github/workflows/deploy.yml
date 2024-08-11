@@ -1,0 +1,50 @@
+name: Deploy to Tomcat
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Upload WAR to server
+        env:
+          DEPLOY_SERVER: ${{ secrets.SERVER_IP }}
+          DEPLOY_USER: ${{ secrets.SERVER_USERNAME }}
+          DEPLOY_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+          DEPLOY_PATH: ${{ secrets.SERVER_PATH }}
+        run: |
+          scp -o StrictHostKeyChecking=no target/*.war $DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/webapps/
+
+      - name: Restart Tomcat
+        env:
+          DEPLOY_SERVER: ${{ secrets.SERVER_IP }}
+          DEPLOY_USER: ${{ secrets.SERVER_USERNAME }}
+          DEPLOY_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+          DEPLOY_PATH: ${{ secrets.SERVER_PATH }}
+        run: |
+          ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_SERVER << 'EOF'
+          # Stop Tomcat
+          sudo $DEPLOY_PATH/bin/shutdown.sh
+          
+          # Wait for Tomcat to stop
+          sleep 10
+          
+          # Start Tomcat
+          sudo $DEPLOY_PATH/bin/startup.sh
+          EOF
