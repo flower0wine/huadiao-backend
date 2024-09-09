@@ -10,10 +10,10 @@
        http://www.springframework.org/schema/aop
        https://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <context:property-placeholder location="classpath:huadiao.properties,classpath:dev/huadiao.properties"/>
+    <context:property-placeholder location="classpath:huadiao.properties"/>
 
-    <import resource="classpath:redis-spring-config.xml"/>
-    <import resource="classpath:mysql-spring-config.xml"/>
+    <!--<import resource="classpath:redis-spring-config.xml"/>-->
+    <!--<import resource="classpath:mysql-spring-config.xml"/>-->
 
     <aop:config proxy-target-class="true"/>
 

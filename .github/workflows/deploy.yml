@@ -59,6 +59,9 @@ jobs:
           # Wait for a few seconds before starting Tomcat
           sleep 10
           
+          # Set JAVA_OPTS to include the JVM parameter
+          export JAVA_OPTS="-Dspring.profiles.active=prod"
+          
           # Start Tomcat
           ${DEPLOY_PATH}/bin/startup.sh
           EOF
