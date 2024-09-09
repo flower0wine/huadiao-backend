@@ -22,11 +22,12 @@ public interface HistoryMapper {
     /**
      * 获取笔记历史访问记录
      * @param uid 用户 uid
+     * @param noteTitle 笔记标题
      * @param row 获取行数
      * @param offset 偏移量
      * @return 返回笔记访问记录
      */
-    List<NoteHistory> selectNoteHistoryByUid(@Param("uid") Integer uid, @Param("row") Integer row, @Param("offset") Integer offset);
+    List<NoteHistory> selectNoteHistoryByUid(@Param("uid") Integer uid, @Param("noteTitle") String noteTitle, @Param("row") Integer row, @Param("offset") Integer offset);
 
     /**
      * 根据 用户 uid 查找所有的笔记 id

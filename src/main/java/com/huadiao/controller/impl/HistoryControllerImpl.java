@@ -7,6 +7,7 @@ import com.huadiao.service.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
@@ -27,10 +28,10 @@ public class HistoryControllerImpl extends AbstractController implements History
 
     @Override
     @GetMapping("/note")
-    public Result<?> getNoteHistory(HttpSession session, Integer row, Integer offset) {
+    public Result<?> getNoteHistory(HttpSession session, @RequestParam(required = false) String noteTitle, Integer row, Integer offset) {
         Integer uid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
-        return historyService.getNoteHistory(uid, userId, row, offset);
+        return historyService.getNoteHistory(uid, userId, noteTitle, row, offset);
     }
 
     @Override

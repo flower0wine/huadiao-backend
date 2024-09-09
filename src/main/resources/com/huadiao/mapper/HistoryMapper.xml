@@ -42,18 +42,24 @@
     </delete>
 
     <resultMap id="noteHistoryResultMap" type="com.huadiao.entity.NoteHistory">
-        <result property="uid" column="author_uid"/>
-        <result property="userId" column="user_id"/>
-        <result property="nickname" column="nickname"/>
-        <result property="userAvatar" column="user_avatar"/>
+        <id column="uid" />
+        <id column="author_uid" />
+        <id column="note_id" />
         <result property="noteId" column="note_id"/>
         <result property="noteContent" column="note_content"/>
         <result property="noteTitle" column="note_title"/>
         <result property="visitTime" column="view_time"/>
+        <association property="author" javaType="com.huadiao.entity.dto.user.UserShareDto">
+            <id property="uid" column="author_uid" />
+            <result property="nickname" column="nickname" />
+            <result property="userAvatar" column="user_avatar" />
+            <result property="userId" column="user_id" />
+        </association>
     </resultMap>
     <!--获取笔记历史访问记录-->
     <select id="selectNoteHistoryByUid" resultMap="noteHistoryResultMap">
         select t1.`author_uid`,
+               t1.`uid`,
                `nickname`,
                `user_id`,
                `user_avatar`,
@@ -64,10 +70,11 @@
         from huadiao_note_view t1
                  left join huadiao_homepage t2 on author_uid = t2.uid
                  left join huadiao_user_info t3 on author_uid = t3.uid
-                 left join huadiao_note t4 on author_uid = t4.uid and t1.`note_id` = t4.`note_id`
+                 left join huadiao_note t4 on author_uid = t4.uid and t1.`note_id` = t4.`note_id` and t4.`status`
                  left join huadiao_user_base t5 on author_uid = t5.uid
         where t1.uid = #{uid}
           and t1.`status`
+          <if test="noteTitle != null">and `note_title` like concat('%', #{noteTitle}, '%')</if>
           and t1.`id` >= (select `id` from huadiao_note_view where `uid` = #{uid} and `status` limit #{offset}, 1)
         order by `view_time` desc
         limit #{row};

@@ -13,11 +13,12 @@ public interface HistoryController {
     /**
      * 获取笔记历史记录
      * @param session session 对象
+     * @param noteTitle 笔记标题
      * @param row 行数
      * @param offset 偏移量
      * @return 返回获取过程中的提示
      */
-    Result<?> getNoteHistory(HttpSession session, Integer row, Integer offset);
+    Result<?> getNoteHistory(HttpSession session, String noteTitle, Integer row, Integer offset);
 
     /**
      * 获取番剧访问历史记录

@@ -29,10 +29,10 @@ public class HistoryServiceImpl extends AbstractHistoryService {
     }
 
     @Override
-    public Result<?> getNoteHistory(Integer uid, String userId, Integer row, Integer offset) {
+    public Result<?> getNoteHistory(Integer uid, String userId, String noteTitle, Integer row, Integer offset) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试获取笔记访问历史记录, row: {}, offset: {}", uid, userId, row, offset);
         Result<?> result = checkOffsetAndRow(offset, row, (o, r) -> {
-            List<NoteHistory> noteHistoryList = historyMapper.selectNoteHistoryByUid(uid, r, o);
+            List<NoteHistory> noteHistoryList = historyMapper.selectNoteHistoryByUid(uid, noteTitle, r, o);
             if (noteHistoryList.size() == 0) {
                 log.debug("笔记访问历史记录获取数据条数为 0");
                 return Result.emptyData();

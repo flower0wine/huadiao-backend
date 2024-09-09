@@ -1,5 +1,6 @@
 package com.huadiao.entity;
 
+import com.huadiao.entity.dto.user.UserShareDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,12 +17,9 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 public class NoteHistory {
-    private Integer uid;
-    private String nickname;
-    private String userId;
-    private String userAvatar;
     private String noteTitle;
     private String noteContent;
     private Integer noteId;
     private Date visitTime;
+    private UserShareDto author;
 }
