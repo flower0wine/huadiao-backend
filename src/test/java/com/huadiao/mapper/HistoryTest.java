@@ -14,11 +14,11 @@ import java.util.List;
  * @date 2024 年 09 月 09 日
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring-ioc.xml"})
+@ContextConfiguration(locations = {"classpath:spring-test.xml"})
 public class HistoryTest {
 
     @Autowired
-    HistoryMapper historyMapper;
+    private HistoryMapper historyMapper;
 
     @Test
     public void selectNoteHistoryByUidTest() {
