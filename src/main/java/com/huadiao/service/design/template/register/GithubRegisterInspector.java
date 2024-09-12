@@ -42,6 +42,8 @@ public class GithubRegisterInspector extends AbstractInspector implements Regist
     @Override
     public Result<?> check() {
         String code = codeThreadLocal.get();
+        log.debug("Github 第三方登录, code: {}", code);
+
         JSONObject data = getData(code, githubClientId, githubClientSecret, githubAccessTokenUri);
         String accessToken = data.getStr("access_token");
         accessTokenThreadLocal.set(accessToken);
@@ -95,5 +97,7 @@ public class GithubRegisterInspector extends AbstractInspector implements Regist
         userEs.setNickname(nickname);
         // 保存至 elasticsearch
         userRepository.save(userEs);*/
+
+        log.debug("Github 第三方登录成功");
     }
 }

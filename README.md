@@ -100,3 +100,15 @@ skip-grant-tables
 ```
 -Dspring.profiles.active=dev
 ```
+
+### 1.5.6. Nginx 配置
+
+在项目根目录下有服务器上的 nginx 配置，在服务器设置一个文件
+并在 `/etc/nginx.conf/` 文件中引用即可。
+
+```nginx configuration
+http {
+    # 设置 nginx 配置路径
+    include /etc/nginx/hosts/vue_server.host;
+}
+```

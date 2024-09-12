@@ -44,7 +44,9 @@ public class GoogleRegisterInspector extends AbstractInspector implements Regist
     @Override
     public Result<?> check() {
         String code = codeThreadLocal.get();
+        log.debug("Google 第三方登录 code: {}", code);
         JSONObject data = getData(code, googleClientId, googleClientSecret, googleAccessTokenUri, grantType, redirectUri);
+
         String accessToken = data.getStr("access_token");
         accessTokenThreadLocal.set(accessToken);
 
@@ -97,6 +99,8 @@ public class GoogleRegisterInspector extends AbstractInspector implements Regist
         userEs.setNickname(nickname);
         // 保存至 elasticsearch
         userRepository.save(userEs);*/
+
+        log.debug("Google 第三方登录成功");
     }
 
     @Override

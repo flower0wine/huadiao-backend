@@ -2,7 +2,6 @@ package com.huadiao.service.design.template;
 
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.huadiao.elasticsearch.repository.UserRepository;
@@ -76,6 +75,7 @@ public abstract class AbstractInspector {
      * @return 返回用户信息
      */
     protected JSONObject getUserInfo(String accessToken, String apiUser) {
+        long start = System.currentTimeMillis();
         log.debug("向第三方请求数据中...");
         // 通过访问令牌获取用户信息
         HttpRequest httpRequest = HttpRequest.get(apiUser)
@@ -84,7 +84,7 @@ public abstract class AbstractInspector {
 
         String result = httpRequest.execute().body();
 
-        log.debug("向第三方请求数据完成");
+        log.debug("向第三方请求数据完成, 耗时: {} ms", System.currentTimeMillis() - start);
 
         return JSONUtil.parseObj(result);
     }
@@ -131,6 +131,7 @@ public abstract class AbstractInspector {
     }
 
     private JSONObject getData(Map<String, Object> map, String accessTokenUri) {
+        long start = System.currentTimeMillis();
         log.debug("获取访问令牌中...");
 
         // 获取访问令牌
@@ -141,11 +142,7 @@ public abstract class AbstractInspector {
 
         String result = httpRequest.execute().body();
 
-        log.debug("访问令牌获取成功");
+        log.debug("访问令牌获取成功, 耗时: {} ms", System.currentTimeMillis() - start);
         return JSONUtil.parseObj(result);
-    }
-
-    private HttpResponse setProxyAndExecute(HttpRequest request) {
-        return request.setHttpProxy("127.0.0.1", 17890).execute();
     }
 }

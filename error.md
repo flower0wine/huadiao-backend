@@ -51,3 +51,27 @@
 
 然后你可以使用 `org.springframework.core.env.Environment` 这个接口来获取当前程序
 的运行环境，这时程序会根据环境来加载不同的配置。
+
+### 1.4. Tomcat 上传的文件 Nginx 访问不了
+
+这个原因是我用 root 启动的 Tomcat，然后 Nginx 是用 nginx 身份启动的，导致 Nginx
+没有权限访问 Tomcat 上传的文件。
+
+```shell
+if [ -z "$UMASK" ]; then
+    UMASK="0027" # 将 0027 改为 0022
+fi
+umask $UMASK
+```
+
+解决方法在 CSDN 淘到了，[解决方法](https://blog.csdn.net/gcyyn/article/details/88056296)
+
+### 1.5. Nginx 默认限制文件上传大小为 1MB
+
+这个直接在配置文件中修改 `client_max_body_size` 即可。
+
+```nginx configuration
+http {
+    client_max_body_size 100M;
+}
+```

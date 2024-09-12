@@ -2,8 +2,6 @@ package com.huadiao.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.Cookie;
@@ -31,7 +29,6 @@ public class CsrfCheckInterceptor implements HandlerInterceptor {
             log.debug("客户端 IP: {}, 当前请求为 CSRF 请求!", remoteAddress);
             return false;
         }
-        log.debug("客户端 IP: {} 通过 CSRF 验证!", request.getRemoteAddr());
         return true;
     }
 
