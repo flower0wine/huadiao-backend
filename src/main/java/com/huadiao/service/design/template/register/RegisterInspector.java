@@ -1,6 +1,7 @@
 package com.huadiao.service.design.template.register;
 
 import com.huadiao.entity.Result;
+import com.huadiao.enumeration.LoginTypeEnum;
 import com.huadiao.enumeration.ResultCodeEnum;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,4 +44,10 @@ public interface RegisterInspector {
     default ThreadLocal<String> getCodeThreadLocal() {
         return null;
     }
+
+    /**
+     * 获取登录类型
+     * @return 登录类型
+     */
+    LoginTypeEnum getLoginType();
 }

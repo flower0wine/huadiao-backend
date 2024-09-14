@@ -95,7 +95,8 @@ public class CommonServiceImpl extends AbstractCommonService {
             Integer uid = userShareDto.getUid();
             String userId = userShareDto.getUserId();
             this.login(uid, userId, request, response);
-            return Result.ok(SUCCEED_REGISTER);
+            log.debug("{} 账号注册成功",registerInspector.getLoginType());
+            return Result.ok("注册成功");
         }
         log.debug("用户通过所有的注册检查! 下面开始注册新花凋用户");
 
@@ -109,7 +110,7 @@ public class CommonServiceImpl extends AbstractCommonService {
             userId = CreateHuadiaoUserId.createUserId();
             Integer existedUid = userMapper.selectUidByUserId(userId);
             if (existedUid != null) {
-                log.trace("为新用户创建的 userId {} 重复, 准备再次创建", userId);
+                log.debug("为新用户创建的 userId {} 重复, 准备再次创建", userId);
                 continue;
             }
             end = true;
@@ -129,6 +130,6 @@ public class CommonServiceImpl extends AbstractCommonService {
         if (!(registerInspector instanceof HuadiaoRegisterInspector)) {
             this.login(uid, userId, request, response);
         }
-        return Result.ok(SUCCEED_REGISTER);
+        return Result.ok("注册成功");
     }
 }

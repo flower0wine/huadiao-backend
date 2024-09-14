@@ -2,6 +2,7 @@ package com.huadiao.service.design.template.register;
 
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.user.UserBaseDto;
+import com.huadiao.enumeration.LoginTypeEnum;
 import com.huadiao.enumeration.SexEnum;
 import com.huadiao.service.design.template.AbstractInspector;
 import lombok.Getter;
@@ -122,17 +123,16 @@ public class HuadiaoRegisterInspector extends AbstractInspector implements Regis
         Map<String, String> map = threadLocal.get();
         String username = map.get("username");
         String password = map.get("password");
-        String confirmPassword = map.get("confirmPassword");
         String checkCode = map.get("checkCode");
         String jsessionid = map.get("jsessionid");
 
         log.info("用户尝试注册花凋账号, 用户名 {}, 验证码 {}", username, checkCode);
         if (username == null) {
-            return Result.errorParam(nullUsername);
+            return Result.errorParam("用户名不能为空");
         } else if (password == null) {
-            return Result.errorParam(nullPassword);
+            return Result.errorParam("密码不能为空");
         } else if (checkCode == null) {
-            return Result.errorParam(nullCheckCode);
+            return Result.errorParam("验证码不能为空");
         }
         // 检查用户名
         Result<?> result = checkUsername(username);
@@ -141,23 +141,24 @@ public class HuadiaoRegisterInspector extends AbstractInspector implements Regis
             return result;
         }
         // 检查密码
-        result = checkPassword(password, confirmPassword);
+        result = checkPassword(password);
         if (!result.succeed()) {
-            log.debug("用户输入的密码不符合要求, 第一次密码为 {}, 第二次密码为 {}, 错误标识为 {}", password, confirmPassword, result.getData());
+            log.debug("用户输入的密码不符合要求, 为 {}, 错误标识为 {}", password, result.getData());
             return result;
         }
+
         // 检查验证码
         String code = userBaseJedisUtil.getCheckCode(jsessionid);
         if (!checkCode.equals(code)) {
             log.debug("用户输入的验证码不一致, 正确的验证码为 {}, 用户输入的验证码为 {}", code, checkCode);
-            return Result.errorParam(wrongCode);
+            return Result.errorParam("验证码错误");
         }
 
         // 检查用户名是否重复
         UserBaseDto userBaseDto = userMapper.selectUserByUsername(username);
         if (userBaseDto != null) {
             log.debug("用户名输入的用户名已存在, 用户名为 {}", username);
-            return Result.errorParam(sameUsername);
+            return Result.errorParam("用户已存在");
         }
         return Result.ok(null);
     }
@@ -190,6 +191,11 @@ public class HuadiaoRegisterInspector extends AbstractInspector implements Regis
         userRepository.save(userEs);*/
     }
 
+    @Override
+    public LoginTypeEnum getLoginType() {
+        return LoginTypeEnum.HUADIAO;
+    }
+
     /**
      * 检查用户名是否符合要求
      *
@@ -199,7 +205,7 @@ public class HuadiaoRegisterInspector extends AbstractInspector implements Regis
     private static Result<?> checkUsername(String username) {
         if (!(usernameMinLength <= username.length() && username.length() <= usernameMaxLength)) {
             log.debug("用户名长度不符合要求!");
-            return Result.errorParam(wrongUsernameLength);
+            return Result.errorParam("您的用户名长度应在8-20之间!");
         }
         // 检查账号是否符合要求
         Matcher matcher = usernameReg.matcher(username);
@@ -207,31 +213,24 @@ public class HuadiaoRegisterInspector extends AbstractInspector implements Regis
             return Result.ok(null);
         }
         log.debug("username: {}, 用户名不符合要求!", username);
-        return Result.errorParam(wrongUsername);
+        return Result.errorParam("您的用户名应仅包含数字、字母、下划线!");
     }
 
     /**
      * 检查密码是否符合要求
      *
      * @param password        密码
-     * @param confirmPassword 再次确认的密码
      * @return 返回错误标识, 符合要求返回 null
      */
-    private static Result<?> checkPassword(String password, String confirmPassword) {
-        if (password == null) {
-            return Result.errorParam(nullPassword);
-        }
-        if (!password.equals(confirmPassword)) {
-            return Result.errorParam(noSamePassword);
-        }
+    private static Result<?> checkPassword(String password) {
         if (!(passwordMinLength <= password.length() && password.length() <= passwordMaxLength)) {
-            return Result.errorParam(wrongPasswordLength);
+            return Result.errorParam("您的密码长度应在8-32之间!");
         }
         // 检查密码是否符合要求
         Matcher matcher = passwordReg.matcher(password);
         if (matcher.find()) {
             return Result.ok(null);
         }
-        return Result.errorParam(wrongPassword);
+        return Result.errorParam("您的密码应至少包含数字, 大小写字母!");
     }
 }

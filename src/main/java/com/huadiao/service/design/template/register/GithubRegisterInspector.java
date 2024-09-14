@@ -40,6 +40,11 @@ public class GithubRegisterInspector extends AbstractInspector implements Regist
     }
 
     @Override
+    public LoginTypeEnum getLoginType() {
+        return LoginTypeEnum.GITHUB;
+    }
+
+    @Override
     public Result<?> check() {
         String code = codeThreadLocal.get();
         log.debug("Github 第三方登录, code: {}", code);

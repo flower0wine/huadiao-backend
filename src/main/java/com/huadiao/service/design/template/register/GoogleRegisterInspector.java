@@ -42,6 +42,11 @@ public class GoogleRegisterInspector extends AbstractInspector implements Regist
     private String redirectUri;
 
     @Override
+    public LoginTypeEnum getLoginType() {
+        return LoginTypeEnum.GOOGLE;
+    }
+
+    @Override
     public Result<?> check() {
         String code = codeThreadLocal.get();
         log.debug("Google 第三方登录 code: {}", code);
