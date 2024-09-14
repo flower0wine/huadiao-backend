@@ -44,7 +44,7 @@ public class UserInfoControllerImpl extends AbstractController implements UserIn
     @GetMapping
     public Result<?> getUserInfo(HttpSession session, Integer uid) {
         String userId = (String) session.getAttribute(userIdKey);
-           Integer myUid = (Integer) session.getAttribute(uidKey);
+        Integer myUid = (Integer) session.getAttribute(uidKey);
         return userInfoService.getUserInfo(myUid, uid, userId);
     }
 
@@ -55,6 +55,11 @@ public class UserInfoControllerImpl extends AbstractController implements UserIn
         return userInfoService.getUserShareInfo(uid);
     }
 
-
+    @Override
+    @GetMapping("/account")
+    public Result<?> getAccountInfo(HttpSession session) {
+        Integer uid = (Integer) session.getAttribute(uidKey);
+        return userInfoService.getAccountInfo(uid);
+    }
 
 }

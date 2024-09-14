@@ -2,6 +2,7 @@ package com.huadiao.controller;
 
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.user.UserShareDto;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
@@ -39,4 +40,7 @@ public interface UserInfoController extends Controller {
      * @return 返回可共享对象
      */
     UserShareDto getUserShare(HttpSession httpSession);
+
+    @GetMapping("/account")
+    Result<?> getAccountInfo(HttpSession session);
 }

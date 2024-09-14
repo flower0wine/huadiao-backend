@@ -21,7 +21,7 @@ public class UserInfoDto {
     /**
      * 三种情况: 0 (未知), 1 (男), 2 (女)
      */
-    private String sex;
+    private Integer sex;
     private String canvases;
     private String school;
     private Date bornDate;

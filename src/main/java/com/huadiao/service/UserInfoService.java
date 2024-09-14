@@ -43,4 +43,10 @@ public interface UserInfoService {
      */
     UserShareDto getUserShareInfo(Integer uid);
 
+    /**
+     * 获取用户账户信息
+     * @param uid 用户 uid
+     * @return 返回账户信息
+     */
+    Result<?> getAccountInfo(Integer uid);
 }

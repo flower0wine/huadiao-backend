@@ -3,6 +3,7 @@ package com.huadiao.service.impl;
 import com.huadiao.entity.Result;
 import com.huadiao.entity.dto.user.UserAbstractDto;
 import com.huadiao.entity.dto.user.UserShareDto;
+import com.huadiao.entity.dto.userinfo.UserInfoDto;
 import com.huadiao.enumeration.SexEnum;
 import com.huadiao.mapper.FollowFanMapper;
 import com.huadiao.mapper.UserInfoMapper;
@@ -119,4 +120,9 @@ public class UserInfoServiceIml extends AbstractUserInfoService {
         return userShareDto;
     }
 
+    @Override
+    public Result<?> getAccountInfo(Integer uid) {
+        UserInfoDto userInfoDto = userInfoMapper.selectUserInfoByUid(uid);
+        return Result.ok(userInfoDto);
+    }
 }
