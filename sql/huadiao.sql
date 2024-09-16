@@ -487,3 +487,26 @@ CREATE TABLE IF NOT EXISTS
     PRIMARY KEY (`id`),
     UNIQUE (`gid`, `name`, `filename`)
 ) ENGINE = 'Innodb' DEFAULT CHARSET = 'utf8mb4' COMMENT = '表情数据';
+
+CREATE TABLE IF NOT EXISTS `huadiao_note_tag`
+(
+    `id`          INT         NOT NULL AUTO_INCREMENT COMMENT '唯一标识',
+    `name`        VARCHAR(10) NOT NULL COMMENT '标签名称',
+    `create_time` DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
+    `tag_id`      TINYINT     NOT NULL COMMENT '标签 ID',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `unique_type` (`tag_id`),
+    KEY `huadiao_note_tag_index` (`tag_id`, `name`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT = '笔记标签表';
+
+CREATE TABLE IF NOT EXISTS `huadiao_note_tag_relation`
+(
+    `id`      INT NOT NULL AUTO_INCREMENT COMMENT '唯一标识',
+    `note_id` INT NOT NULL COMMENT '笔记 ID',
+    `tag_id`  INT NOT NULL COMMENT '标签 ID',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `unique_note_tag` (`note_id`, `tag_id`),
+    KEY `huadiao_note_tag_relation_index` (`note_id`, `tag_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT = '笔记标签关系表';

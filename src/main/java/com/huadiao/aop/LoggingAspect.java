@@ -44,12 +44,26 @@ public class LoggingAspect {
                 joinPoint.getSignature().getName(),
                 argsTypes,
                 argsValues);
-        Object result = joinPoint.proceed();
+
+        Object result = null;
+        try {
+            result = joinPoint.proceed();
+        } catch (Exception e) {
+            log.error("Exception in {}.{}({}) with argument[s] = {}, reason: {}",
+                    joinPoint.getSignature().getDeclaringTypeName(),
+                    joinPoint.getSignature().getName(),
+                    argsTypes,
+                    argsValues,
+                    e.getMessage());
+            throw e;
+        }
+
         log.debug("Exit: {}.{}({}) with {}",
                 joinPoint.getSignature().getDeclaringTypeName(),
                 joinPoint.getSignature().getName(),
                 argsTypes,
                 result.getClass().getTypeName());
+
         return result;
     }
 }

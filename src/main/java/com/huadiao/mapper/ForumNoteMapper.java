@@ -30,7 +30,10 @@ public interface ForumNoteMapper {
      * 根据 offset 和 limit 来获取笔记
      * @param offset 偏移量
      * @param row 条数
+     * @param tag 标签
      * @return 返回查询到的笔记
      */
-    List<ForumNote> selectForumNote(@Param("offset") Integer offset, @Param("row") Integer row);
+    List<ForumNote> selectForumNote(@Param("offset") Integer offset,
+                                    @Param("row") Integer row,
+                                    @Param("tag") Integer tag);
 }

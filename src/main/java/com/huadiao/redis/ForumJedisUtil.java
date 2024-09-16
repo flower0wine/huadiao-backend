@@ -1,6 +1,6 @@
 package com.huadiao.redis;
 
-import com.huadiao.entity.note.ForumRankNote;
+import com.huadiao.redis.entity.NoteRank;
 
 import java.util.List;
 
@@ -34,5 +34,5 @@ public interface ForumJedisUtil {
      * @param noteRankMaxLength 排行榜上的笔记总数
      * @return 返回对应的笔记
      */
-    List<ForumRankNote> getRangeNoteRank(int noteRankMaxLength);
+    NoteRank getRangeNoteRank(int noteRankMaxLength);
 }

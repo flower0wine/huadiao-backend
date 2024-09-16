@@ -4,9 +4,11 @@ import cn.hutool.json.JSONUtil;
 import com.huadiao.entity.note.ForumRankNote;
 import com.huadiao.redis.AbstractJedis;
 import com.huadiao.redis.ForumJedisUtil;
+import com.huadiao.redis.entity.NoteRank;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,22 +50,23 @@ public class ForumJedis extends AbstractJedis implements ForumJedisUtil {
     @Override
     public void updateForumRankNote(int noteRankMaxLength) {
         Jedis jedis = jedisPool.getResource();
-        long len = jedis.llen(forumNoteRank);
-        if(len != 0L) {
-            jedis.del(forumNoteRank);
-        }
         List<ForumRankNote> forumRankNoteList = forumNoteMapper.selectForumRankNote(noteRankMaxLength);
+
+        NoteRank noteRank = new NoteRank();
+        noteRank.setNoteRank(forumRankNoteList);
+        noteRank.setUpdateTime(new Date());
+
         if(forumRankNoteList.size() != 0) {
-            jedis.rpush(forumNoteRank, forumRankNoteList.stream().map(JSONUtil::toJsonStr).toArray(String[]::new));
+            jedis.set(forumNoteRank, JSONUtil.toJsonStr(noteRank));
         }
         jedis.close();
     }
 
     @Override
-    public List<ForumRankNote> getRangeNoteRank(int noteRankMaxLength) {
+    public NoteRank getRangeNoteRank(int noteRankMaxLength) {
         Jedis jedis = jedisPool.getResource();
-        List<String> forumRankNoteList = jedis.lrange(forumNoteRank, 0, noteRankMaxLength);
+        String forumRankNoteListStr = jedis.get(forumNoteRank);
         jedis.close();
-        return forumRankNoteList.stream().map((item) -> JSONUtil.toBean(item, ForumRankNote.class)).collect(Collectors.toList());
+        return JSONUtil.toBean(forumRankNoteListStr, NoteRank.class);
     }
 }

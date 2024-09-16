@@ -107,6 +107,23 @@ public abstract class AbstractService implements Service {
         return function.apply(offset, row);
     }
 
+    protected Result<?> checkPageAndSize(Integer page, Integer size, BiFunction<Integer, Integer, Result<?>> function) {
+        if (page == null || page <= 0 || size == null || size < 0) {
+            return Result.errorParam();
+        }
+        if (size > defaultRow) {
+            size = defaultRow;
+        }
+
+        page = (page - 1) * size;
+
+        // page 虽然大于 0，但 page == Integer.MAX_VALUE 时，(page - 1) * size 会溢出
+        if (page < 0) {
+            page = 0;
+        }
+        return function.apply(page, size);
+    }
+
     /**
      * 检查 list 是否为 null, 或者为空集合
      * @param ll 多参集合

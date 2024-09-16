@@ -2,6 +2,7 @@ package com.huadiao.controller.forum;
 
 import com.huadiao.controller.Controller;
 import com.huadiao.entity.Result;
+import com.huadiao.entity.req.RandomGetNote;
 
 import javax.servlet.http.HttpSession;
 
@@ -15,11 +16,10 @@ public interface ForumNoteController extends Controller {
     /**
      * 随机获取笔记
      * @param session session 对象
-     * @param offset 偏移量
-     * @param row 条数
+     * @param randomGetNote 随机获取笔记的请求参数
      * @return 返回随机获取的笔记
      */
-    Result<?> randomGetNote(HttpSession session, Integer offset, Integer row);
+    Result<?> randomGetNote(HttpSession session, RandomGetNote randomGetNote);
 
     /**
      * 获取笔记排行榜指定范围的笔记

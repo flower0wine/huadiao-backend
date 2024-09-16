@@ -3,13 +3,11 @@ package com.huadiao.controller.forum.impl;
 import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.forum.ForumNoteController;
 import com.huadiao.entity.Result;
+import com.huadiao.entity.req.RandomGetNote;
 import com.huadiao.service.forum.ForumService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -29,11 +27,12 @@ public class ForumNoteControllerImpl extends AbstractController implements Forum
     }
 
     @Override
-    @PostMapping("/recommend")
-    public Result<?> randomGetNote(HttpSession session, Integer offset, Integer row) {
+    @PostMapping
+    public Result<?> randomGetNote(HttpSession session,
+                                   @RequestBody RandomGetNote randomGetNote) {
         Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
-        return forumService.randomGetNote(myUid, userId, offset, row);
+        return forumService.randomGetNote(myUid, userId, randomGetNote);
     }
 
     @Override
