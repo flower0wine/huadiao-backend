@@ -1,22 +1,18 @@
 package com.huadiao.entity.note;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author flowerwine
  * @date 2023 年 10 月 21 日
  */
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
+@Data
 public class Note {
     private Integer noteId;
+    private Integer authorUid;
     private String noteTitle;
     private String noteContent;
     private Date publishTime;
@@ -24,4 +20,5 @@ public class Note {
     private Integer starCount;
     private Integer likeCount;
     private Integer commentCount;
+    private List<NoteTag> noteTags;
 }

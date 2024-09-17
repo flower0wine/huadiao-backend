@@ -9,6 +9,7 @@ import com.huadiao.entity.dto.note.SelfNoteDto;
 import com.huadiao.entity.dto.note.ShareNoteDto;
 import com.huadiao.entity.dto.user.UserAbstractDto;
 import com.huadiao.entity.note.Note;
+import com.huadiao.entity.vo.NoteVO;
 import com.huadiao.mapper.*;
 import com.huadiao.service.AbstractFollowFanService;
 import com.huadiao.service.AbstractNoteService;
@@ -17,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -128,19 +127,19 @@ public class NoteServiceImpl extends AbstractNoteService {
             }
         }
 
-        // 填充数据
-        Map<String, Object> map = new HashMap<>(32);
-        map.put("me", me);
-        map.put("noteTitle", note.getNoteTitle());
-        map.put("noteContent", note.getNoteContent());
-        map.put("viewCount", note.getViewCount());
-        map.put("likeCount", note.getLikeCount());
-        map.put("starCount", note.getStarCount());
-        map.put("commentCount", note.getCommentCount());
-        map.put("publishTime", note.getPublishTime());
-        map.put("authorAndMeRelation", relation);
-        map.put("noteAndMeRelation", noteRelationDto);
-        return Result.ok(map);
+        NoteVO noteVO = new NoteVO();
+        noteVO.setMe(me);
+        noteVO.setNoteTitle(note.getNoteTitle());
+        noteVO.setNoteContent(note.getNoteContent());
+        noteVO.setViewCount(note.getViewCount());
+        noteVO.setLikeCount(note.getLikeCount());
+        noteVO.setStarCount(note.getStarCount());
+        noteVO.setCommentCount(note.getCommentCount());
+        noteVO.setPublishTime(note.getPublishTime());
+        noteVO.setAuthorAndMeRelation(relation);
+        noteVO.setNoteAndMeRelation(noteRelationDto);
+        noteVO.setNoteTags(note.getNoteTags());
+        return Result.ok(noteVO);
     }
 
     @Override

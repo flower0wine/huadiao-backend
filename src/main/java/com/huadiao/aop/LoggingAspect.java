@@ -5,6 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -21,11 +22,13 @@ public class LoggingAspect {
     @Pointcut("execution(* *(..))")
     public void methodPointcut() {}
 
-    @Around("controller() && methodPointcut() || service() && methodPointcut()")
+    @Around("(controller() && methodPointcut()) || (service() && methodPointcut())")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         StringBuilder argsTypes = new StringBuilder();
-        for (int i = 0; i < joinPoint.getArgs().length; i++) {
-            argsTypes.append(joinPoint.getArgs()[i].getClass().getTypeName());
+        Class<?>[] clazz = ((MethodSignature) joinPoint.getSignature()).getMethod().getParameterTypes();
+
+        for (int i = 0; i < clazz.length; i++) {
+            argsTypes.append(clazz[i]);
             if (i < joinPoint.getArgs().length - 1) {
                 argsTypes.append(", ");
             }
@@ -62,7 +65,7 @@ public class LoggingAspect {
                 joinPoint.getSignature().getDeclaringTypeName(),
                 joinPoint.getSignature().getName(),
                 argsTypes,
-                result.getClass().getTypeName());
+                result);
 
         return result;
     }

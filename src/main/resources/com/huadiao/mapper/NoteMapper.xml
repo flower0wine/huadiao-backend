@@ -41,7 +41,8 @@
     </delete>
 
     <resultMap id="singleNoteDtoResultMap" type="com.huadiao.entity.note.Note">
-        <result property="noteId" column="note_id"/>
+        <id property="noteId" column="note_id"/>
+        <id property="authorUid" column="uid"/>
         <result property="noteTitle" column="note_title"/>
         <result property="noteContent" column="note_content"/>
         <result property="publishTime" column="publish_time"/>
@@ -49,6 +50,10 @@
         <result property="viewCount" column="view_count"/>
         <result property="starCount" column="star_count"/>
         <result property="commentCount" column="comment_count"/>
+        <collection property="noteTags" javaType="java.util.List" ofType="com.huadiao.entity.note.NoteTag">
+            <result property="tagId" column="tag_id"/>
+            <result property="tagName" column="name"/>
+        </collection>
     </resultMap>
     <!--查找笔记-->
     <select id="selectNoteByUidAndNoteId" resultMap="singleNoteDtoResultMap">
@@ -57,6 +62,8 @@
                `note_title`,
                `note_content`,
                `publish_time`,
+               t6.`tag_id`,
+               t7.`name`,
                count(distinct t2.uid)                                    as `like_count`,
                count(distinct t3.uid)                                    as `view_count`,
                count(distinct t4.uid)                                    as `star_count`,
@@ -67,8 +74,11 @@
                  left join huadiao_note_star t4 on t1.uid = t4.author_uid and t4.status and t1.`note_id` = t4.`note_id`
                  left join huadiao_note_comment t5
                            on t1.uid = t5.author_uid and t5.status and t1.`note_id` = t5.`note_id`
+                 left join huadiao_note_tag_relation t6 on t6.`note_id` = t1.`note_id`
+                 left join huadiao_note_tag t7 on t7.`tag_id` = t6.`tag_id`
         where t1.`uid` = #{uid}
-          and t1.`note_id` = #{noteId};
+          and t1.`note_id` = #{noteId}
+        group by t6.`tag_id`
     </select>
 
     <!--计数笔记-->
