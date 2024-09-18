@@ -12,9 +12,10 @@ import com.huadiao.service.AbstractCommonService;
 import com.huadiao.service.design.template.login.LoginInspector;
 import com.huadiao.service.design.template.register.HuadiaoRegisterInspector;
 import com.huadiao.service.design.template.register.RegisterInspector;
+import com.huadiao.util.CookieUtil;
 import com.huadiao.util.CreateHuadiaoUserId;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
@@ -30,19 +31,13 @@ import javax.servlet.http.HttpSession;
  */
 @Slf4j
 @Service
+@AllArgsConstructor
 public class CommonServiceImpl extends AbstractCommonService {
     private UserMapper userMapper;
     private HomepageMapper homepageMapper;
     private UserSettingsMapper userSettingsMapper;
     private HuadiaoHouseMapper huadiaoHouseMapper;
-
-    @Autowired
-    public CommonServiceImpl(UserMapper userMapper, HomepageMapper homepageMapper, UserSettingsMapper userSettingsMapper, HuadiaoHouseMapper huadiaoHouseMapper) {
-        this.userMapper = userMapper;
-        this.homepageMapper = homepageMapper;
-        this.userSettingsMapper = userSettingsMapper;
-        this.huadiaoHouseMapper = huadiaoHouseMapper;
-    }
+    private CookieUtil cookieUtil;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -62,18 +57,23 @@ public class CommonServiceImpl extends AbstractCommonService {
         // 更新登录时间
         userMapper.updateUserLatestLoginTime(uid);
         // 添加 cookie 维持用户登录状态
-        ResponseCookie cookie = getUserCookie(userId);
+        ResponseCookie cookie = cookieUtil.getUserCookie(userId);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         HttpSession session = request.getSession();
         session.setAttribute("uid", uid);
         session.setAttribute("userId", userId);
         session.setAttribute("nickname", userId);
-        session.setMaxInactiveInterval(sessionSurvivalTime);
+        session.setMaxInactiveInterval(cookieProperties.sessionSurvivalTime);
     }
 
     @Override
     public void getCheckCode(HttpServletResponse response, HttpSession session, String jsessionid) throws Exception {
+        Integer codeImageWidth = codeProperties.codeImageWidth;
+        Integer codeImageHeight = codeProperties.codeImageHeight;
+        Integer codeLength = codeProperties.codeLength;
+        Integer codeDisturbCount = codeProperties.codeDisturbCount;
+
         CircleCaptcha circleCaptcha = CaptchaUtil.createCircleCaptcha(codeImageWidth, codeImageHeight, codeLength, codeDisturbCount);
         circleCaptcha.write(response.getOutputStream());
         String code = circleCaptcha.getCode();

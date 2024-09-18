@@ -1,5 +1,7 @@
 package com.huadiao.controller;
 
+import com.huadiao.constant.HuadiaoProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -19,4 +21,7 @@ public abstract class AbstractController implements Controller {
 
     @Value("${huadiao.frontendHost}")
     protected String frontendHost;
+
+    @Autowired
+    protected HuadiaoProperties huadiaoProperties;
 }
