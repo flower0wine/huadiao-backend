@@ -68,4 +68,11 @@ public interface CommonController extends Controller {
      * @throws Exception 可能抛出异常
      */
     String googleRegister(HttpServletRequest request, HttpServletResponse response, String code) throws Exception;
+
+    /**
+     * 验证用户身份
+     * @param session session
+     * @return 验证结果
+     */
+    Result<?> validateUser(HttpSession session);
 }

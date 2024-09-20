@@ -90,6 +90,10 @@ public class Result<T> {
         return new Result<>(ResultCodeEnum.NOT_AUTHORITATIVE, null);
     }
 
+    public static <T> Result<T> notAuthorize(String message) {
+        return new Result<>(ResultCodeEnum.NOT_AUTHORITATIVE, message, null);
+    }
+
     public static <T> Result<T> serverError() {
         return new Result<>(ResultCodeEnum.SERVER_ERROR, null);
     }

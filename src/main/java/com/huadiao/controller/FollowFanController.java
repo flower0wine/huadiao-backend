@@ -1,9 +1,9 @@
 package com.huadiao.controller;
 
 import com.huadiao.entity.Result;
+import com.huadiao.entity.req.follow.TransferFollowerParams;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 /**
  * 用户关注与粉丝控制器接口
@@ -31,21 +31,21 @@ public interface FollowFanController extends Controller {
      * @param session session 对象
      * @param viewedUid 被访问的用户 uid
      * @param groupId 关注分组 id
-     * @param begin 开始分页
-     * @param page 查询页数
+     * @param page 页码
+     * @param size 每页数量
      * @return 返回关注信息
      */
-    Result<?> getUserFollow(HttpSession session, Integer viewedUid, Integer groupId, Integer begin, Integer page);
+    Result<?> getUserFollow(HttpSession session, Integer viewedUid, Integer groupId, Integer page, Integer size);
 
     /**
      * 获取指定用户的粉丝
      * @param session session 对象
      * @param uid 被访问的用户 uid
-     * @param offset 偏移量
-     * @param row 行数
+     * @param page 页码
+     * @param size 每页数量
      * @return 返回粉丝信息
      */
-    Result<?> getUserFan(HttpSession session, Integer uid, Integer offset, Integer row);
+    Result<?> getUserFan(HttpSession session, Integer uid, Integer page, Integer size);
 
     /**
      * 获取指定 uid 的关注和粉丝信息, 关注数量和粉丝数量
@@ -84,8 +84,9 @@ public interface FollowFanController extends Controller {
      * @param session session 对象
      * @param groupName 分组名称
      * @param groupId 分组 id
+     * @return 返回修改分组名称成功与否提示
      */
-    void modifyFollowGroupName(HttpSession session, String groupName, Integer groupId);
+    Result<?> modifyFollowGroupName(HttpSession session, String groupName, Integer groupId);
 
     /**
      * 删除关注分组
@@ -98,20 +99,16 @@ public interface FollowFanController extends Controller {
     /**
      * 复制关注到其他分组
      * @param session session 对象
-     * @param srcGroupId 原关注分组 id
-     * @param destGroupId 目标关注分组 id
-     * @param followerList 被关注的用户 uid
+     * @param transferFollowerParams 复制所需参数
      * @return 返回复制过程中的提示
      */
-    Result<?> copyFollow(HttpSession session, Integer srcGroupId, Integer destGroupId, List<Integer> followerList);
+    Result<?> copyFollow(HttpSession session, TransferFollowerParams transferFollowerParams);
 
     /**
      * 复制关注到其他分组
      * @param session session 对象
-     * @param srcGroupId 原关注分组 id
-     * @param destGroupId 目标关注分组 id
-     * @param followerList 被关注的用户 uid
+     * @param transferFollowerParams 移动所需参数
      * @return 返回移动过程中的提示
      */
-    Result<?> moveFollow(HttpSession session, Integer srcGroupId, Integer destGroupId, List<Integer> followerList);
+    Result<?> moveFollow(HttpSession session, TransferFollowerParams transferFollowerParams);
 }

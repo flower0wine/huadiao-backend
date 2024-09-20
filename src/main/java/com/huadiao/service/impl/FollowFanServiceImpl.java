@@ -103,24 +103,22 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
                 log.debug("uid, userId 分别为 {}, {} 的用户访问 viewedUid 为 {} 的用户不存在", uid, userId, viewedUid);
                 return Result.pageNotExist();
             }
-            if (offset == null || row == null || offset < 0 || row < 0) {
-                return Result.errorParam();
-            }
-            if(row > defaultRow) {
-                row = defaultRow;
-            }
-            Result<?> result = checkPublicFollowStatus(uid, userId, viewedUid);
-            if(!result.succeed()) {
-                return result;
-            }
-            boolean me = uid.equals(viewedUid);
-            // 不是本人只能查看全部关注, 或者提供的 group 为 null
-            if(!me) {
-                groupId = null;
-            } else {
-                groupId = Integer.valueOf(defaultAllGroupId).equals(groupId) ? null : groupId;
-            }
-            return afterGetFollowFanInfo(uid, userId, viewedUid, groupId, offset, row);
+
+            return checkPageAndSize(offset, row, (page, size) -> {
+                Result<?> result = checkPublicFollowStatus(uid, userId, viewedUid);
+                if(!result.succeed()) {
+                    return result;
+                }
+                boolean me = uid.equals(viewedUid);
+                Integer groupIdTemp;
+                // 不是本人只能查看全部关注, 或者提供的 group 为 null
+                if(!me) {
+                    groupIdTemp = null;
+                } else {
+                    groupIdTemp = Integer.valueOf(defaultAllGroupId).equals(groupId) ? null : groupId;
+                }
+                return afterGetFollowFanInfo(uid, userId, viewedUid, groupIdTemp, page, size);
+            });
         }
 
         protected Result<?> afterGetFollowFanInfo(Integer uid, String userId, Integer viewedUid, Integer groupId, Integer offset, Integer row) {
@@ -242,10 +240,16 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyGroupName(Integer uid, String userId, String groupName, Integer groupId) {
+    public Result<?> modifyGroupName(Integer uid, String userId, String groupName, Integer groupId) {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试修改关注分组 groupId 为 {} 的名称, 提供的名称为 {}", uid, userId, groupId, groupName);
-        followFanMapper.modifyFollowGroupNameByUid(uid, groupName, groupId);
-        log.debug("uid, userId 分别为 {}, {} 的用户成功修改关注分组 groupId 为 {} 的名称, 提供的名称为 {}", uid, userId, groupId, groupName);
+        Integer count = followFanMapper.modifyFollowGroupNameByUid(uid, groupName, groupId);
+
+        log.debug("uid, userId 分别为 {}, {} 的用户修改关注分组 groupId 为 {} 的名称成功, 修改了 {} 条记录", uid, userId, groupId, count);
+        if (count == null || count == 0) {
+            return Result.notExist();
+        } else {
+            return Result.ok("修改成功");
+        }
     }
 
     @Override
@@ -254,7 +258,6 @@ public class FollowFanServiceImpl extends AbstractFollowFanService {
         log.debug("uid, userId 分别为 {}, {} 的用户尝试删除关注分组 groupId 为 {}", uid, userId, groupId);
         List<Integer> followerUidList = followFanMapper.selectFollowerUidByUid(uid, groupId);
         followFanMapper.deleteRelation(uid, groupId, followerUidList);
-        followFanMapper.insertFollowToOtherGroup(uid, defaultFollowGroupId, followerUidList);
         followFanMapper.deleteFollowGroupByUid(uid, groupId);
         log.debug("uid, userId 分别为 {}, {} 的用户尝试成功关注分组 groupId 为 {}", uid, userId, groupId);
         return Result.ok(null);

@@ -103,8 +103,9 @@ public interface FollowFanService {
      * @param userId 用户 id
      * @param groupName 修改后的关注分组名称
      * @param groupId 关注分组 id
+     * @return 返回修改成功或失败提示
      */
-    void modifyGroupName(Integer uid, String userId, String groupName, Integer groupId);
+    Result<?> modifyGroupName(Integer uid, String userId, String groupName, Integer groupId);
 
     /**
      * 删除关注分组

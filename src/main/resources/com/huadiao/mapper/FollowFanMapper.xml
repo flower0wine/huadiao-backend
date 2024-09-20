@@ -58,10 +58,13 @@
 
     <!--删除我与多人的关系-->
     <delete id="deleteRelation">
-        delete from huadiao_relation where `group_id` = #{groupId} and
-        <foreach collection="list" open="(" close=")" separator=" or " item="followerUid">
-            (`uid` = #{followerUid} and `fan_uid` = #{uid})
-        </foreach>
+        delete from huadiao_relation
+        <trim prefix="where" suffixOverrides="and">
+            `group_id` = #{groupId} and
+            <foreach collection="list" open="(" close=")" separator=" or " item="followerUid">
+                (`uid` = #{followerUid} and `fan_uid` = #{uid})
+            </foreach>
+        </trim>
     </delete>
 
     <!--获取用户关注和粉丝的数量-->
@@ -140,21 +143,21 @@
 
     <!--获取用户粉丝-->
     <select id="selectUserFanByUid" resultMap="followFanResultMap">
-        select distinct t1.`fan_uid`                   as uid,
-               if(t2.`fan_uid` is null, 0, 1) as `friend`,
-               t3.`user_avatar`,
-               t4.`user_id`,
-               t5.`nickname`,
-               t5.`canvases`,
-               t1.`latest_follow_date`
+        select distinct t1.`fan_uid` as uid,
+                        if(t2.`fan_uid` is null, 0, 1) as `friend`,
+                        t3.`user_avatar`,
+                        t4.`user_id`,
+                        t5.`nickname`,
+                        t5.`canvases`,
+                        t1.`latest_follow_date`
         from huadiao_relation t1
-                 left join huadiao_relation t2 on t1.`fan_uid` = t2.`uid` and t2.`status`
+                 left join huadiao_relation t2 on t1.`fan_uid` = t2.`uid` and t1.`uid` = t2.`fan_uid` and t2.`status`
                  left join huadiao_homepage t3 on t3.uid = t1.fan_uid
                  left join huadiao_user_base t4 on t4.uid = t1.fan_uid
                  left join huadiao_user_info t5 on t5.uid = t1.fan_uid
         where t1.uid = #{uid}
           and t1.`status`
-          and t1.`id` >= (select `id` from huadiao_relation where uid = #{uid} and `status` limit #{offset}, 1)
+          and t1.`id` >= (select `id` from huadiao_relation where `uid` = #{uid} and `status` order by `id` limit #{offset}, 1)
         limit #{row};
     </select>
 

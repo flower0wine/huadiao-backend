@@ -109,4 +109,16 @@ public class CommonControllerImpl extends AbstractController implements CommonCo
         registerInspector.getThreadLocal().set(map);
         return commonService.registerHuadiao(request, response, registerInspector);
     }
+
+    @Override
+    @GetMapping("/validate")
+    public Result<?> validateUser(HttpSession session) {
+        Integer uid = (Integer) session.getAttribute("uid");
+
+        if (uid != null) {
+            return Result.ok("当前用户已登录");
+        } else {
+            return Result.notAuthorize("当前用户未登录");
+        }
+    }
 }

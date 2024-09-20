@@ -126,8 +126,9 @@ public interface FollowFanMapper {
      * @param uid       用户 uid
      * @param groupName 修改后的关注分组名称
      * @param groupId   要修改名称的关注分组
+     * @return 修改结果
      */
-    void modifyFollowGroupNameByUid(@Param("uid") Integer uid, @Param("groupName") String groupName, @Param("groupId") Integer groupId);
+    Integer modifyFollowGroupNameByUid(@Param("uid") Integer uid, @Param("groupName") String groupName, @Param("groupId") Integer groupId);
 
     /**
      * 删除关注分组

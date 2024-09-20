@@ -3,11 +3,12 @@ package com.huadiao.controller.impl;
 import com.huadiao.controller.AbstractController;
 import com.huadiao.controller.FollowFanController;
 import com.huadiao.entity.Result;
+import com.huadiao.entity.req.follow.TransferFollowerParams;
 import com.huadiao.service.FollowFanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 /**
  * @author flowerwine
@@ -44,18 +45,18 @@ public class FollowFanControllerImpl extends AbstractController implements Follo
 
     @Override
     @GetMapping("/follow")
-    public Result<?> getUserFollow(HttpSession session, Integer uid, Integer groupId, Integer offset, Integer row) {
+    public Result<?> getUserFollow(HttpSession session, Integer uid, Integer groupId, Integer page, Integer size) {
         Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
-        return followFanService.getUserFollow(myUid, userId, uid, groupId, offset, row);
+        return followFanService.getUserFollow(myUid, userId, uid, groupId, page, size);
     }
 
     @Override
     @GetMapping("/fan")
-    public Result<?> getUserFan(HttpSession session, Integer uid, Integer offset, Integer row) {
+    public Result<?> getUserFan(HttpSession session, Integer uid, Integer page, Integer size) {
         Integer myUid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
-        return followFanService.getUserFan(myUid, userId, uid, offset, row);
+        return followFanService.getUserFan(myUid, userId, uid, page, size);
     }
 
     @Override
@@ -92,10 +93,10 @@ public class FollowFanControllerImpl extends AbstractController implements Follo
 
     @Override
     @GetMapping("/follow/group/modify")
-    public void modifyFollowGroupName(HttpSession session, String groupName, Integer groupId) {
+    public Result<?> modifyFollowGroupName(HttpSession session, String groupName, Integer groupId) {
         Integer uid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
-        followFanService.modifyGroupName(uid, userId, groupName, groupId);
+        return followFanService.modifyGroupName(uid, userId, groupName, groupId);
     }
 
     @Override
@@ -108,23 +109,29 @@ public class FollowFanControllerImpl extends AbstractController implements Follo
 
     @Override
     @PostMapping("/follow/copy")
-    public Result<?> copyFollow(HttpSession session,
-                                @RequestParam Integer srcGroupId,
-                                @RequestParam Integer destGroupId,
-                                @RequestParam(name = "uid") List<Integer> followerList) {
+    public Result<?> copyFollow(HttpSession session, @RequestBody TransferFollowerParams transferFollowerParams) {
         Integer uid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
-        return followFanService.copyFollow(uid, userId, srcGroupId, destGroupId, followerList);
+        return followFanService.copyFollow(
+                uid,
+                userId,
+                transferFollowerParams.getSrcGroupId(),
+                transferFollowerParams.getDestGroupId(),
+                transferFollowerParams.getUidList()
+        );
     }
 
     @Override
     @PostMapping("/follow/move")
-    public Result<?> moveFollow(HttpSession session,
-                                @RequestParam Integer srcGroupId,
-                                @RequestParam Integer destGroupId,
-                                @RequestParam(name = "uid") List<Integer> followerList) {
+    public Result<?> moveFollow(HttpSession session, @RequestBody TransferFollowerParams transferFollowerParams) {
         Integer uid = (Integer) session.getAttribute(uidKey);
         String userId = (String) session.getAttribute(userIdKey);
-        return followFanService.moveFollow(uid, userId, srcGroupId, destGroupId, followerList);
+        return followFanService.moveFollow(
+                uid,
+                userId,
+                transferFollowerParams.getSrcGroupId(),
+                transferFollowerParams.getDestGroupId(),
+                transferFollowerParams.getUidList()
+        );
     }
 }
